@@ -1,0 +1,4 @@
+obj/
+GameData/KSPFixSuspensionBounce/*.dll
+GameData/*.zip
+__pycache__/
