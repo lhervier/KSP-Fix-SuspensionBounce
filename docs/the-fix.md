@@ -1,7 +1,7 @@
 # The fix
 
 Part of [Suspension Bounce Fix](../README.md). What the mod changes for each of the three
-[culprits](the-culprits.md), the two ways it can set the damper, and how it does it in the code.
+[culprits](the-culprits.md), and how it does it in the code.
 
 ## What the mod keeps
 
@@ -42,9 +42,13 @@ to its 50 kg. The spring keeps its last setting.
 The mod measures how far the suspension's axis leans on the surface its ray hits: the ground, or the side of another
 vessel; in the air, on the vertical.
 
-- Up to 30°, the suspension keeps all its spring and all its damper.
-- Beyond that, both weaken more and more: a third is left at 60°, and nothing when the axis lies flat on the surface,
-  or points away from it.
+- Up to 40°, the suspension keeps all its spring and all its damper. Not less than 40°: some legs stand slanted by
+  design, and an LT-2 standing on flat ground already leans by 32°; with a lower threshold, every lander on LT-2 legs
+  would sink a little more than without the mod. The leg lying down that this is for was thrown at 48 to 52°. On a
+  slope, the downhill leg leans by its own angle plus the slope's: the downhill LT-2 legs of a lander standing on more
+  than about 8° pass 40°, and keep 85 % of their spring and damper on 13°.
+- Beyond that, both weaken more and more: 40 % is left at 60°, and nothing when the axis lies flat on the surface, or
+  points away from it.
 - The limit of the first culprit also drops with the lean, by half at 45°: the more the suspension leans, the harder
   the same push shakes the part, and the weaker the damper must be not to send it back.
 
@@ -52,19 +56,13 @@ A leg lying down whose foot brushes the ground, or the side of a lander, then ba
 longer be thrown. On the other hand, a rover wheel touching a steep face, a rock or the edge of a crater, gets a
 softer suspension for as long as it touches it: this is still to be checked (*Work in progress* in the README).
 
-## The two modes
+## Nothing else
 
-The `mode` setting in `GameData/KSPFixSuspensionBounce/PluginData/settings.cfg`, read when KSP starts:
+The mod keeps KSP's spring and damper, unless the damper is above the limit, or the axis leans more than 40°. It
+writes nothing on a suspension it does not change: every other vessel behaves exactly as without it.
 
-- **`Minimal`** (the default): the mod keeps KSP's spring and damper, unless the damper is above the limit, or the
-  axis leans more than 30°. It writes nothing on a suspension it does not change: every other vessel behaves exactly
-  as without it.
-- **`MassBased`**: the mod works out every damper again from the spring and the mass the leg carries, in place of the
-  correction for heavy vessels. In stock, the more a leg carries, the more it swings before it settles, until that
-  correction steps in, and a leg that carries little is held too stiffly. With this mode, every vessel settles on its
-  legs the same way, whatever its weight: as, in stock, a lander of about one ton per leg does. This changes how every
-  lander and every rover settles. The lean and the limit apply too.
-- **`Stock`**: the mod changes nothing.
+The `mode` setting in `GameData/KSPFixSuspensionBounce/PluginData/settings.cfg`, read when KSP starts, turns the fix
+off: `Minimal`, the default, is the fix; `Stock` changes nothing, to compare.
 
 ## In the code
 
@@ -95,7 +93,7 @@ surface hit (`wheelState[0].hit.normal`), or the local vertical (`FlightGlobals.
 nothing. `Fade` turns it into the share of its spring and damper the suspension keeps:
 
 ```csharp
-if (cos >= CosFullUpTo)   // cos 30°
+if (cos >= CosFullUpTo)   // cos 40°
 {
     return 1f;
 }
@@ -107,13 +105,13 @@ float ratio = cos / CosFullUpTo;
 return ratio * ratio;
 ```
 
-**The limit** of the damper, in both modes:
+**The limit** of the damper:
 
 ```csharp
 float limit = share * Mathf.Max(cos, 0f) * Mathf.Max(cos, 0f) / (2f * Time.fixedDeltaTime);
 ```
 
-**The mass set in motion** at the wheel, before the limit and `MassBased` use it: `VesselInertia`, in
+**The mass set in motion** at the wheel, before the limit uses it: `VesselInertia`, in
 [Src/VesselInertia.cs](../Src/VesselInertia.cs), adds up once per vessel and per step the mass, the centre of mass and
 the inertia tensor of the parts' rigidbodies (each part's own inertia, turned to world axes, plus its mass about the
 centre of mass). At the point the wheel touches, along the normal of the surface, the vessel answers as a mass m with
@@ -123,16 +121,10 @@ centre of mass). At the point the wheel touches, along the normal of the surface
 share = Mathf.Min(share, (float)inertia.EffectiveMass(point, normal));
 ```
 
-**`MassBased`**: the game's formula, with the mass carried in place of `damperFudge`:
-
-```csharp
-return Mathf.Sqrt(Mathf.Max(spring * suspension.damperRatio * mass, 0f)) * suspension.damperTweakable;
-```
-
 **Writing to the wheel**:
 
 ```csharp
-if (massBased || isLimited || wasLimited || isFaded || wasFaded)
+if (isLimited || wasLimited || isFaded || wasFaded)
 {
     wheel.wheelCollider.damperRate = damper;
 }
@@ -142,10 +134,10 @@ if (isFaded || wasFaded)
 }
 ```
 
-In `Minimal`, the mod only writes what it changes, and once more at the step where it stops changing it: the game only
+The mod only writes what it changes, and once more at the step where it stops changing it: the game only
 writes a spring or a damper that differs from the wheel's by more than 3 or 1.05, and would otherwise keep the mod's.
 In the air, a limited suspension stays marked as such by the mod, so that the game sets its own back at the next
 contact.
 
 **The log**: with `logLevel = Debug`, a line in `KSP.log` when a suspension starts or stops being limited or
-weakened, and, in `MassBased`, a line the first time each suspension is set.
+weakened.

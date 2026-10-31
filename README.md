@@ -3,41 +3,41 @@
 **⚠️ Not finished yet.** This is a new fix, not a finished mod. The code and the conclusions on this page can still
 change.
 
-A fix for stock KSP 1.12, kept small: two Harmony postfixes, in one source file. Here is what it fixes:
+A fix for stock KSP 1.12, kept small: two Harmony postfixes, in two short source files. Here is what it fixes:
 
-> **A light probe standing on its landing legs is thrown up into the air.** A probe of 100 kg on three LT-05 legs,
-> put on the runway, leaves it the moment physics starts and climbs well over a hundred metres. Put back on the
-> ground, it is thrown up again.
+> **In KSP, landing legs and wheels often go haywire.** A light probe leaves the runway on its own legs, a landing leg
+> set down alone in EVA construction flies off, a light rover that stands still on Kerbin never comes to rest on Eve.
 
-![The probe launched on the runway](imgs/small-probe.gif)
+<table>
+<tr>
+<td width="50%"><img src="imgs/small-probe.gif" alt="A light probe launched on the runway"></td>
+<td width="50%"><img src="imgs/minirover-stock-eve.gif" alt="A light rover loaded on Eve"></td>
+</tr>
+<tr>
+<td valign="top"><em>A probe of 100 kg on three LT-05 legs, launched on the runway
+(<a href="#a-light-probe-on-the-runway">how</a>).</em></td>
+<td valign="top"><em>A rover of a quarter of a ton on four RoveMax S2 wheels, set down on Eve, saved, and loaded
+there.</em></td>
+</tr>
+<tr>
+<td><img src="imgs/landing-leg-stock-minmus.gif" alt="A landing leg set down alone on Minmus"></td>
+<td><img src="imgs/landing-leg.gif" alt="A landing leg set down alone on Kerbin, with Terrain Precision Fix"></td>
+</tr>
+<tr>
+<td valign="top"><em>On Minmus, a landing leg taken off a lander and set down on its foot in EVA construction
+(<a href="#a-landing-leg-placed-alone">how</a>).</em></td>
+<td valign="top"><b>⚠️ Only with Terrain Precision Fix:</b> <em>the same on Kerbin. In stock, the leg lies down there
+and stays there.</em></td>
+</tr>
+</table>
 
-*KSP 1.12.5 and KSP Community Fixes, without this mod: the probe of [A light probe on the runway](#a-light-probe-on-the-runway), launched from the SPH on
-the runway.*
+*KSP 1.12.5 and KSP Community Fixes, without this mod.*
 
-The cause: KSP sizes the damper of each leg without the mass the leg carries, and on a light vessel, that damper
-throws the vessel up instead of slowing it down (see [The culprits](#the-culprits)). By default, this mod only lowers the
-dampers that are too stiff for the mass they carry, which only very light vessels have: every other vessel behaves
-as without it. A second mode, for players who want it, sizes every damper from the mass its leg carries: see
-[The fix](#the-fix).
-
-It also fixes a part lying alone, with or without
-[Terrain Precision Fix](https://github.com/lhervier/KSP-Fix-TerrainPrecision):
-
-> **A landing leg set down alone in EVA construction is thrown up into the air.** In stock, on Minmus, a few
-> seconds after it is set down. With Terrain Precision Fix, on Kerbin as well, at once; it breaks when it falls back.
-> See [A landing leg placed alone](#a-landing-leg-placed-alone) for why.
-
-![A landing leg set down alone on Minmus, in stock](imgs/landing-leg-stock-minmus.gif)
-
-*KSP 1.12.5 and KSP Community Fixes, without this mod or Terrain Precision Fix: on Minmus, the save
-[`landing-leg-minmus.sfs`](https://github.com/lhervier/KSP-Fix-TerrainPrecision/blob/main/diag/lone-parts/limits/landing-leg/landing-leg-minmus.sfs)
-of Terrain Precision Fix; in EVA construction, Bill Kerman takes a leg off the lander and sets it down on its foot.*
-
-![A landing leg set down alone on Kerbin, with Terrain Precision Fix](imgs/landing-leg.gif)
-
-*KSP 1.12.5, KSP Community Fixes and Terrain Precision Fix, without this mod: on Kerbin, the save
-[`landing-leg-kerbin.sfs`](https://github.com/lhervier/KSP-Fix-TerrainPrecision/blob/main/diag/lone-parts/limits/landing-leg/landing-leg-kerbin.sfs)
-of Terrain Precision Fix; in EVA construction, Bill Kerman takes a leg off the lander and sets it down on its foot.*
+The cause: KSP sizes a suspension with a few simple rules, patched over the years, and some cases slip through: a
+light vessel, or a part lying alone, gets a damper that throws it up instead of slowing it down (see
+[The culprits](#the-culprits)). This mod only changes a suspension in those cases, with or without
+[Terrain Precision Fix](https://github.com/lhervier/KSP-Fix-TerrainPrecision): every other vessel behaves as without
+it (see [The fix](#the-fix)).
 
 **How this was made.** The investigation and the code were written with Claude, Anthropic's AI assistant.
 Everything here was reviewed and validated by a human — me. I am saying so up front, because contributions made with
@@ -75,12 +75,13 @@ step, well short of sending it back.
 same limit, for the smallest share the leg can carry, so that it is already right at the first step of the next
 contact.
 
-**Leaning.** Past 30° of lean on the surface its ray hits, a suspension loses more and more of its spring and its
-damper, and the limit of its damper drops with the lean.
+**Leaning.** Past 40° of lean on the surface its ray hits, a suspension loses more and more of its spring and its
+damper, and the limit of its damper drops with the lean. Not before 40°: some legs stand slanted by design, and an
+LT-2 standing on flat ground already leans by 32°. On a slope of more than about 8°, the downhill LT-2 legs of a lander
+pass 40°, and get a little softer.
 
-**Two modes.** `Minimal`, the default, only changes a suspension that reaches the limit or leans past 30°: every other
-vessel behaves exactly as without the mod. `MassBased` sizes every damper from the mass its leg carries, so that light
-and heavy vessels settle on their legs alike.
+**Nothing else.** The mod only changes a suspension that reaches the limit or leans past 40°: every other vessel
+behaves exactly as without it.
 
 **→ Full chapter: [The fix](docs/the-fix.md)**
 
@@ -100,7 +101,7 @@ on its legs within a fraction of a second, and stays there.
 With `logLevel = Debug` in the settings, the mod writes a line for each leg whose damper it lowers:
 
 ```
-[KSPFixSuspensionBounce] [DEBUG] Damper of miniLandingLeg (749513586) of SuspensionBounce limited to 1.667 for 0.033 t carried, KSP computed 7
+[KSPFixSuspensionBounce] [DEBUG] Damper of miniLandingLeg (749513586) of SuspensionBounce limited to 0.833 for 0.033 t carried, KSP computed 7
 ```
 
 ### A landing leg placed alone
@@ -143,10 +144,7 @@ as a leg standing on its foot would, and may roll or stand up again before it co
 
 ## Work in progress
 
-- **`MassBased` on heavy vessels.** A heavy rover or lander should settle on its wheels or legs a little more firmly
-  than without the mod, without bouncing, sinking or shaking. To check by hand: land or load the same heavy vessel
-  with `mode = Stock`, then with `mode = MassBased`, and compare how it settles.
-- **Rovers on rough ground.** A wheel whose ray hits a face leaning more than 30° on its axis, a rock or the edge of
+- **Rovers on rough ground.** A wheel whose ray hits a face leaning more than 40° on its axis, a rock or the edge of
   a crater, gets a softer suspension for as long as it touches it. A rover driving over rough ground should behave as
   without the mod, neither sinking onto its wheels nor bouncing. To check by hand: drive the same rover over the same
   rocks with `mode = Stock`, then with the mod.

@@ -43,10 +43,12 @@ namespace com.github.lhervier.ksp.fix.suspensionbounce
             AccessTools.FieldRefAccess<SuspensionLoadBalancer, List<ModuleWheelSuspension>>("suspensionModules");
 
         /// <summary>
-        /// The angle between the suspension's axis and the local vertical up to which the suspension works in full;
-        /// beyond it, its spring and damper fade out.
+        /// The angle between the suspension's axis and the surface its ray hits up to which the suspension works in
+        /// full; beyond it, its spring and damper fade out.
         /// </summary>
-        private const float FullUpToDegrees = 30f;
+        // Some legs stand slanted by design: an LT-2 standing on flat ground leans by 32°. The leg lying down that
+        // this fade is for was thrown at 48 to 52°.
+        private const float FullUpToDegrees = 40f;
 
         private static readonly float CosFullUpTo = Mathf.Cos(FullUpToDegrees * Mathf.Deg2Rad);
 
@@ -66,9 +68,6 @@ namespace com.github.lhervier.ksp.fix.suspensionbounce
 
         /// <summary>The suspensions whose spring and damper are faded for the angle of their axis.</summary>
         private static readonly HashSet<ModuleWheelSuspension> faded = new HashSet<ModuleWheelSuspension>();
-
-        /// <summary>The suspensions already sized in MassBased mode, for one Debug line each.</summary>
-        private static readonly HashSet<ModuleWheelSuspension> sized = new HashSet<ModuleWheelSuspension>();
 
         /// <summary>Patches the spring and damper update of the suspensions, on the ground and off it.</summary>
         /// <exception cref="MissingMemberException">A member the fix reads is missing from the game.</exception>
@@ -91,13 +90,12 @@ namespace com.github.lhervier.ksp.fix.suspensionbounce
             {
                 limited.Clear();
                 faded.Clear();
-                sized.Clear();
             });
         }
 
         /// <summary>
         /// Replaces the spring and damper SuspensionSpringUpdate has just set on the wheel collider with the ones the
-        /// mode sizes, for the share of the vessel the suspension carries among the grounded ones. The game calls it at
+        /// fix sizes, for the share of the vessel the suspension carries among the grounded ones. The game calls it at
         /// every physics step where the wheel touches the ground.
         /// </summary>
         private static void SuspensionSpringUpdatePostfix(ModuleWheelSuspension __instance)
@@ -141,7 +139,7 @@ namespace com.github.lhervier.ksp.fix.suspensionbounce
         }
 
         /// <summary>
-        /// Sets on the wheel collider the spring and damper the mode sizes for a suspension carrying
+        /// Sets on the wheel collider the spring and damper the fix sizes for a suspension carrying
         /// <paramref name="share"/> tons, or the mass the vessel sets in motion at its wheel when that is less, starting
         /// from <paramref name="stockDamper"/>, the damper the game last computed: faded with the angle of the
         /// suspension's axis, and the damper kept under what one physics step can take.
@@ -166,9 +164,8 @@ namespace com.github.lhervier.ksp.fix.suspensionbounce
             {
                 return;
             }
-            bool massBased = Settings.Mode == DamperMode.MassBased;
             float stockSpring = StockSpring(suspension);
-            float damper = massBased ? MassBasedDamper(suspension, stockSpring, share) : stockDamper;
+            float damper = stockDamper;
 
             float fade = Fade(cos);
             bool isFaded = fade < 1f;
@@ -200,10 +197,9 @@ namespace com.github.lhervier.ksp.fix.suspensionbounce
                 wasLimited = limited.Remove(suspension);
             }
 
-            // MassBased replaces every damper. Minimal leaves the wheel alone unless it changes it, or has just stopped:
-            // the game only sets a spring or a damper that differs from the wheel's by more than 3 or 1.05, and would
-            // otherwise keep the mod's.
-            if (massBased || isLimited || wasLimited || isFaded || wasFaded)
+            // Leave the wheel alone unless the fix changes it, or has just stopped: the game only sets a spring or a
+            // damper that differs from the wheel's by more than 3 or 1.05, and would otherwise keep the mod's.
+            if (isLimited || wasLimited || isFaded || wasFaded)
             {
                 wheel.wheelCollider.damperRate = damper;
             }
@@ -214,22 +210,9 @@ namespace com.github.lhervier.ksp.fix.suspensionbounce
 
             if (Log.IsDebugEnabled)
             {
-                LogChange(suspension, wheel, share, stockDamper, damper, fade, isLimited, wasLimited, isFaded, wasFaded,
+                LogChange(suspension, share, stockDamper, damper, fade, isLimited, wasLimited, isFaded, wasFaded,
                     offGround);
             }
-        }
-
-        /// <summary>
-        /// Returns the damper sized from the spring and the mass the suspension carries, with the damping ratio the
-        /// part's settings and the player's tweakable ask for, whatever the vessel's mass.
-        /// </summary>
-        private static float MassBasedDamper(ModuleWheelSuspension suspension, float spring, float mass)
-        {
-            // The stock damper is sqrt(spring * damperRatio * damperFudge) * damperTweakable, where damperFudge only
-            // grows with the whole vessel's mass once it is large. The damping ratio of a spring k holding a mass m
-            // with a damper c is c / (2 * sqrt(k * m)): putting the mass in place of damperFudge makes it
-            // sqrt(damperRatio) * damperTweakable / 2 for every vessel, 0.74 for a landing leg left to its settings.
-            return Mathf.Sqrt(Mathf.Max(spring * suspension.damperRatio * mass, 0f)) * suspension.damperTweakable;
         }
 
         /// <summary>
@@ -317,17 +300,14 @@ namespace com.github.lhervier.ksp.fix.suspensionbounce
         }
 
         /// <summary>
-        /// Writes a Debug line when a suspension starts or stops being faded or limited, and, in MassBased mode, the
-        /// first time a suspension is sized.
+        /// Writes a Debug line when a suspension starts or stops being faded or limited.
         /// </summary>
-        private static void LogChange(ModuleWheelSuspension suspension, KSPWheelController wheel, float share,
-            float stockDamper, float damper, float fade, bool isLimited, bool wasLimited, bool isFaded, bool wasFaded,
-            bool offGround)
+        private static void LogChange(ModuleWheelSuspension suspension, float share, float stockDamper, float damper,
+            float fade, bool isLimited, bool wasLimited, bool isFaded, bool wasFaded, bool offGround)
         {
             Part part = suspension.part;
             string name = $"{part.partInfo?.name} ({part.persistentId}) of {suspension.vessel.vesselName}";
             string where = offGround ? ", wheel off the ground" : "";
-            string from = "KSP computed";
             if (isFaded && !wasFaded)
             {
                 Log.Debug($"Suspension of {name} faded to {fade:0.###} for the lean of its axis{where}");
@@ -338,17 +318,12 @@ namespace com.github.lhervier.ksp.fix.suspensionbounce
             }
             if (isLimited && !wasLimited)
             {
-                Log.Debug($"Damper of {name} limited to {damper:0.###} for {share:0.###} t carried{where}, {from} " +
-                    $"{stockDamper:0.###}");
+                Log.Debug($"Damper of {name} limited to {damper:0.###} for {share:0.###} t carried{where}, " +
+                    $"KSP computed {stockDamper:0.###}");
             }
             else if (!isLimited && wasLimited)
             {
                 Log.Debug($"Damper of {name} no longer limited, {damper:0.###} for {share:0.###} t carried");
-            }
-            if (Settings.Mode == DamperMode.MassBased && sized.Add(suspension))
-            {
-                Log.Debug($"Damper of {name} sized to {damper:0.###} for {share:0.###} t carried{where} and a spring " +
-                    $"of {wheel.wheelCollider.springRate:0.###}, {from} {stockDamper:0.###}");
             }
         }
     }

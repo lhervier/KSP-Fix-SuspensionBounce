@@ -14,13 +14,7 @@ namespace com.github.lhervier.ksp.fix.suspensionbounce
         /// physics step without bouncing back: it is then lowered to that limit. Only very light vessels and parts
         /// placed alone reach it.
         /// </summary>
-        Minimal,
-
-        /// <summary>
-        /// Every damper is sized from both the spring and the mass its suspension carries, so that all vessels settle
-        /// on their legs the same way, whatever their mass; the limit of <see cref="Minimal"/> still applies.
-        /// </summary>
-        MassBased
+        Minimal
     }
 
     /// <summary>
