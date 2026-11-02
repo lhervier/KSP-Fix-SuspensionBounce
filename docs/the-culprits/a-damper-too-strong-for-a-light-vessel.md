@@ -1,106 +1,114 @@
-# Premier coupable : un amortisseur trop fort pour un vaisseau léger
+# First culprit: a damper too strong for a light vessel
 
-Partie de [Suspension Bounce Fix](../../README.md), [les coupables](../the-culprits.md) : un coupable qui projette.
+Part of [Suspension Bounce Fix](../../README.md), [the culprits](../the-culprits.md): a culprit that throws.
 
-À cause du [plancher](the-patches.md#le-plancher-dune-demi-tonne), une jambe qui porte 50 kg reçoit la raideur d'une
-jambe qui porte une demi-tonne, et l'amortisseur qui va avec. Pour cette jambe, l'amortisseur est beaucoup trop fort,
-et il la projette (voir [pourquoi un amortisseur peut projeter](../the-culprits.md#ce-que-le-stock-ne-résout-pas--les-coupables)).
-Une sonde de 100 kg sur trois jambes en est projetée dès que la physique démarre. Une jambe posée seule en construction
-EVA aussi, quand [Terrain Precision Fix](https://github.com/lhervier/KSP-Fix-TerrainPrecision) lui donne sa propre
-masse dès le départ ; en stock, c'est [le deuxième coupable](a-suspension-in-the-air-keeps-its-settings.md) qui la
-projette.
+Because of the [floor](the-patches.md#the-half-ton-floor), a leg carrying 50 kg gets the stiffness of a leg carrying
+half a ton, and the damper that goes with it. For this leg, the damper is far too strong, and it throws it (see
+[why a damper can throw a vessel](../the-culprits.md#what-stock-leaves-unsolved-the-culprits)). A probe of 100 kg on
+three legs is thrown by it as soon as physics starts. So is a landing leg placed alone in EVA construction, when
+[Terrain Precision Fix](https://github.com/lhervier/KSP-Fix-TerrainPrecision) gives it its own mass from the start; in
+stock, it is [the second culprit](a-suspension-in-the-air-keeps-its-settings.md) that throws it.
 
 <table>
 <tr>
-<td width="50%"><img src="../../imgs/small-probe.gif" alt="Une sonde légère lancée sur la piste"></td>
-<td width="50%"><img src="../../imgs/landing-leg.gif" alt="Une jambe d'atterrissage posée seule sur Kerbin, avec Terrain Precision Fix"></td>
+<td width="50%"><img src="../../imgs/small-probe.gif" alt="A light probe launched on the runway"></td>
+<td width="50%"><img src="../../imgs/landing-leg.gif" alt="A landing leg set down alone on Kerbin, with Terrain Precision Fix"></td>
 </tr>
 <tr>
-<td valign="top"><em>KSP 1.12.5 et KSP Community Fixes, sans ce mod : la sonde de
-<a href="../../README.md#a-light-probe-on-the-runway">A light probe on the runway</a>, lancée du SPH sur la
-piste.</em></td>
-<td valign="top"><b>Pas en stock : sans Terrain Precision Fix, la même jambe se couche sur Kerbin et y reste.</b><br>
-<em>KSP 1.12.5, KSP Community Fixes et Terrain Precision Fix, sans ce mod : sur Kerbin, la sauvegarde
+<td valign="top"><em>KSP 1.12.5 and KSP Community Fixes, without this mod: the probe of
+<a href="../../README.md#a-light-probe-on-the-runway">A light probe on the runway</a>, launched from the SPH onto the
+runway.</em></td>
+<td valign="top"><b>Not in stock: without Terrain Precision Fix, the same leg lies down on Kerbin and stays there.</b><br>
+<em>KSP 1.12.5, KSP Community Fixes and Terrain Precision Fix, without this mod: on Kerbin, the save
 <a href="https://github.com/lhervier/KSP-Fix-TerrainPrecision/blob/main/diag/lone-parts/limits/landing-leg/landing-leg-kerbin.sfs"><code>landing-leg-kerbin.sfs</code></a>
-de Terrain Precision Fix ; en construction EVA, Bill Kerman prend une jambe de l'atterrisseur et la pose sur son
-pied.</em></td>
+of Terrain Precision Fix; in EVA construction, Bill Kerman takes a leg off the lander and sets it down on its
+foot.</em></td>
 </tr>
 </table>
 
-Un monde lourd aggrave ce coupable. Sur Kerbin, un vaisseau de quelques centaines de kilos reste juste sous la limite :
-son amortisseur, celui de la demi-tonne du plancher, retire à chaque pas presque toute la vitesse de la jambe, sans la
-renvoyer. Sur Eve, le même amortisseur, deux à trois fois plus fort
-([curseur réglé automatiquement](the-patches.md#le-réglage-automatique-des-curseurs) et
-[forte gravité](the-patches.md#la-forte-gravité)), passe la limite : un petit rover qui reste immobile sur la piste de
-Kerbin rebondit sur Eve de plus en plus haut, et ne se pose plus. Il peut tenir un moment, roues presque immobiles ; au
-premier écart, une bosse, une roue qui retouche le sol, chaque pas amplifie de nouveau le mouvement.
+A heavy world makes this culprit worse. On Kerbin, a vessel of a few hundred kilograms stays just under the limit: its
+damper, the one of the floor's half ton, takes off almost all the leg's speed at each step, without sending it back.
+On Eve, the same damper, two to three times as strong
+([slider set automatically](the-patches.md#the-automatic-sliders) and [high gravity](the-patches.md#high-gravity)),
+goes past the limit: a small rover that stands still on the runway of Kerbin bounces higher and higher on Eve, and
+never settles. It can hold for a while, its wheels almost still; at the first disturbance, a bump, a wheel touching the
+ground again, each step amplifies the motion once more.
 
-![Un rover léger chargé sur Eve, en stock](../../imgs/minirover-stock-eve.gif)
+![A light rover loaded on Eve, in stock](../../imgs/minirover-stock-eve.gif)
 
-*KSP 1.12.5 et KSP Community Fixes, sans ce mod : un rover d'un quart de tonne sur quatre roues RoveMax S2, posé sur
-Eve, sauvegardé, et chargé là.*
+*KSP 1.12.5 and KSP Community Fixes, without this mod: a rover of a quarter of a ton on four RoveMax S2 wheels, set
+down on Eve, saved, and loaded there.*
 
-## Ce que le mod change
+## What the mod changes
 
-Il laisse l'amortisseur de KSP, sauf s'il est trop fort pour la masse que la jambe doit freiner. Il le ramène alors à
-une limite : l'amortisseur qui retire au plus la moitié de la vitesse de la jambe en un pas, loin de la renvoyer. Cette
-masse, c'est la part du poids que porte la jambe, ou moins pour une roue loin du centre du vaisseau : poussé là, le
-vaisseau tourne autant qu'il se soulève, et la roue n'en met en mouvement qu'une partie. Un vaisseau ordinaire reste
-loin de cette limite, et se comporte exactement comme sans le mod ; seuls les vaisseaux très légers, et les rovers
-légers sur un monde lourd, l'atteignent.
+It keeps KSP's spring, the floor included: a vessel sinks on its legs as it would without the mod, and removing the
+floor would bring back the spring stuck at zero that it prevents. It also keeps KSP's damper, unless it is too strong
+for the mass the leg has to slow down. That mass is the share of the weight the leg carries, or less for a wheel far
+from the vessel's centre: pushed there, the vessel turns as much as it rises, and the wheel only sets part of it in
+motion. The mod then brings the damper down to a limit: the damper that takes off at most half the leg's speed in a
+step, well short of sending it back. No more than half: a damper that stopped the leg in one step would already be on
+the edge, and the wheels of a rover, at the end of trusses whose joints give way, first set even less mass in motion.
+
+An ordinary vessel stays far below that limit, and behaves exactly as without the mod; only very light vessels, and
+light rovers on a heavy world, reach it.
 
 <table>
 <tr>
-<td width="50%"><img src="../../imgs/smallprobe-modded.gif" alt="La même sonde lancée sur la piste, avec le mod"></td>
-<td width="50%"><img src="../../imgs/landingleg-tpf-modded.gif" alt="La même jambe posée seule sur Kerbin, avec Terrain Precision Fix et le mod"></td>
+<td width="50%"><img src="../../imgs/smallprobe-modded.gif" alt="The same probe launched on the runway, with the mod"></td>
+<td width="50%"><img src="../../imgs/landingleg-tpf-modded.gif" alt="The same leg set down alone on Kerbin, with Terrain Precision Fix and the mod"></td>
 </tr>
 <tr>
-<td valign="top"><em>KSP 1.12.5, KSP Community Fixes et ce mod : la sonde de
-<a href="../../README.md#a-light-probe-on-the-runway">A light probe on the runway</a>, lancée du SPH sur la
-piste.</em></td>
-<td valign="top"><em>KSP 1.12.5, KSP Community Fixes, Terrain Precision Fix et ce mod : la même jambe, posée de la
-même façon sur Kerbin depuis la sauvegarde
+<td valign="top"><em>KSP 1.12.5, KSP Community Fixes and this mod: the probe of
+<a href="../../README.md#a-light-probe-on-the-runway">A light probe on the runway</a>, launched from the SPH onto the
+runway.</em></td>
+<td valign="top"><em>KSP 1.12.5, KSP Community Fixes, Terrain Precision Fix and this mod: the same leg, set down the
+same way on Kerbin from the save
 <a href="https://github.com/lhervier/KSP-Fix-TerrainPrecision/blob/main/diag/lone-parts/limits/landing-leg/landing-leg-kerbin.sfs"><code>landing-leg-kerbin.sfs</code></a>.</em></td>
 </tr>
 </table>
 
-![Le même rover chargé sur Eve, avec le mod](../../imgs/minirover-modded.gif)
+![The same rover loaded on Eve, with the mod](../../imgs/minirover-modded.gif)
 
-*KSP 1.12.5, KSP Community Fixes et ce mod : le même rover, chargé sur Eve depuis la même sauvegarde.*
+*KSP 1.12.5, KSP Community Fixes and this mod: the same rover, loaded on Eve from the same save.*
 
-## Dans le code du mod
+## In the mod's code
 
-Un postfix de `ModuleWheelSuspension.SuspensionSpringUpdate`, que KSP appelle à chaque pas où la roue touche quelque
-chose, dans [Src/SuspensionDamper.cs](../../Src/SuspensionDamper.cs) (`SuspensionSpringUpdatePostfix`). La part de la
-jambe est la masse du vaisseau partagée entre les roues au sol, comptées une fois par vaisseau et par pas (`Count`) ;
-`Apply` part de l'amortisseur que KSP vient de calculer :
+A postfix of `ModuleWheelSuspension.SuspensionSpringUpdate`, which KSP calls at every step where the wheel touches
+something, in [Src/SuspensionDamper.cs](../../Src/SuspensionDamper.cs) (`SuspensionSpringUpdatePostfix`). The leg's
+share is the vessel's mass shared between the wheels on the ground, counted once per vessel and per step (`Count`);
+`Apply` starts from the damper KSP has just worked out:
 
 ```csharp
 float share = (float)vessel.totalMass / Mathf.Max(count.Grounded, 1);
 Apply(__instance, wheel, share, StockDamper(__instance), false);
 ```
 
-Dans `Apply`, la part est bornée par la masse que le vaisseau met en mouvement au point de contact, calculée par
-`VesselInertia.EffectiveMass` dans [Src/VesselInertia.cs](../../Src/VesselInertia.cs) :
+In `Apply`, the share is capped by the mass the vessel sets in motion at the point of contact, worked out by
+`VesselInertia.EffectiveMass` in [Src/VesselInertia.cs](../../Src/VesselInertia.cs). `VesselInertia` adds up, once per
+vessel and per step, the mass, the centre of mass and the inertia tensor of the parts' rigidbodies (each part's own
+inertia, turned to world axes, plus its mass about the centre of mass). At the point of contact
+(`wheelState[0].hit.point`), along the normal of the surface (`wheelState[0].hit.normal`), or at the wheel along the
+local vertical when it touches nothing, the vessel answers as a mass m, with
+1 / m = 1 / M + (r × n) · I⁻¹ · (r × n), r the point from the centre of mass, n the normal:
 
 ```csharp
 share = Mathf.Min(share, (float)inertia.EffectiveMass(point, normal));
 ```
 
-Puis l'amortisseur est ramené à la limite s'il la dépasse ; `cos` est l'inclinaison du
-[troisième coupable](a-suspension-pushing-at-a-slant.md#dans-le-code-du-mod), 1 pour une suspension droite :
+Then the damper is brought down to the limit if it is above it:
 
 ```csharp
-float limit = share * Mathf.Max(cos, 0f) * Mathf.Max(cos, 0f) / (2f * Time.fixedDeltaTime);
+float limit = share / (2f * Time.fixedDeltaTime);
 bool isLimited = damper > limit;
 ```
 
-Le mod n'écrit sur la roue que ce qu'il change, et une dernière fois au pas où il cesse de le changer : KSP n'écrit
-lui-même qu'un amortisseur qui diffère de plus de 1,05 de celui de la roue
-([l'arrondi et le seuil d'écriture](the-patches.md#larrondi-et-le-seuil-décriture)), et garderait sinon celui du mod :
+The mod only writes on the wheel what it changes, and once more at the step where it stops changing it: KSP itself only
+writes a damper that differs from the wheel's by more than 1.05
+([rounding and the write threshold](the-patches.md#rounding-and-the-write-threshold)), and would otherwise keep the
+mod's:
 
 ```csharp
-if (isLimited || wasLimited || isFaded || wasFaded)
+if (isLimited || wasLimited)
 {
     wheel.wheelCollider.damperRate = damper;
 }

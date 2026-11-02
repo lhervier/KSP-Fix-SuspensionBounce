@@ -9,14 +9,12 @@ using VehiclePhysics;
 namespace com.github.lhervier.ksp.fix.suspensionbounce
 {
     /// <summary>
-    /// Sizes the spring and the damper of each suspension so that it can no longer throw its vessel. Three stock flaws
-    /// are taken care of. ModuleWheelSuspension.SuspensionSpringUpdate derives the damper from the spring alone, and the
-    /// spring from a weight that SuspensionLoadBalancer never lets fall below half a ton: a light vessel gets the damper
-    /// of a heavy one, which reverses its speed at each physics step instead of slowing it. The game only sizes a
-    /// suspension while its wheel touches the ground, and keeps the last spring and damper while it does not, whatever
-    /// happens to the vessel's mass meanwhile. And the suspension keeps pushing along its axis when its part lies on its
-    /// side, its axis almost parallel to the ground, where the wheel's ray grazes the ground and reads a compression
-    /// that jumps at the slightest rotation.
+    /// Sizes the damper of each suspension so that it can no longer throw its vessel. Two stock flaws are taken care
+    /// of. ModuleWheelSuspension.SuspensionSpringUpdate derives the damper from the spring alone, and the spring from a
+    /// weight that SuspensionLoadBalancer never lets fall below half a ton: a light vessel gets the damper of a heavy
+    /// one, which reverses its speed at each physics step instead of slowing it. And the game only sizes a suspension
+    /// while its wheel touches the ground, and keeps the last spring and damper while it does not, whatever happens to
+    /// the vessel's mass meanwhile.
     /// </summary>
     internal static class SuspensionDamper
     {
@@ -30,10 +28,6 @@ namespace com.github.lhervier.ksp.fix.suspensionbounce
         private static readonly AccessTools.FieldRef<ModuleWheelSubmodule, KSPWheelController> Wheel =
             AccessTools.FieldRefAccess<ModuleWheelSubmodule, KSPWheelController>("wheel");
 
-        /// <summary>The spring SuspensionSpringUpdate last computed, before it decides whether to set it.</summary>
-        private static readonly AccessTools.FieldRef<ModuleWheelSuspension, float> StockSpring =
-            AccessTools.FieldRefAccess<ModuleWheelSuspension, float>("spring");
-
         /// <summary>The damper SuspensionSpringUpdate last computed, before it decides whether to set it.</summary>
         private static readonly AccessTools.FieldRef<ModuleWheelSuspension, float> StockDamper =
             AccessTools.FieldRefAccess<ModuleWheelSuspension, float>("damper");
@@ -41,16 +35,6 @@ namespace com.github.lhervier.ksp.fix.suspensionbounce
         /// <summary>The suspensions of a vessel, as SuspensionLoadBalancer lists them to share its weight.</summary>
         private static readonly AccessTools.FieldRef<SuspensionLoadBalancer, List<ModuleWheelSuspension>> Suspensions =
             AccessTools.FieldRefAccess<SuspensionLoadBalancer, List<ModuleWheelSuspension>>("suspensionModules");
-
-        /// <summary>
-        /// The angle between the suspension's axis and the surface its ray hits up to which the suspension works in
-        /// full; beyond it, its spring and damper fade out.
-        /// </summary>
-        // Some legs stand slanted by design: an LT-2 standing on flat ground leans by 32°. The leg lying down that
-        // this fade is for was thrown at 48 to 52°.
-        private const float FullUpToDegrees = 40f;
-
-        private static readonly float CosFullUpTo = Mathf.Cos(FullUpToDegrees * Mathf.Deg2Rad);
 
         /// <summary>How many suspensions a vessel has, and how many touch the ground.</summary>
         private struct SuspensionCount
@@ -65,9 +49,6 @@ namespace com.github.lhervier.ksp.fix.suspensionbounce
 
         /// <summary>The suspensions whose damper is lowered to the limit.</summary>
         private static readonly HashSet<ModuleWheelSuspension> limited = new HashSet<ModuleWheelSuspension>();
-
-        /// <summary>The suspensions whose spring and damper are faded for the angle of their axis.</summary>
-        private static readonly HashSet<ModuleWheelSuspension> faded = new HashSet<ModuleWheelSuspension>();
 
         /// <summary>Patches the spring and damper update of the suspensions, on the ground and off it.</summary>
         /// <exception cref="MissingMemberException">A member the fix reads is missing from the game.</exception>
@@ -85,17 +66,13 @@ namespace com.github.lhervier.ksp.fix.suspensionbounce
                 postfix: new HarmonyMethod(typeof(SuspensionDamper), nameof(SuspensionSpringUpdatePostfix)));
             harmony.Patch(FixedUpdate,
                 postfix: new HarmonyMethod(typeof(SuspensionDamper), nameof(FixedUpdatePostfix)));
-            // No set holds a suspension of a scene that is gone.
-            GameEvents.onGameSceneLoadRequested.Add(scene =>
-            {
-                limited.Clear();
-                faded.Clear();
-            });
+            // The set holds no suspension of a scene that is gone.
+            GameEvents.onGameSceneLoadRequested.Add(scene => limited.Clear());
         }
 
         /// <summary>
-        /// Replaces the spring and damper SuspensionSpringUpdate has just set on the wheel collider with the ones the
-        /// fix sizes, for the share of the vessel the suspension carries among the grounded ones. The game calls it at
+        /// Replaces the damper SuspensionSpringUpdate has just set on the wheel collider with the one the fix sizes,
+        /// for the share of the vessel the suspension carries among the grounded ones. The game calls it at
         /// every physics step where the wheel touches the ground.
         /// </summary>
         private static void SuspensionSpringUpdatePostfix(ModuleWheelSuspension __instance)
@@ -112,9 +89,8 @@ namespace com.github.lhervier.ksp.fix.suspensionbounce
         }
 
         /// <summary>
-        /// Sizes the spring and damper of a suspension whose wheel is off the ground, which the game leaves as they were
-        /// at the last contact, for the share of the vessel it will carry once all the suspensions of the vessel are on
-        /// the ground.
+        /// Sizes the damper of a suspension whose wheel is off the ground, which the game leaves as it was at the last
+        /// contact, for the share of the vessel it will carry once all the suspensions of the vessel are on the ground.
         /// </summary>
         private static void FixedUpdatePostfix(ModuleWheelSuspension __instance)
         {
@@ -127,28 +103,26 @@ namespace com.github.lhervier.ksp.fix.suspensionbounce
             }
             // The spring and damper were sized for the mass and gravity of the last contact: since then, the vessel may
             // have burnt or transferred most of its mass, or, for a part placed alone in EVA construction, lost the 4 t
-            // ModuleCargoPart.MakePartSettle gives it for 3 s; it may also have tipped over. The wheel pushes with them
-            // at the first step of the next contact, before SuspensionSpringUpdate sizes them again. Each suspension
-            // will then carry its share of the vessel: the share among all of them, the smallest it can be when they
-            // all touch.
+            // ModuleCargoPart.MakePartSettle gives it for 3 s. The wheel pushes with them at the first step of the next
+            // contact, before SuspensionSpringUpdate sizes them again. Each suspension will then carry its share of the
+            // vessel: the share among all of them, the smallest it can be when they all touch.
             SuspensionCount count = Count(vessel);
             float share = (float)vessel.totalMass / Mathf.Max(count.All, 1);
             // The wheel's own damper may already hold what the mod set at the previous step: start again from the
-            // game's, as for the spring.
+            // game's.
             Apply(__instance, wheel, share, StockDamper(__instance), true);
         }
 
         /// <summary>
-        /// Sets on the wheel collider the spring and damper the fix sizes for a suspension carrying
-        /// <paramref name="share"/> tons, or the mass the vessel sets in motion at its wheel when that is less, starting
-        /// from <paramref name="stockDamper"/>, the damper the game last computed: faded with the angle of the
-        /// suspension's axis, and the damper kept under what one physics step can take.
+        /// Sets on the wheel collider the damper the fix sizes for a suspension carrying <paramref name="share"/> tons,
+        /// or the mass the vessel sets in motion at its wheel when that is less: <paramref name="stockDamper"/>, the
+        /// damper the game last computed, kept under what one physics step can take.
         /// </summary>
         private static void Apply(ModuleWheelSuspension suspension, KSPWheelController wheel, float share,
             float stockDamper, bool offGround)
         {
             Vector3 normal, point;
-            float cos = LeanCosine(suspension, wheel, out normal, out point);
+            Contact(suspension, wheel, out normal, out point);
 
             // The share is the weight the suspension holds up when the vessel rests on its suspensions, but a damper
             // slows what moves at its wheel: pushed off the line of its centre of mass, the vessel turns as much as it
@@ -164,21 +138,13 @@ namespace com.github.lhervier.ksp.fix.suspensionbounce
             {
                 return;
             }
-            float stockSpring = StockSpring(suspension);
             float damper = stockDamper;
 
-            float fade = Fade(cos);
-            bool isFaded = fade < 1f;
-            bool wasFaded = isFaded ? !faded.Add(suspension) : faded.Remove(suspension);
-            damper *= fade;
-
             // A damper c slows a mass m by c * v / m * dt in a physics step of length dt: above m / dt, the step does
-            // not stop the motion, it reverses it, and the next step reverses it again, faster. With the axis leaning
-            // by an angle a on the surface hit, the compression the ray reads moves about 1 / cos^2 a faster than the
-            // part: the mass the damper sees along the ray is m cos^2 a. The mass is the vessel's taken as rigid, but
-            // a wheel at the end of trusses first sets in motion less than that, its joints giving way: the damper
-            // takes off at most half the speed in a step.
-            float limit = share * Mathf.Max(cos, 0f) * Mathf.Max(cos, 0f) / (2f * Time.fixedDeltaTime);
+            // not stop the motion, it reverses it, and the next step reverses it again, faster. The mass is the
+            // vessel's taken as rigid, but a wheel at the end of trusses first sets in motion less than that, its
+            // joints giving way: the damper takes off at most half the speed in a step.
+            float limit = share / (2f * Time.fixedDeltaTime);
             bool isLimited = damper > limit;
             bool wasLimited;
             if (isLimited)
@@ -197,36 +163,29 @@ namespace com.github.lhervier.ksp.fix.suspensionbounce
                 wasLimited = limited.Remove(suspension);
             }
 
-            // Leave the wheel alone unless the fix changes it, or has just stopped: the game only sets a spring or a
-            // damper that differs from the wheel's by more than 3 or 1.05, and would otherwise keep the mod's.
-            if (isLimited || wasLimited || isFaded || wasFaded)
+            // Leave the wheel alone unless the fix changes it, or has just stopped: the game only sets a damper that
+            // differs from the wheel's by more than 1.05, and would otherwise keep the mod's.
+            if (isLimited || wasLimited)
             {
                 wheel.wheelCollider.damperRate = damper;
-            }
-            if (isFaded || wasFaded)
-            {
-                wheel.wheelCollider.springRate = stockSpring * fade;
             }
 
             if (Log.IsDebugEnabled)
             {
-                LogChange(suspension, share, stockDamper, damper, fade, isLimited, wasLimited, isFaded, wasFaded,
-                    offGround);
+                LogChange(suspension, share, stockDamper, damper, isLimited, wasLimited, offGround);
             }
         }
 
         /// <summary>
-        /// Returns the cosine of the angle between the suspension's axis and the surface its wheel touches, or the
-        /// local vertical when it touches none: 1 when the axis stands square on it, 0 when it lies flat on it,
-        /// negative when it points away from it. Also gives that surface's normal, or the local vertical, and the
-        /// point the wheel touches it at, or the wheel's position.
+        /// Gives the point the wheel touches the surface at and that surface's normal, or, when it touches none, the
+        /// wheel's position and the local vertical.
         /// </summary>
-        private static float LeanCosine(ModuleWheelSuspension suspension, KSPWheelController wheel,
+        private static void Contact(ModuleWheelSuspension suspension, KSPWheelController wheel,
             out Vector3 normal, out Vector3 point)
         {
             // The wheel reads its compression along a ray cast down its axis, and that ray hits whatever collider lies
-            // on its way, another vessel's side included: the lean that counts is the one on the surface hit. Off the
-            // ground, the local vertical stands for the ground the wheel will touch first.
+            // on its way, another vessel's side included. Off the ground, the local vertical stands for the ground the
+            // wheel will touch first.
             VehicleBase.WheelState state = wheel.wheelState != null && wheel.wheelState.Length > 0
                 ? wheel.wheelState[0] : null;
             if (state != null && state.grounded && state.hit.normal != Vector3.zero)
@@ -239,30 +198,6 @@ namespace com.github.lhervier.ksp.fix.suspensionbounce
                 point = wheel.wheelCollider.transform.position;
                 normal = FlightGlobals.getUpAxis(suspension.vessel.mainBody, point);
             }
-            return Vector3.Dot(wheel.SuspensionAxis, normal);
-        }
-
-        /// <summary>
-        /// Returns the share of its spring and damper a suspension keeps for <paramref name="cos"/>, the cosine of the
-        /// lean of its axis: all of them up to <see cref="FullUpToDegrees"/>, then less and less, none when the axis
-        /// lies flat on the surface or points away from it.
-        /// </summary>
-        private static float Fade(float cos)
-        {
-            // The more the axis leans on the surface the ray hits, the more the ray grazes it, and the more a small
-            // turn of the part moves the point it hits: the compression it reads, and so the force of its spring and
-            // damper, change about 1 / cos^2 of the lean faster than the part moves. The square of the cosine, past
-            // the angle where the suspension works in full, takes that back.
-            if (cos >= CosFullUpTo)
-            {
-                return 1f;
-            }
-            if (cos <= 0f)
-            {
-                return 0f;
-            }
-            float ratio = cos / CosFullUpTo;
-            return ratio * ratio;
         }
 
         /// <summary>Returns how many suspensions the vessel has, and how many have their wheel on the ground.</summary>
@@ -300,22 +235,14 @@ namespace com.github.lhervier.ksp.fix.suspensionbounce
         }
 
         /// <summary>
-        /// Writes a Debug line when a suspension starts or stops being faded or limited.
+        /// Writes a Debug line when a suspension starts or stops being limited.
         /// </summary>
         private static void LogChange(ModuleWheelSuspension suspension, float share, float stockDamper, float damper,
-            float fade, bool isLimited, bool wasLimited, bool isFaded, bool wasFaded, bool offGround)
+            bool isLimited, bool wasLimited, bool offGround)
         {
             Part part = suspension.part;
             string name = $"{part.partInfo?.name} ({part.persistentId}) of {suspension.vessel.vesselName}";
             string where = offGround ? ", wheel off the ground" : "";
-            if (isFaded && !wasFaded)
-            {
-                Log.Debug($"Suspension of {name} faded to {fade:0.###} for the lean of its axis{where}");
-            }
-            else if (!isFaded && wasFaded)
-            {
-                Log.Debug($"Suspension of {name} no longer faded");
-            }
             if (isLimited && !wasLimited)
             {
                 Log.Debug($"Damper of {name} limited to {damper:0.###} for {share:0.###} t carried{where}, " +

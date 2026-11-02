@@ -37,7 +37,7 @@ The cause: KSP sizes a suspension with a few simple rules, patched over the year
 light vessel, or a part lying alone, gets a damper that throws it up instead of slowing it down (see
 [The culprits](#the-culprits)). This mod only changes a suspension in those cases, with or without
 [Terrain Precision Fix](https://github.com/lhervier/KSP-Fix-TerrainPrecision): every other vessel behaves as without
-it (see [The fix](#the-fix)).
+it.
 
 **How this was made.** The investigation and the code were written with Claude, Anthropic's AI assistant.
 Everything here was reviewed and validated by a human — me. I am saying so up front, because contributions made with
@@ -48,42 +48,28 @@ few minutes.
 ## The culprits
 
 KSP sets the spring of each suspension from the weight it carries, never below the weight of half a ton on Kerbin, and
-the damper from the spring alone. Three things then throw a light vessel, or a part lying alone, into the air.
+the damper from the spring alone. Two things then throw a light vessel, or a part lying alone, into the air. The mod
+keeps the spring KSP sets, its floor included, and only changes the damper.
 
 **A damper too strong for a light vessel.** Because of the floor, a leg carrying a few tens of kilograms gets the
 damper of half a ton. KSP works out physics in small steps, and at each step, that damper sends the leg back the other
-way, faster than it came.
+way, faster than it came. The mod works out what each leg carries, the vessel's mass shared between the wheels on the
+ground, or less for a leg far from the vessel's centre of mass: pushed there, the vessel turns as much as it rises. It
+keeps the damper under the one that takes off half the leg's speed in a single physics step, well short of sending it
+back.
+
+**→ Full chapter: [First culprit: a damper too strong for a light vessel](docs/the-culprits/a-damper-too-strong-for-a-light-vessel.md)**
 
 **A suspension in the air keeps its old settings.** KSP only sets a suspension while its wheel touches something: a
-part that left the ground heavy, and touches it again light, pushes with the damper of its heavy self.
+part that left the ground heavy, and touches it again light, pushes with the damper of its heavy self. The mod keeps
+the damper of a wheel in the air under the same limit, for the smallest share the leg can carry, so that it is already
+right at the first step of the next contact.
 
-**A suspension that pushes at a slant.** When a part leans or lies down, its suspension meets the surface at a slant:
-how far it reads it has sunk jumps from one step to the next, and KSP sets it as if it stood upright.
+**→ Full chapter: [Second culprit: a suspension in the air keeps its old settings](docs/the-culprits/a-suspension-in-the-air-keeps-its-settings.md)**
 
-**→ Full chapter: [The culprits](docs/the-culprits.md)**
-
-## The fix
-
-The mod keeps the spring KSP sets, its floor included, and deals with each culprit in turn.
-
-**On the ground, a damper the leg can take.** The mod works out what each leg carries, the vessel's mass shared
-between the wheels on the ground, or less for a leg far from the vessel's centre of mass: pushed there, the vessel
-turns as much as it rises. It keeps the damper under the one that takes off half the leg's speed in a single physics
-step, well short of sending it back.
-
-**Off the ground too.** KSP leaves a wheel in the air with the damper of its last contact; the mod keeps it under the
-same limit, for the smallest share the leg can carry, so that it is already right at the first step of the next
-contact.
-
-**Leaning.** Past 40° of lean on the surface its ray hits, a suspension loses more and more of its spring and its
-damper, and the limit of its damper drops with the lean. Not before 40°: some legs stand slanted by design, and an
-LT-2 standing on flat ground already leans by 32°. On a slope of more than about 8°, the downhill LT-2 legs of a lander
-pass 40°, and get a little softer.
-
-**Nothing else.** The mod only changes a suspension that reaches the limit or leans past 40°: every other vessel
-behaves exactly as without it.
-
-**→ Full chapter: [The fix](docs/the-fix.md)**
+**Nothing else.** The mod only changes a damper that reaches the limit: every other vessel behaves exactly as without
+it. How KSP sets a suspension, and the patches it got over the years, are in
+[The culprits](docs/the-culprits.md).
 
 ## Checked
 
@@ -129,7 +115,7 @@ Minmus, it goes much higher. With this mod, with or without Terrain Precision Fi
 as a leg standing on its foot would, and may roll or stand up again before it comes to rest; the mod writes:
 
 ```
-[KSPFixSuspensionBounce] [DEBUG] Damper of landingLeg1 (521620801) of Jambes d'atterrissage LT-1 limited to 2.5 for 0.05 t carried, KSP computed 6
+[KSPFixSuspensionBounce] [DEBUG] Damper of landingLeg1 (1927183636) of Jambes d'atterrissage LT-1 limited to 0.793 for 0.037 t carried, KSP computed 6
 ```
 
 ## Limits
@@ -141,16 +127,13 @@ as a leg standing on its foot would, and may roll or stand up again before it co
   placed**, for another reason: `ModuleCargoPart.MakePartSettle` makes a part placed alone weigh 4 t (20 t below
   0.8 g) for 3 s, and the suspension sizes its spring for that. This fix does not change it: Terrain Precision Fix's
   `fixLonePartMass` does.
+- **A part placed alone that rolls against another vessel can still be pushed off at a few metres per second.** When
+  its suspension's ray grazes the small, curved colliders of a lander, an engine bell for one, the point it hits jumps
+  from one step to the next, and so does the spring's push. A light part rolls away at 2 to 3 m/s; the ground, broad
+  and smooth, does not do this.
 
 ## Work in progress
 
-- **Rovers on rough ground.** A wheel whose ray hits a face leaning more than 40° on its axis, a rock or the edge of
-  a crater, gets a softer suspension for as long as it touches it. A rover driving over rough ground should behave as
-  without the mod, neither sinking onto its wheels nor bouncing. To check by hand: drive the same rover over the same
-  rocks with `mode = Stock`, then with the mod.
-- **Tipped over vessels.** A vessel lying on its side keeps its legs and wheels from pushing it about; it should come
-  to rest as quickly as without the mod, or quicker. To check by hand: tip a lander over with `mode = Stock`, then with
-  the mod, and compare.
 - **Other parts with a suspension.** The fix applies to every part with `ModuleWheelSuspension`: landing legs, wheels
   and landing gear. It has been played with LT-05 and LT-1 legs and RoveMax M1 wheels only.
 

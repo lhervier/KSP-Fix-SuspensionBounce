@@ -3,31 +3,14 @@ using System.IO;
 
 namespace com.github.lhervier.ksp.fix.suspensionbounce
 {
-    /// <summary>How the mod sizes the damper of each suspension (landing leg, wheel, landing gear).</summary>
-    internal enum DamperMode
-    {
-        /// <summary>The mod changes nothing: every damper is the one KSP sets.</summary>
-        Stock,
-
-        /// <summary>
-        /// The damper KSP sets is kept, unless it is stiffer than the mass its suspension carries can take in one
-        /// physics step without bouncing back: it is then lowered to that limit. Only very light vessels and parts
-        /// placed alone reach it.
-        /// </summary>
-        Minimal
-    }
-
     /// <summary>
     /// What the player can set in PluginData/settings.cfg, next to the DLL. Read once, when KSP starts.
     /// </summary>
     internal static class Settings
     {
-        /// <summary>How the dampers are sized (see <see cref="DamperMode"/>).</summary>
-        public static DamperMode Mode { get; private set; } = DamperMode.Minimal;
-
         /// <summary>
         /// Reads the settings file and applies its log level. A missing file, a missing value or an unknown
-        /// value leaves the default: the Minimal mode, logging at Info.
+        /// value leaves the default: logging at Info.
         /// </summary>
         public static void Load()
         {
@@ -46,7 +29,6 @@ namespace com.github.lhervier.ksp.fix.suspensionbounce
             }
 
             Log.Level = ReadEnum(node, "logLevel", Log.Level, path);
-            Mode = ReadEnum(node, "mode", Mode, path);
         }
 
         /// <summary>

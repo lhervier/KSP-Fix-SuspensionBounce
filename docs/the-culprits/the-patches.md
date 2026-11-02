@@ -1,29 +1,28 @@
-# Les rustines
+# The patches
 
-Partie de [Suspension Bounce Fix](../../README.md), [les coupables](../the-culprits.md) : les rustines de KSP 1.12.5
-sur [le modèle de base](the-base-model.md), chacune avec ses conséquences.
+Part of [Suspension Bounce Fix](../../README.md), [the culprits](../the-culprits.md): the patches of KSP 1.12.5 on
+[the base model](the-base-model.md), each with its consequences.
 
-KSP a reçu plusieurs corrections pour les cas où son modèle de base ne suffisait pas. Squad ne les a pas commentées : leur
-raison d'être est déduite de ce qu'elles font.
+KSP got several corrections for the cases where its base model was not enough. Squad did not comment on them: why they
+are there is worked out from what they do.
 
-## Le plancher d'une demi-tonne
+## The half-ton floor
 
-Quelle que soit sa part réelle, KSP fait comme si chaque roue portait au moins le poids d'une demi-tonne sur Kerbin.
-Sans doute pour ceci : sous un tout petit poids, le ressort calculé est si faible que les arrondis de
-[la rustine suivante](#larrondi-et-le-seuil-décriture) le laissent à zéro, et la jambe s'écrase contre sa butée.
+Whatever its real share, KSP acts as if each wheel carried at least the weight of half a ton on Kerbin. Probably for
+this: under a very small weight, the spring worked out is so weak that the rounding of
+[the next patch](#rounding-and-the-write-threshold) leaves it at zero, and the leg is crushed against its stop.
 
-Conséquences :
+Consequences:
 
-- **Plus de ressort nul.** Un atterrisseur posé sur un astre à faible gravité, dont chaque jambe porte à peine
-  quelques dizaines de kilos de poids, ne s'écrase plus sur ses butées.
-- **Un vaisseau léger est porté comme une demi-tonne.** Ses jambes s'enfoncent à peine, et reçoivent l'amortisseur de
-  la demi-tonne, beaucoup trop fort pour elles : c'est
-  [le premier coupable](a-damper-too-strong-for-a-light-vessel.md).
+- **No more zero spring.** A lander set down on a low gravity body, each of whose legs carries barely a few tens of
+  kilograms of weight, is no longer crushed onto its stops.
+- **A light vessel is held up as half a ton would be.** Its legs barely sink, and get the damper of half a ton, far too
+  strong for them: this is [the first culprit](a-damper-too-strong-for-a-light-vessel.md).
 
 <details>
-<summary>Dans le code</summary>
+<summary>In the code</summary>
 
-Le `minMass` de `SuspensionLoadBalancer.FixedUpdate`, qui vaut `0.5` :
+The `minMass` of `SuspensionLoadBalancer.FixedUpdate`, which is `0.5`:
 
 ```csharp
 suspensionModules[j].sprungMassGravity = Mathf.Max((float)(num * (double)share * (double)multiplier), minMass);
@@ -31,26 +30,26 @@ suspensionModules[j].sprungMassGravity = Mathf.Max((float)(num * (double)share *
 
 </details>
 
-## L'arrondi et le seuil d'écriture
+## Rounding and the write threshold
 
-KSP arrondit le ressort et l'amortisseur à l'unité, et n'écrit un nouveau ressort sur la roue que s'il diffère de plus
-de 3 de l'ancien. Sans doute contre une boucle : le ressort dépend de l'enfoncement
-([rustine suivante](#le-renfort-à-lenfoncement)), et l'enfoncement du ressort ; recalculé à chaque pas, il pourrait
-faire vibrer la suspension. Ce seuil convient à des ressorts de quelques dizaines ou centaines, pas de quelques
-unités : un ressort qui devrait passer de 0 à 1 reste à 0.
+KSP rounds the spring and the damper to the unit, and only writes a new spring on the wheel if it differs from the old
+one by more than 3. Probably against a loop: the spring depends on the compression
+([next patch](#the-boost-with-compression)), and the compression on the spring; worked out again at each step, it could
+make the suspension vibrate. This threshold suits springs of a few tens or hundreds, not of a few units: a spring that
+should go from 0 to 1 stays at 0.
 
-Conséquences :
+Consequences:
 
-- **Pas de vibration** entre le ressort et l'enfoncement, si c'était bien le but.
-- **Un petit ressort n'est jamais écrit** : sous 3, il reste à zéro. C'est ce qui rend
-  [le plancher](#le-plancher-dune-demi-tonne) nécessaire.
-- **Le ressort change par paliers**, en retard sur ce que KSP calcule, puisque le renfort à l'enfoncement le fait
-  varier sans cesse.
+- **No vibration** between the spring and the compression, if that was indeed the aim.
+- **A small spring is never written**: under 3, it stays at zero. This is what makes
+  [the floor](#the-half-ton-floor) necessary.
+- **The spring changes in steps**, lagging behind what KSP works out, since the boost with compression keeps changing
+  it.
 
 <details>
-<summary>Dans le code</summary>
+<summary>In the code</summary>
 
-La fin de `ModuleWheelSuspension.SuspensionSpringUpdate` ; `oscillationDamper` vaut `3` :
+The end of `ModuleWheelSuspension.SuspensionSpringUpdate`; `oscillationDamper` is `3`:
 
 ```csharp
 damper = Mathf.Max(Mathf.Round(damper), 0.1f);
@@ -71,26 +70,27 @@ if (Mathf.Abs(damper - wheel.wheelCollider.damperRate) > 1.05f)
 
 </details>
 
-## Le renfort à l'enfoncement
+## The boost with compression
 
-Plus la roue s'enfonce, plus son ressort durcit, jusqu'à deux fois sa raideur de départ ; et quand elle dépasse 80 %
-de sa course, il durcit encore, d'autant plus qu'elle y reste, jusqu'à trois fois. Sans doute contre la butée : une
-roue qui touche le bout de sa course cogne, et rebondit. Sous forte gravité, ce renfort arrive dès les premiers
-centimètres.
+The further the wheel sinks, the stiffer its spring, up to twice its starting stiffness; and when it goes past 80 % of
+its travel, it stiffens further, the more so the longer it stays there, up to three times. Probably against the stop:
+a wheel that reaches the end of its travel knocks, and bounces back. Under high gravity, this boost comes in from the
+first centimetres.
 
-Conséquences :
+Consequences:
 
-- **Moins de butées** à l'atterrissage et sur les bosses.
-- **Un ressort qui change avec l'enfoncement**, ce qui crée la boucle que combat
-  [le seuil d'écriture](#larrondi-et-le-seuil-décriture). Sur Eve, sa raideur varie fortement au moindre enfoncement.
-- **Un amortisseur qui durcit avec lui**, puisqu'il suit le ressort : il est le plus fort au moment du choc, là où un
-  vaisseau léger a le moins de marge.
+- **Fewer hits on the stop** when landing and over bumps.
+- **A spring that changes with the compression**, which creates the loop that
+  [the write threshold](#rounding-and-the-write-threshold) fights. On Eve, its stiffness changes a lot at the slightest
+  compression.
+- **A damper that stiffens with it**, since it follows the spring: it is strongest at the moment of impact, where a
+  light vessel has the least margin.
 
 <details>
-<summary>Dans le code</summary>
+<summary>In the code</summary>
 
-Dans `ModuleWheelSuspension.SuspensionSpringUpdate`, `boost` grandit avec l'enfoncement (`suspCompression`, de 0 à 1)
-et avec la gravité ; `boostClamp` vaut `0.5`. `BoostCurve` en fait un multiplicateur du ressort :
+In `ModuleWheelSuspension.SuspensionSpringUpdate`, `boost` grows with the compression (`suspCompression`, from 0 to 1)
+and with gravity; `boostClamp` is `0.5`. `BoostCurve` turns it into a multiplier of the spring:
 
 ```csharp
 boost = 1f + Mathf.Clamp(suspCompression * BoostCurve((float)base.vessel.mainBody.GeeASL * (float)base.vessel.gravityMultiplier, 1f), -1f, boostClamp);
@@ -105,7 +105,7 @@ private float BoostCurve(float b, float power)
 }
 ```
 
-`UpdateAutoBoost` monte `autoBoost` tant que l'enfoncement dépasse 0,8, et le redescend sous 0,4 :
+`UpdateAutoBoost` raises `autoBoost` as long as the compression is above 0.8, and lowers it again below 0.4:
 
 ```csharp
 else if (st > 0.8f)
@@ -120,23 +120,23 @@ else if (st < 0.4f)
 
 </details>
 
-## La correction des gros vaisseaux
+## The big-vessel correction
 
-Au-delà d'une quarantaine de tonnes, l'amortisseur durcit avec la masse du vaisseau et avec l'enfoncement des jambes,
-jusqu'à près de quatre fois. Sans doute contre les gros vaisseaux qui oscillent sur leurs jambes, que le modèle de
-base amortit moins. Elle lit la masse du vaisseau entier, pas ce que porte chaque jambe.
+Above about forty tons, the damper stiffens with the vessel's mass and with the compression of the legs, up to nearly
+four times. Probably against big vessels that sway on their legs, which the base model damps less. It reads the mass of
+the whole vessel, not what each leg carries.
 
-Conséquences :
+Consequences:
 
-- **Les très gros vaisseaux, peu de jambes, sont mieux amortis.**
-- **Rien en dessous d'une quarantaine de tonnes**, même pour une jambe qui porte plusieurs tonnes. Sans que ça gêne :
-  un vaisseau de 20 t sur quatre jambes se pose déjà en deux oscillations.
+- **Very big vessels on few legs are better damped.**
+- **Nothing below about forty tons**, even for a leg carrying several tons. Without harm: a vessel of 20 t on four legs
+  already settles in two oscillations.
 
 <details>
-<summary>Dans le code</summary>
+<summary>In the code</summary>
 
-`damperFudge`, dans `ModuleWheelSuspension.SuspensionSpringUpdate`, passe de 1 à 15 sous la racine de l'amortisseur,
-selon la masse du vaisseau entier fois l'enfoncement de la roue :
+`damperFudge`, in `ModuleWheelSuspension.SuspensionSpringUpdate`, goes from 1 to 15 under the square root of the
+damper, from the mass of the whole vessel times the wheel's compression:
 
 ```csharp
 float num = sprungMass * suspCompression;   // sprungMass = vessel.totalMass
@@ -147,25 +147,24 @@ damper = Mathf.Sqrt(Mathf.Clamp(spring * damperRatio * damperFudge, 0.01f, dampe
 
 </details>
 
-## Le réglage automatique des curseurs
+## The automatic sliders
 
-Chaque suspension a deux curseurs dans la fenêtre de la pièce, « Spring » et « Damper ». Tant que le réglage
-automatique est actif, comme par défaut, KSP les règle seul, une fois, au premier contact : le ressort d'autant plus
-raide que la jambe est chargée près de sa charge maximale, l'amortisseur selon la gravité de l'astre, 1,1 sous 1 g,
-1 sur Kerbin, puis de plus en plus fort jusqu'à 2 sur l'astre le plus lourd du système, Eve (1,7 g). Pour que le
-joueur n'ait rien à régler.
+Each suspension has two sliders in the part's window, "Spring" and "Damper". As long as the automatic setting is on, as
+it is by default, KSP sets them on its own, once, at the first contact: the spring the stiffer as the leg is loaded
+near its maximum load, the damper from the body's gravity, 1.1 under 1 g, 1 on Kerbin, then stronger and stronger up
+to 2 on the heaviest body of the system, Eve (1.7 g). So that the player has nothing to set.
 
-Conséquences :
+Consequences:
 
-- **Rien à régler pour le joueur**, sur tous les astres.
-- **Un amortisseur deux fois plus fort sur Eve** que sur Kerbin, pour la même masse à freiner : il aggrave
-  [le premier coupable](a-damper-too-strong-for-a-light-vessel.md).
+- **Nothing for the player to set**, on every body.
+- **A damper twice as strong on Eve** as on Kerbin, for the same mass to slow down: it makes
+  [the first culprit](a-damper-too-strong-for-a-light-vessel.md) worse.
 
 <details>
-<summary>Dans le code</summary>
+<summary>In the code</summary>
 
-Dans `ModuleWheelSuspension.SuspensionSpringUpdate` ; `MaximumSurfaceGeeASL` est la plus forte gravité de surface des
-astres à sol solide, celle d'Eve en stock, et `damperLerpBase` vaut `1` :
+In `ModuleWheelSuspension.SuspensionSpringUpdate`; `MaximumSurfaceGeeASL` is the highest surface gravity of the bodies
+with a solid surface, Eve's in stock, and `damperLerpBase` is `1`:
 
 ```csharp
 if (autoSpringDamper && (!autoSpringDamperSet || (maximumLoad > 0f && num > maximumLoad)))
@@ -191,27 +190,26 @@ if (autoSpringDamper && (!autoSpringDamperSet || (maximumLoad > 0f && num > maxi
 
 </details>
 
-## La forte gravité
+## High gravity
 
-Au-delà de 1,5 g, donc sur Eve seulement en stock, KSP triple le ressort et multiplie l'amortisseur par 1,2. Sans
-doute pour qu'un vaisseau ne s'y écrase pas sur ses jambes. Avec le curseur réglé à 2, une suspension reçoit sur Eve un
-amortisseur 2 × 1,2 = 2,4 fois plus fort que sur Kerbin pour le même ressort, alors que la masse à freiner n'a pas
-changé.
+Above 1.5 g, so only on Eve in stock, KSP triples the spring and multiplies the damper by 1.2. Probably so that a
+vessel is not crushed onto its legs there. With the slider set to 2, a suspension gets on Eve a damper 2 × 1.2 = 2.4
+times as strong as on Kerbin for the same spring, while the mass to slow down has not changed.
 
-Conséquences :
+Consequences:
 
-- **Plus de marge avant la butée** sur Eve : le vaisseau s'y enfonce trois fois moins que ne le voudrait la seule
-  règle du poids.
-- **Un amortisseur plus fort encore**, qui s'ajoute au curseur à 2 : il aggrave
-  [le premier coupable](a-damper-too-strong-for-a-light-vessel.md).
-- **Un saut à 1,5 g** : sur un astre d'un pack de planètes à 1,49 g ou à 1,51 g, le même vaisseau reçoit un ressort trois
-  fois différent.
+- **More margin before the stop** on Eve: the vessel sinks there three times less than the weight rule alone would
+  have it.
+- **An even stronger damper**, on top of the slider at 2: it makes
+  [the first culprit](a-damper-too-strong-for-a-light-vessel.md) worse.
+- **A jump at 1.5 g**: on a body of a planet pack at 1.49 g or at 1.51 g, the same vessel gets a spring three times
+  different.
 
 <details>
-<summary>Dans le code</summary>
+<summary>In the code</summary>
 
-Dans `ModuleWheelSuspension.SuspensionSpringUpdate`, une fois le ressort et l'amortisseur calculés ;
-`highGeeThreshold` vaut `1.5`, `highGeeSpringTweakable` `3`, `highGeeDamperTweakable` `1.2` :
+In `ModuleWheelSuspension.SuspensionSpringUpdate`, once the spring and the damper are worked out; `highGeeThreshold` is
+`1.5`, `highGeeSpringTweakable` `3`, `highGeeDamperTweakable` `1.2`:
 
 ```csharp
 if (adjustForHighGee && base.vessel.mainBody.GeeASL > (double)highGeeThreshold)

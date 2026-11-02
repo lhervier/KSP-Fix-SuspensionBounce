@@ -1,12 +1,10 @@
-<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 55 900 250" width="900" height="250" font-family="Segoe UI, Helvetica, Arial, sans-serif" font-size="13">
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 55 600 250" width="600" height="250" font-family="Segoe UI, Helvetica, Arial, sans-serif" font-size="13">
   <style>
     /* One palette for light and dark pages alike: transparent background, mid tones only. */
     .part { fill: #9aa4af; stroke: #5c6670; stroke-width: 1.5; }
     .ground { fill: #a57c4c; }
     .ray { stroke: #e5534b; stroke-width: 2.5; stroke-dasharray: 7 4; fill: none; }
-    .ray.after { opacity: 0.55; }
     .hit { fill: #e5534b; }
-    .hit.after { opacity: 0.55; }
     .dim { stroke: #848d97; stroke-width: 1.3; fill: none; }
     .sep { stroke: #848d97; stroke-width: 1; opacity: 0.4; }
     .title { fill: #848d97; font-weight: 700; font-size: 14px; }
@@ -30,7 +28,6 @@
   </defs>
 
   <line class="sep" x1="300" y1="65" x2="300" y2="290"/>
-  <line class="sep" x1="600" y1="65" x2="600" y2="290"/>
 
   <!-- Standing: the ray follows the leg down to the ground. -->
   <g>
@@ -38,45 +35,28 @@
     <use href="#leg" transform="translate(150,152)"/>
     <line class="ray" x1="150" y1="152" x2="150" y2="220"/>
     <circle class="hit" cx="150" cy="220" r="4.5"/>
-    <text class="rayLabel" x="122" y="200" text-anchor="end">rayon</text>
+    <text class="rayLabel" x="122" y="200" text-anchor="end">ray</text>
     <line class="dim" x1="190" y1="153" x2="190" y2="219" marker-start="url(#arrow)" marker-end="url(#arrow)"/>
     <text class="note" x="198" y="183">distance</text>
-    <text class="note" x="198" y="198">lue</text>
-    <text class="title" x="150" y="260" text-anchor="middle">Debout</text>
-    <text class="text" x="150" y="278" text-anchor="middle">Le rayon suit l'axe de la jambe</text>
-    <text class="text" x="150" y="294" text-anchor="middle">jusqu'au sol.</text>
+    <text class="note" x="198" y="198">read</text>
+    <text class="title" x="150" y="260" text-anchor="middle">Standing</text>
+    <text class="text" x="150" y="278" text-anchor="middle">The ray follows the leg's axis</text>
+    <text class="text" x="150" y="294" text-anchor="middle">down to the ground.</text>
   </g>
 
   <!-- Against another vessel: the ray hits its side, and the suspension pushes against it. -->
   <g transform="translate(300,0)">
     <rect class="ground" x="20" y="220" width="260" height="12"/>
     <rect class="part" x="170" y="70" width="110" height="150" rx="8"/>
-    <text class="onPart" x="225" y="140" text-anchor="middle">autre</text>
-    <text class="onPart" x="225" y="155" text-anchor="middle">vaisseau</text>
+    <text class="onPart" x="225" y="140" text-anchor="middle">other</text>
+    <text class="onPart" x="225" y="155" text-anchor="middle">vessel</text>
     <use href="#leg" transform="translate(50,198) rotate(-90)"/>
     <line class="ray" x1="50" y1="198" x2="170" y2="198"/>
     <circle class="hit" cx="170" cy="198" r="4.5"/>
     <line class="dim" x1="124" y1="170" x2="164" y2="170" marker-start="url(#arrow)" marker-end="url(#arrow)"/>
-    <text class="note" x="144" y="162" text-anchor="middle">poussée</text>
-    <text class="title" x="150" y="260" text-anchor="middle">Contre un autre vaisseau</text>
-    <text class="text" x="150" y="278" text-anchor="middle">Le rayon touche son flanc :</text>
-    <text class="text" x="150" y="294" text-anchor="middle">la jambe pousse contre lui.</text>
-  </g>
-
-  <!-- Lying down: the ray grazes the ground, and a small turn of the leg moves the point hit far away. -->
-  <g transform="translate(600,0)">
-    <rect class="ground" x="20" y="220" width="260" height="12"/>
-    <!-- Axis 12° below the horizontal; the faint ray is the same leg turned by 4°. -->
-    <use href="#leg" transform="translate(40,190) rotate(-78)"/>
-    <line class="ray after" x1="40" y1="190" x2="253.5" y2="220"/>
-    <circle class="hit after" cx="253.5" cy="220" r="4.5"/>
-    <line class="ray" x1="40" y1="190" x2="181" y2="220"/>
-    <circle class="hit" cx="181" cy="220" r="4.5"/>
-    <line class="dim" x1="183" y1="241" x2="251" y2="241" marker-end="url(#arrow)"/>
-    <text class="note" x="217" y="177" text-anchor="middle">après un</text>
-    <text class="note" x="217" y="190" text-anchor="middle">petit mouvement</text>
-    <text class="title" x="150" y="260" text-anchor="middle">Couchée</text>
-    <text class="text" x="150" y="278" text-anchor="middle">Le rayon rase le sol : un petit mouvement</text>
-    <text class="text" x="150" y="294" text-anchor="middle">déplace loin le point touché.</text>
+    <text class="note" x="144" y="162" text-anchor="middle">push</text>
+    <text class="title" x="150" y="260" text-anchor="middle">Against another vessel</text>
+    <text class="text" x="150" y="278" text-anchor="middle">The ray hits its side:</text>
+    <text class="text" x="150" y="294" text-anchor="middle">the leg pushes against it.</text>
   </g>
 </svg>

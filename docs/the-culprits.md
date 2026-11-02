@@ -1,67 +1,59 @@
-# Les coupables
+# The culprits
 
-Partie de [Suspension Bounce Fix](../README.md). Comment KSP 1.12.5 règle le ressort et l'amortisseur d'une
-suspension : un modèle de base simple, les rustines qu'il a reçues pour les cas où il ne suffisait pas, puis ce que
-ces rustines laissent sans réponse, et qui projette en l'air un vaisseau léger, ou une pièce posée seule.
+Part of [Suspension Bounce Fix](../README.md). How KSP 1.12.5 sets the spring and the damper of a suspension: a simple
+base model, the patches it got for the cases where it was not enough, then what those patches leave unanswered, and
+what throws a light vessel, or a part placed alone, into the air.
 
-## Le modèle de base
+## The base model
 
-Dans KSP, une suspension, c'est un ressort et un amortisseur, que KSP règle tout seul selon quatre règles. La
-suspension mesure son enfoncement par un rayon tendu le long de son axe : elle marche sur toute surface, mais de biais,
-la mesure devient instable. Le ressort suit le poids, partagé à parts égales entre les roues au sol : tous les
-vaisseaux s'enfoncent à peu près autant. L'amortisseur suit le ressort, et ne croît donc que comme la racine de la
-masse : juste pour une jambe qui porte de l'ordre d'une tonne, plus mou au-delà sans que ça gêne, trop dur en deçà. Enfin, le réglage
-n'a lieu qu'au contact : en l'air, la roue garde ses anciens réglages.
+In KSP, a suspension is a spring and a damper, which KSP sets on its own by four rules. The suspension measures how far
+it has sunk with a ray cast along its axis: it works on any surface. The spring follows the weight, shared equally
+between the wheels on the ground: every vessel sinks about as far. The damper follows the spring, and so only grows as
+the square root of the mass: right for a leg carrying about a ton, softer above that without harm, too stiff below.
+Last, the setting only happens on contact: in the air, the wheel keeps its old settings.
 
-**→ Chapitre complet : [Le modèle de base](the-culprits/the-base-model.md)**
+**→ Full chapter: [The base model](the-culprits/the-base-model.md)**
 
-## Les rustines
+## The patches
 
-KSP a reçu plusieurs corrections pour les cas où ce modèle ne suffisait pas. Chacune a ses effets de bord, et
-plusieurs font les coupables plus bas :
+KSP got several corrections for the cases where this model was not enough. Each has its side effects, and several
+make the culprits below:
 
-- **Le plancher d'une demi-tonne** : chaque roue porte au moins le poids d'une demi-tonne sur Kerbin, pour qu'un tout
-  petit ressort ne soit pas arrondi à zéro ; un vaisseau léger reçoit alors l'amortisseur de la demi-tonne.
-- **L'arrondi et le seuil d'écriture** : le ressort n'est écrit que s'il change de plus de 3, sans doute contre une
-  boucle entre le ressort et l'enfoncement ; un petit ressort reste à zéro, d'où le plancher.
-- **Le renfort à l'enfoncement** : le ressort durcit jusqu'à trois fois près de la butée, et l'amortisseur avec lui,
-  au moment du choc.
-- **La correction des gros vaisseaux** : au-delà d'une quarantaine de tonnes, l'amortisseur durcit jusqu'à près de
-  quatre fois, selon la masse du vaisseau entier, pas selon ce que porte chaque jambe.
-- **Le réglage automatique des curseurs** : réglés au premier contact, l'amortisseur jusqu'à 2 sur Eve.
-- **La forte gravité** : au-delà de 1,5 g, donc sur Eve, le ressort est triplé et l'amortisseur multiplié par 1,2.
+- **The half-ton floor**: each wheel carries at least the weight of half a ton on Kerbin, so that a very small spring
+  is not rounded down to zero; a light vessel then gets the damper of half a ton.
+- **Rounding and the write threshold**: the spring is only written when it changes by more than 3, probably against a
+  loop between the spring and the compression; a small spring stays at zero, hence the floor.
+- **The boost with compression**: the spring stiffens up to three times near the end of its travel, and the damper
+  with it, at the moment of impact.
+- **The big-vessel correction**: above about forty tons, the damper stiffens up to nearly four times, from the mass of
+  the whole vessel, not from what each leg carries.
+- **The automatic sliders**: set at the first contact, the damper up to 2 on Eve.
+- **High gravity**: above 1.5 g, so on Eve, the spring is tripled and the damper multiplied by 1.2.
 
-**→ Chapitre complet : [Les rustines](the-culprits/the-patches.md)**
+**→ Full chapter: [The patches](the-culprits/the-patches.md)**
 
-## Ce que le stock ne résout pas : les coupables
+## What stock leaves unsolved: the culprits
 
-**Pourquoi un amortisseur peut projeter.** Dans la réalité, un amortisseur trop fort ne projette rien : il rend
-seulement la jambe lente à se poser. Mais KSP calcule la physique par petits pas, cinquante par seconde. À chaque pas,
-l'amortisseur freine la jambe selon la vitesse qu'elle avait au pas précédent. Sur une jambe chargée, ce freinage
-retire un peu de vitesse à chaque pas. Sur une jambe qui ne porte presque rien, il est si fort qu'en un seul pas il
-fait plus que l'arrêter : il la renvoie dans l'autre sens, plus vite qu'elle n'est venue. Le pas suivant recommence, et
-en quelques pas le vaisseau part à des dizaines de mètres par seconde. Les trois coupables mènent tous là.
+**Why a damper can throw a vessel.** In real life, a damper that is too strong throws nothing: it only makes the leg
+slow to settle. But KSP works out physics in small steps, fifty a second. At each step, the damper slows the leg
+according to the speed it had at the previous step. On a loaded leg, this braking takes off a little speed at each
+step. On a leg that carries almost nothing, it is so strong that in a single step it does more than stop it: it sends
+it back the other way, faster than it came. The next step does it again, and in a few steps the vessel leaves at tens
+of metres per second. Both culprits lead there.
 
-### Premier coupable : un amortisseur trop fort pour un vaisseau léger
+### First culprit: a damper too strong for a light vessel
 
-À cause du plancher, une jambe qui porte 50 kg reçoit l'amortisseur d'une jambe qui porte une demi-tonne, beaucoup
-trop fort pour elle : il la projette. Un monde lourd l'aggrave : un petit rover immobile sur Kerbin rebondit sans fin
-sur Eve. Le mod ramène l'amortisseur sous une limite.
+Because of the floor, a leg carrying 50 kg gets the damper of a leg carrying half a ton, far too strong for it: it
+throws it. A heavy world makes it worse: a small rover that stands still on Kerbin bounces on and on on Eve. The mod
+brings the damper down under a limit.
 
-**→ Chapitre complet : [Premier coupable : un amortisseur trop fort pour un vaisseau léger](the-culprits/a-damper-too-strong-for-a-light-vessel.md)**
+**→ Full chapter: [First culprit: a damper too strong for a light vessel](the-culprits/a-damper-too-strong-for-a-light-vessel.md)**
 
-### Deuxième coupable : une suspension en l'air garde ses anciens réglages
+### Second culprit: a suspension in the air keeps its old settings
 
-En l'air, une roue garde le ressort et l'amortisseur de son dernier contact. Une pièce posée seule en construction EVA,
-que KSP fait peser jusqu'à 20 t ses premières secondes, garde ainsi une suspension réglée pour 20 t, qui la projette
-quand elle retouche le sol à sa propre masse. Le mod ramène l'amortisseur sous la limite dès que la roue est en l'air.
+In the air, a wheel keeps the spring and the damper of its last contact. A part placed alone in EVA construction,
+which KSP makes weigh up to 20 t for its first seconds, thus keeps a suspension set for 20 t, which throws it when it
+touches the ground again at its own mass. The mod brings the damper down under the limit as soon as the wheel is in
+the air.
 
-**→ Chapitre complet : [Deuxième coupable : une suspension en l'air garde ses anciens réglages](the-culprits/a-suspension-in-the-air-keeps-its-settings.md)**
-
-### Troisième coupable : une suspension qui pousse de biais
-
-Quand la pièce penche ou se couche, l'enfoncement que lit sa suspension saute d'un pas à l'autre, et KSP la règle
-comme si elle était droite : les poussées changent de sens à chaque pas et grandissent. Une jambe couchée dont le pied
-frôle le sol finit projetée. Le mod retire peu à peu le ressort et l'amortisseur au-delà de 40° d'inclinaison.
-
-**→ Chapitre complet : [Troisième coupable : une suspension qui pousse de biais](the-culprits/a-suspension-pushing-at-a-slant.md)**
+**→ Full chapter: [Second culprit: a suspension in the air keeps its old settings](the-culprits/a-suspension-in-the-air-keeps-its-settings.md)**

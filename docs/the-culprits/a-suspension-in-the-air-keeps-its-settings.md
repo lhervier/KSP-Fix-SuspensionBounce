@@ -1,41 +1,48 @@
-# Deuxième coupable : une suspension en l'air garde ses anciens réglages
+# Second culprit: a suspension in the air keeps its old settings
 
-Partie de [Suspension Bounce Fix](../../README.md), [les coupables](../the-culprits.md) : un coupable qui projette.
+Part of [Suspension Bounce Fix](../../README.md), [the culprits](../the-culprits.md): a culprit that throws.
 
-En l'air, la roue garde le ressort et l'amortisseur de son dernier contact
-(voir [le modèle de base](the-base-model.md)). Au contact suivant, elle pousse d'abord avec ces anciens réglages, puis
-KSP les recalcule. Ce n'est pas grave si le vaisseau a gardé sa masse entre-temps.
+In the air, the wheel keeps the spring and the damper of its last contact (see [the base model](the-base-model.md)).
+At the next contact, it first pushes with those old settings, then KSP works them out again. No harm if the vessel has
+kept its mass in the meantime.
 
-Une pièce posée seule en construction EVA, non : pendant ses trois premières secondes au sol, KSP la fait peser 4 t,
-et même 20 t sous faible gravité. Une jambe qui quitte le sol pendant ce temps garde une suspension réglée pour 20 t.
-Quand son pied retouche le sol, revenue à ses propres 50 kg, cette suspension la projette.
+Not so for a part placed alone in EVA construction: for its first three seconds on the ground, KSP makes it weigh 4 t,
+and even 20 t under low gravity. A leg that leaves the ground during that time keeps a suspension set for 20 t. When
+its foot touches the ground again, back to its own 50 kg, that suspension throws it.
 
-![Une jambe d'atterrissage posée seule sur Minmus, en stock, avec sa masse incrustée](../../imgs/landing-leg-stock-minmus-mass.gif)
+![A landing leg set down alone on Minmus, in stock, with its mass overlaid](../../imgs/landing-leg-stock-minmus-mass.gif)
 
-*KSP 1.12.5 et KSP Community Fixes, sans ce mod ni Terrain Precision Fix : sur Minmus, la sauvegarde
+*KSP 1.12.5 and KSP Community Fixes, without this mod or Terrain Precision Fix: on Minmus, the save
 [`landing-leg-minmus.sfs`](https://github.com/lhervier/KSP-Fix-TerrainPrecision/blob/main/diag/lone-parts/limits/landing-leg/landing-leg-minmus.sfs)
-de Terrain Precision Fix ; en construction EVA, Bill Kerman prend une jambe de l'atterrisseur et la pose sur son pied
-(voir [A landing leg placed alone](../../README.md#a-landing-leg-placed-alone)). Incrustée en bas à droite, la masse
-de la jambe, ajoutée au montage : 20 t et le temps qui reste, à partir du clic qui la pose, compté sur l'horloge du jeu
-(`ModuleCargoPart.MakePartSettle`), puis ses propres 50 kg.*
+of Terrain Precision Fix; in EVA construction, Bill Kerman takes a leg off the lander and sets it down on its foot
+(see [A landing leg placed alone](../../README.md#a-landing-leg-placed-alone)). Overlaid at the bottom right, the mass
+of the leg, added in editing: 20 t and the time left, from the click that sets it down, counted on the game's clock
+(`ModuleCargoPart.MakePartSettle`), then its own 50 kg.*
 
-Avec [Terrain Precision Fix](https://github.com/lhervier/KSP-Fix-TerrainPrecision), la jambe n'a jamais 20 t : elle a
-ses 50 kg dès qu'elle est posée, et ce coupable disparaît. Le symptôme, lui, est immédiat : la jambe, encore debout
-sur son pied, reçoit l'amortisseur trop fort du [premier coupable](a-damper-too-strong-for-a-light-vessel.md), et elle
-est projetée dès qu'elle touche le sol.
+With [Terrain Precision Fix](https://github.com/lhervier/KSP-Fix-TerrainPrecision), the leg never weighs 20 t: it has
+its 50 kg as soon as it is set down, and this culprit is gone. The symptom, though, comes at once: the leg, still
+standing on its foot, gets the too strong damper of the [first culprit](a-damper-too-strong-for-a-light-vessel.md),
+and is thrown as soon as it touches the ground.
 
-## Ce que le mod change
+## What the mod changes
 
-En l'air aussi, il ramène l'amortisseur sous [la limite](a-damper-too-strong-for-a-light-vessel.md#ce-que-le-mod-change),
-pour la plus petite part que la jambe portera : celle qu'elle aura quand toutes les roues du vaisseau toucheront. Au
-contact suivant, l'amortisseur est déjà à la mesure de la jambe. Le ressort, lui, garde son dernier réglage.
+In the air too, it brings the damper down under
+[the limit](a-damper-too-strong-for-a-light-vessel.md#what-the-mod-changes), for the smallest share the leg will carry:
+the one it will have when all the vessel's wheels touch. At the next contact, the damper already suits the leg. The
+spring keeps its last setting.
 
-## Dans le code du mod
+![The same leg set down alone on Minmus, with the mod, with its mass overlaid](../../imgs/landing-leg-modded-minmus-mass.gif)
 
-Un postfix de `ModuleWheelSuspension.FixedUpdate`, que KSP appelle à chaque pas, dans
-[Src/SuspensionDamper.cs](../../Src/SuspensionDamper.cs) (`FixedUpdatePostfix`). Il laisse une roue qui touche au
-postfix du [premier coupable](a-damper-too-strong-for-a-light-vessel.md#dans-le-code-du-mod), et une pièce sur rails
-(`packed`) à KSP :
+*KSP 1.12.5, KSP Community Fixes and this mod, without Terrain Precision Fix: the same leg, set down the same way on
+Minmus from the same save. Overlaid at the bottom right, the mass of the leg, added in editing as above: 20 t and the
+time left, then its own 50 kg.*
+
+## In the mod's code
+
+A postfix of `ModuleWheelSuspension.FixedUpdate`, which KSP calls at every step, in
+[Src/SuspensionDamper.cs](../../Src/SuspensionDamper.cs) (`FixedUpdatePostfix`). It leaves a wheel that touches
+something to the postfix of the [first culprit](a-damper-too-strong-for-a-light-vessel.md#in-the-mods-code), and a part
+on rails (`packed`) to KSP:
 
 ```csharp
 if (!HighLogic.LoadedSceneIsFlight || wheel == null || wheel.wheelCollider == null || vessel == null ||
@@ -45,16 +52,16 @@ if (!HighLogic.LoadedSceneIsFlight || wheel == null || wheel.wheelCollider == nu
 }
 ```
 
-En l'air, la part est la masse du vaisseau partagée entre toutes ses suspensions, et `Apply` borne l'amortisseur que
-KSP a calculé en dernier, pas celui de la roue, qui peut déjà être celui du mod :
+In the air, the share is the vessel's mass shared between all its suspensions, and `Apply` caps the damper KSP worked
+out last, not the wheel's, which may already be the mod's:
 
 ```csharp
 float share = (float)vessel.totalMass / Mathf.Max(count.All, 1);
 Apply(__instance, wheel, share, StockDamper(__instance), true);
 ```
 
-Dans `Apply`, une suspension bornée reste marquée comme telle tant que sa roue est en l'air : au contact suivant, si
-l'amortisseur de KSP n'est plus à borner, le mod l'écrit sur la roue à la place du sien.
+In `Apply`, a limited suspension stays marked as such as long as its wheel is in the air: at the next contact, if
+KSP's damper no longer needs capping, the mod writes it on the wheel in place of its own.
 
 ```csharp
 else if (offGround)

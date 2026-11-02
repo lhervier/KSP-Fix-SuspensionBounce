@@ -1,66 +1,61 @@
-# Le modèle de base
+# The base model
 
-Partie de [Suspension Bounce Fix](../../README.md), [les coupables](../the-culprits.md) : comment KSP 1.12.5 règle
-le ressort et l'amortisseur d'une suspension, avant toute rustine.
+Part of [Suspension Bounce Fix](../../README.md), [the culprits](../the-culprits.md): how KSP 1.12.5 sets the spring
+and the damper of a suspension, before any patch.
 
-Dans KSP, une suspension, c'est un ressort et un amortisseur. La raideur du ressort décide de combien la jambe
-s'enfonce sous le poids du vaisseau. L'amortisseur ralentit les mouvements de la jambe, pour qu'elle ne rebondisse pas
-sans fin. KSP les fait fonctionner tout seul, selon quatre règles simples.
+In KSP, a suspension is a spring and a damper. The stiffness of the spring decides how far the leg sinks under the
+vessel's weight. The damper slows the leg's movements, so that it does not bounce on and on. KSP runs them on its own,
+by four simple rules.
 
-**La suspension mesure son enfoncement le long de son axe**, comme un bâton tendu devant soi : un rayon part de la
-roue dans l'axe de la jambe, et touche ce qu'il rencontre. L'enfoncement est la distance jusqu'à ce point.
-Conséquences :
+**The suspension measures how far it has sunk along its axis**, like a stick held out in front: a ray leaves the wheel
+along the leg's axis, and hits whatever it meets. How far it has sunk is the distance to that point. Consequences:
 
-- **Elle marche sur toute surface** : le sol, une piste, un bâtiment, le flanc d'un autre vaisseau.
-- **Elle pousse contre ce qu'elle touche**, même quand ce n'est pas le sol : une jambe couchée contre un atterrisseur
-  pousse contre lui.
-- **De biais, la mesure devient instable.** Quand la pièce penche ou se couche, le rayon rencontre la surface de biais :
-  le moindre mouvement de la pièce déplace alors loin le point touché, et l'enfoncement lu saute d'un pas à l'autre
-  (voir [le troisième coupable](a-suspension-pushing-at-a-slant.md)).
+- **It works on any surface**: the ground, a runway, a building, the side of another vessel.
+- **It pushes against what it touches**, even when that is not the ground: a leg lying against a lander pushes
+  against it.
 
-![Le rayon de la suspension pour une jambe debout, contre un autre vaisseau, et couchée](../../imgs/suspension-ray.svg)
+![The suspension's ray for a leg standing, and against another vessel](../../imgs/suspension-ray.svg)
 
-*Le rayon de la suspension (en rouge) dans trois positions de la jambe. Couchée, le rayon en clair est celui de la même
-jambe, tournée de quelques degrés.*
+*The suspension's ray (in red) in two positions of the leg.*
 
-**Le ressort suit le poids.** KSP partage le poids du vaisseau à parts égales entre les roues qui touchent le sol, et
-donne à chacune un ressort à la mesure de sa part. Plus une jambe porte, plus son ressort est raide. Conséquences :
+**The spring follows the weight.** KSP shares the vessel's weight equally between the wheels that touch the ground,
+and gives each one a spring to match its share. The more a leg carries, the stiffer its spring. Consequences:
 
-- **Le même enfoncement pour tous.** Un vaisseau léger ou lourd, sur Kerbin ou sur la Mune, s'enfonce à peu près
-  autant sur ses jambes, et le joueur n'a rien à régler.
-- **Le côté chargé s'affaisse.** Toutes les jambes reçoivent le même ressort, celui de la part moyenne, même quand
-  elles ne portent pas autant : en pente, les jambes aval portent plus que leur part et s'enfoncent davantage, comme
-  sur une vraie voiture, dont les ressorts sont identiques.
-- **Un tout petit poids donne un tout petit ressort**, si petit que KSP finit par l'arrondir à zéro : la jambe
-  s'écrase contre sa butée. D'où [le plancher](the-patches.md#le-plancher-dune-demi-tonne).
-- **La part change quand une roue touche ou quitte le sol.** Quand un rover se pose, la première roue qui touche reçoit
-  un moment la part du vaisseau entier, puis sa part diminue à mesure que les autres touchent : son ressort change
-  d'un pas à l'autre.
+- **The same sinking for all.** A light or a heavy vessel, on Kerbin or on the Mun, sinks about as far on its legs,
+  and the player has nothing to set.
+- **The loaded side sags.** All the legs get the same spring, the one of the average share, even when they do not
+  carry as much: on a slope, the downhill legs carry more than their share and sink further, as on a real car, whose
+  springs are all alike.
+- **A very small weight gives a very small spring**, so small that KSP ends up rounding it down to zero: the leg is
+  crushed against its stop. Hence [the floor](the-patches.md#the-half-ton-floor).
+- **The share changes when a wheel touches or leaves the ground.** When a rover lands, the first wheel to touch gets
+  for a moment the share of the whole vessel, then its share drops as the others touch: its spring changes from one
+  step to the next.
 
-**L'amortisseur suit le ressort.** Il est calculé à partir du ressort seul, avec un coefficient propre à chaque pièce :
-un ressort raide reçoit un amortisseur fort. Conséquences :
+**The damper follows the spring.** It is worked out from the spring alone, with a coefficient of each part's own: a
+stiff spring gets a strong damper. Consequences:
 
-- **Rien d'autre à connaître.** L'amortisseur se règle de lui-même chaque fois que le ressort change.
-- **La masse n'y entre qu'à moitié.** Elle y entre à travers le ressort, mais pas assez : pour amortir pareil quelle
-  que soit la masse, l'amortisseur devrait croître comme la masse, il ne croît que comme sa racine. Il convient à une
-  jambe qui porte de l'ordre d'une tonne. Pour une jambe qui porte plusieurs tonnes, il est plus mou, sans que ça
-  gêne : un vaisseau de 20 t sur quatre jambes se pose en deux oscillations, en deux secondes sur Kerbin, cinq sur la
-  Mune. Pour une jambe qui porte beaucoup moins, il est trop dur ([premier coupable](a-damper-too-strong-for-a-light-vessel.md)).
+- **Nothing else to know.** The damper sets itself each time the spring changes.
+- **The mass only half goes into it.** It goes in through the spring, but not enough: to damp the same whatever the
+  mass, the damper should grow as the mass, and it only grows as its square root. It suits a leg carrying about a
+  ton. For a leg carrying several tons, it is softer, without harm: a vessel of 20 t on four legs settles in two
+  oscillations, in two seconds on Kerbin, five on the Mun. For a leg carrying much less, it is too stiff
+  ([first culprit](a-damper-too-strong-for-a-light-vessel.md)).
 
-**Le réglage n'a lieu qu'au contact.** KSP ne recalcule le ressort et l'amortisseur que pendant que la roue touche
-quelque chose ; en l'air, la roue garde ceux de son dernier contact. Conséquences :
+**The setting only happens on contact.** KSP only works out the spring and the damper again while the wheel touches
+something; in the air, the wheel keeps those of its last contact. Consequences:
 
-- **Rien à calculer en l'air**, où la jambe ne porte rien et reste détendue à fond, quel que soit son ressort.
-- **Au contact suivant, la roue pousse d'abord avec ses anciens réglages**, avant que KSP ne les recalcule. Sans
-  conséquence si le vaisseau a gardé sa masse entre-temps ; sinon, voir
-  [le deuxième coupable](a-suspension-in-the-air-keeps-its-settings.md).
+- **Nothing to work out in the air**, where the leg carries nothing and stays fully extended, whatever its spring.
+- **At the next contact, the wheel first pushes with its old settings**, before KSP works them out again. No harm if
+  the vessel has kept its mass in the meantime; otherwise, see
+  [the second culprit](a-suspension-in-the-air-keeps-its-settings.md).
 
 <details>
-<summary>Dans le code</summary>
+<summary>In the code</summary>
 
-`SuspensionLoadBalancer.FixedUpdate` (un module de vaisseau) donne à chaque suspension le poids qu'elle porte,
-`sprungMassGravity` : la masse du vaisseau fois la gravité de surface en g, arrondie au dixième, partagée à parts
-égales entre les roues au sol :
+`SuspensionLoadBalancer.FixedUpdate` (a vessel module) gives each suspension the weight it carries,
+`sprungMassGravity`: the vessel's mass times the surface gravity in g, rounded to the tenth, shared equally between the
+wheels on the ground:
 
 ```csharp
 num = Math.Round(num * vessel.gravityMultiplier * vessel.mainBody.GeeASL * 10.0) / 10.0;
@@ -69,15 +64,15 @@ share = Mathf.Round(100f / divisor) / 100f;
 suspensionModules[j].sprungMassGravity = Mathf.Max((float)(num * (double)share * (double)multiplier), minMass);
 ```
 
-`ModuleWheelSuspension.SuspensionSpringUpdate` transforme ce poids en ressort, puis le ressort en amortisseur
-(`springRatio` et `damperRatio` sont propres à chaque pièce) :
+`ModuleWheelSuspension.SuspensionSpringUpdate` turns that weight into a spring, then the spring into a damper
+(`springRatio` and `damperRatio` are each part's own):
 
 ```csharp
 spring = Mathf.Clamp(springTweakable * springRatio * sprungMassGravity * BoostCurve(boost, boostRatio + autoBoost), 0.01f, springClampMax);
 damper = Mathf.Sqrt(Mathf.Clamp(spring * damperRatio * damperFudge, 0.01f, damperClampMax)) * damperTweakable;
 ```
 
-`ModuleWheelSuspension.FixedUpdate` ne l'appelle que pendant que la roue touche quelque chose :
+`ModuleWheelSuspension.FixedUpdate` only calls it while the wheel touches something:
 
 ```csharp
 if (HighLogic.LoadedSceneIsFlight && baseSetup && !base.part.packed && wheel != null && wheel.IsGrounded)

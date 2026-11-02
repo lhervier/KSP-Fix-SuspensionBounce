@@ -5,8 +5,8 @@ using UnityEngine;
 namespace com.github.lhervier.ksp.fix.suspensionbounce
 {
     /// <summary>
-    /// Installs the fix in the mode the settings choose, once, when KSP starts: from then on, every suspension of a
-    /// vessel in flight gets a damper sized for the mass it carries, as <see cref="DamperMode"/> describes.
+    /// Installs the fix once, when KSP starts: from then on, every suspension of a vessel in flight keeps the damper KSP
+    /// sets, unless it is stiffer than the mass it carries can take in one physics step without bouncing back.
     /// </summary>
     [KSPAddon(KSPAddon.Startup.Instantly, true)]
     public class KSPFixSuspensionBounce : MonoBehaviour
@@ -16,16 +16,11 @@ namespace com.github.lhervier.ksp.fix.suspensionbounce
         private void Start()
         {
             Settings.Load();
-            Log.Info($"Version {typeof(KSPFixSuspensionBounce).Assembly.GetName().Version}, mode {Settings.Mode}, " +
-                $"log level {Log.Level}");
-            if (Settings.Mode == DamperMode.Stock)
-            {
-                return;
-            }
+            Log.Info($"Version {typeof(KSPFixSuspensionBounce).Assembly.GetName().Version}, log level {Log.Level}");
             try
             {
                 SuspensionDamper.Install(new Harmony(HarmonyId));
-                Log.Info($"Suspension damper fix installed, mode {Settings.Mode}");
+                Log.Info("Suspension damper fix installed");
             }
             catch (Exception e)
             {
