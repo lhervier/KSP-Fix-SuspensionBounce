@@ -1,6 +1,6 @@
 # The base model
 
-Part of [Suspension Bounce Fix](../../README.md), [the culprits](../the-culprits.md): how KSP 1.12.5 sets the spring
+Part of [Suspension Bounce Fix](../../README.md), [the culprits](../../README.md#the-culprits): how KSP 1.12.5 sets the spring
 and the damper of a suspension, before any patch.
 
 In KSP, a suspension is a spring and a damper. The stiffness of the spring decides how far the leg sinks under the

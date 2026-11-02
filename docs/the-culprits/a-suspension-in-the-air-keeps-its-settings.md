@@ -1,6 +1,6 @@
 # Second culprit: a suspension in the air keeps its old settings
 
-Part of [Suspension Bounce Fix](../../README.md), [the culprits](../the-culprits.md): a culprit that throws.
+Part of [Suspension Bounce Fix](../../README.md), [the culprits](../../README.md#the-culprits): a culprit that throws.
 
 In the air, the wheel keeps the spring and the damper of its last contact (see [the base model](the-base-model.md)).
 At the next contact, it first pushes with those old settings, then KSP works them out again. No harm if the vessel has

@@ -1,6 +1,6 @@
 # The patches
 
-Part of [Suspension Bounce Fix](../../README.md), [the culprits](../the-culprits.md): the patches of KSP 1.12.5 on
+Part of [Suspension Bounce Fix](../../README.md), [the culprits](../../README.md#the-culprits): the patches of KSP 1.12.5 on
 [the base model](the-base-model.md), each with its consequences.
 
 KSP got several corrections for the cases where its base model was not enough. Squad did not comment on them: why they

@@ -1,10 +1,10 @@
 # First culprit: a damper too strong for a light vessel
 
-Part of [Suspension Bounce Fix](../../README.md), [the culprits](../the-culprits.md): a culprit that throws.
+Part of [Suspension Bounce Fix](../../README.md), [the culprits](../../README.md#the-culprits): a culprit that throws.
 
 Because of the [floor](the-patches.md#the-half-ton-floor), a leg carrying 50 kg gets the stiffness of a leg carrying
 half a ton, and the damper that goes with it. For this leg, the damper is far too strong, and it throws it (see
-[why a damper can throw a vessel](../the-culprits.md#what-stock-leaves-unsolved-the-culprits)). A probe of 100 kg on
+[why a damper can throw a vessel](../../README.md#why-a-damper-can-throw-a-vessel)). A probe of 100 kg on
 three legs is thrown by it as soon as physics starts. So is a landing leg placed alone in EVA construction, when
 [Terrain Precision Fix](https://github.com/lhervier/KSP-Fix-TerrainPrecision) gives it its own mass from the start; in
 stock, it is [the second culprit](a-suspension-in-the-air-keeps-its-settings.md) that throws it.
