@@ -88,6 +88,10 @@ same way on Kerbin from the save
 
 *KSP 1.12.5, KSP Community Fixes and this mod: the same rover, loaded on Eve from the same save.*
 
+![The same heavy rover loaded on Eve, with the mod](../../imgs/bulldozer-modded-eve.gif)
+
+*KSP 1.12.5, KSP Community Fixes and this mod: the same heavy rover, loaded on Eve from the same save.*
+
 ## In the mod's code
 
 A postfix of `ModuleWheelSuspension.SuspensionSpringUpdate`, which KSP calls at every step where the wheel touches
