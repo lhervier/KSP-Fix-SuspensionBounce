@@ -173,6 +173,12 @@ as a leg standing on its foot would, and may roll or stand up again before it co
 
 - **Other parts with a suspension.** The fix applies to every part with `ModuleWheelSuspension`: landing legs, wheels
   and landing gear. It has been played with LT-05 and LT-1 legs, and RoveMax S2 and TR-2L wheels only.
+- **A suspension grazing a curved surface, on demand.** The last case of [Limits](#limits) only shows up by chance,
+  when a part placed alone happens to roll against a lander. A setup that should make it every time: next to a rocket
+  standing on the ground, with a vertical cylindrical tank, set down a second vessel made of a small vertical tank on
+  a rotor, with a landing leg fixed on the tank, lying horizontal. Turn the rotor until the leg's foot just touches the
+  rocket's tank, the leg almost parallel to its surface. The second vessel should be pushed away; to be played without
+  this mod, then with it.
 
 ## Installing
 
