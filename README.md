@@ -31,11 +31,12 @@ and stays there.</em></td>
 </tr>
 <tr>
 <td><img src="imgs/bulldozer-stock-eve.gif" alt="A heavy rover loaded on Eve"></td>
-<td></td>
+<td><img src="imgs/culprit3-stock.gif" alt="A landing leg swung against a fuel tank"></td>
 </tr>
 <tr>
 <td valign="top"><em>A rover of 14 t on six TR-2L wheels, set down on Eve, saved, and loaded there.</em></td>
-<td></td>
+<td valign="top"><em>A vessel of 400 kg on the runway swings a landing leg on a rotation servo against a fuel tank
+(<a href="#a-landing-leg-swung-against-a-fuel-tank">how</a>).</em></td>
 </tr>
 </table>
 
@@ -162,6 +163,41 @@ as a leg standing on its foot would, and may roll or stand up again before it co
 [KSPFixSuspensionBounce] [DEBUG] Damper of landingLeg1 (3552957469) of Jambes d'atterrissage LT-1 limited to 0.924 for 0.037 t carried and 0.05 t moved, KSP computed 6
 ```
 
+### A landing leg swung against a fuel tank
+
+A part placed alone that rolls against a lander can be pushed off, but only by chance. This setup makes it every
+time. It needs the rotation servos of Breaking Ground. The save
+[diag/SuspensionBounceCulprit3.sfs](diag/SuspensionBounceCulprit3.sfs) holds two vessels on the runway, docked together
+by a pair of Clamp-O-Tron Jr. docking ports:
+
+- `SuspensionBounceCulprit3`: an FL-T400 tank standing upright, with a probe core;
+- `SuspensionBounceCulprit3 Probe`, about 400 kg: a probe core, batteries and an F-12 rotation servo, with an LT-2
+  landing leg fixed on the servo, lying horizontal, its foot a little away from the FL-T400.
+
+1. Copy the save into the folder of a sandbox game, under `saves`.
+2. In that game, at the space centre, open the quickload menu (Alt+F9 by default) and load
+   `SuspensionBounceCulprit3`.
+3. Right-click one of the two docking ports and undock, then switch to `SuspensionBounceCulprit3 Probe` (`]`).
+4. Right-click the F-12 servo and set its target angle to 179 (not 180: the slider makes it -179.99, and the
+   servo turns the other way): the servo swings the leg until its foot meets the side of the FL-T400, almost
+   parallel to it.
+
+[diag/automation/run-tank-graze.py](diag/automation/run-tank-graze.py) plays these steps several times in a row,
+through [KSP-Util-MCPServer](https://github.com/lhervier/KSP-Util-MCPServer); its first lines say how to run it.
+
+<img src="imgs/culprit3-modded.gif" alt="A landing leg swung against a fuel tank, with this mod" width="50%">
+
+*KSP 1.12.5, KSP Community Fixes and this mod: the same save as the last image at the top of this page.*
+
+Without this mod, the light vessel is thrown sideways the moment the foot touches, much harder than the swing of the
+leg can explain; not at every try, but a few tries are enough, and it can be thrown hard enough to break apart. With this mod, it is pushed aside at a walking pace
+and comes to rest, undamaged. Played ten times in a row by the script: without this mod, the light vessel broke apart
+seven times; with it, never. It is not perfect: the suspension still takes the side of the tank for ground, and
+compresses against it where a real leg would just knock against the tank. Its ray, nearly parallel to the curved
+side, can meet it already deep inside from one step to the next: the suspension reads a very fast compression that
+the leg does not make, and its damper pushes back against it. The vessel still gets a short kick whenever the foot
+meets the tank again, but the kick stays small. The ground, broad and smooth, does not do this.
+
 ## Limits
 
 - **On a low gravity body, a leg placed alone still hops a little.** Its spring is still the spring of half a ton,
@@ -171,22 +207,11 @@ as a leg standing on its foot would, and may roll or stand up again before it co
   placed**, for another reason: `ModuleCargoPart.MakePartSettle` makes a part placed alone weigh 4 t (20 t below
   0.8 g) for 3 s, and the suspension sizes its spring for that. This fix does not change it: Terrain Precision Fix's
   `fixLonePartMass` does.
-- **A part placed alone that rolls against another vessel can still be pushed off at a few metres per second.** When
-  its suspension's ray grazes the small, curved colliders of a lander, an engine bell for one, the ray can meet one
-  already deep inside it from one step to the next: the suspension reads a very fast compression that the part does
-  not make, and its damper pushes back against it. A light part rolls away at a few metres per second; the ground,
-  broad and smooth, does not do this.
 
 ## Work in progress
 
 - **Other parts with a suspension.** The fix applies to every part with `ModuleWheelSuspension`: landing legs, wheels
   and landing gear. It has been played with LT-05 and LT-1 legs, and RoveMax S2 and TR-2L wheels only.
-- **A suspension grazing a curved surface, on demand.** The last case of [Limits](#limits) only shows up by chance,
-  when a part placed alone happens to roll against a lander. A setup that should make it every time: next to a rocket
-  standing on the ground, with a vertical cylindrical tank, set down a second vessel made of a small vertical tank on
-  a rotor, with a landing leg fixed on the tank, lying horizontal. Turn the rotor until the leg's foot just touches the
-  rocket's tank, the leg almost parallel to its surface. The second vessel should be pushed away; to be played without
-  this mod, then with it.
 
 ## Installing
 
