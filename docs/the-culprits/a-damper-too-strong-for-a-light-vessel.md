@@ -34,21 +34,22 @@ goes past the limit: a small rover that stands still on the runway of Kerbin bou
 never settles. It can hold for a while, its wheels almost still; at the first disturbance, a bump, a wheel touching the
 ground again, each step amplifies the motion once more.
 
-![A light rover loaded on Eve, in stock](../../imgs/minirover-stock-eve.gif)
+A heavy rover can meet this culprit too, through its wheels. Within a step, the damper does not move the whole vessel,
+only the wheel and the part it hangs from; the rest follows a step later. On Eve, this 14 t rover gets a damper sized
+for the 2.3 t each wheel carries: for a wheel and its 375 kg truss, half a ton, it is far too strong.
 
-*KSP 1.12.5 and KSP Community Fixes, without this mod: a rover of a quarter of a ton on four RoveMax S2 wheels, set
-down on Eve, saved, and loaded there.*
-
-A heavy vessel can meet the same culprit through its wheels. The damper does not push the whole vessel at once: within
-a step, it pushes the wheel, and the wheel's joint drags the part the wheel is attached to; the rest of the vessel
-follows a step later. A 14 t rover on six TR-2L wheels, each pair of three hanging from a 375 kg truss, gets on Eve a
-damper of up to 60 per wheel, sized for the 2.3 t each wheel carries: for the wheel and its truss, half a ton, it is
-far too strong. Wheel and truss are sent back at each step, the rover bounces higher and higher, and its wheels break.
-
-![A heavy rover loaded on Eve, in stock](../../imgs/bulldozer-stock-eve.gif)
-
-*KSP 1.12.5 and KSP Community Fixes, without this mod: a rover of 14 t on six TR-2L wheels, set down on Eve, saved,
-and loaded there.*
+<table>
+<tr>
+<td width="50%"><img src="../../imgs/minirover-stock-eve.gif" alt="A light rover loaded on Eve, in stock"></td>
+<td width="50%"><img src="../../imgs/bulldozer-stock-eve.gif" alt="A heavy rover loaded on Eve, in stock"></td>
+</tr>
+<tr>
+<td valign="top"><em>KSP 1.12.5 and KSP Community Fixes, without this mod: a rover of a quarter of a ton on four
+RoveMax S2 wheels, set down on Eve, saved, and loaded there.</em></td>
+<td valign="top"><em>KSP 1.12.5 and KSP Community Fixes, without this mod: a rover of 14 t on six TR-2L wheels, set
+down on Eve, saved, and loaded there.</em></td>
+</tr>
+</table>
 
 ## What the mod changes
 
@@ -84,13 +85,18 @@ same way on Kerbin from the save
 </tr>
 </table>
 
-![The same rover loaded on Eve, with the mod](../../imgs/minirover-modded.gif)
-
-*KSP 1.12.5, KSP Community Fixes and this mod: the same rover, loaded on Eve from the same save.*
-
-![The same heavy rover loaded on Eve, with the mod](../../imgs/bulldozer-modded-eve.gif)
-
-*KSP 1.12.5, KSP Community Fixes and this mod: the same heavy rover, loaded on Eve from the same save.*
+<table>
+<tr>
+<td width="50%"><img src="../../imgs/minirover-modded.gif" alt="The same rover loaded on Eve, with the mod"></td>
+<td width="50%"><img src="../../imgs/bulldozer-modded-eve.gif" alt="The same heavy rover loaded on Eve, with the mod"></td>
+</tr>
+<tr>
+<td valign="top"><em>KSP 1.12.5, KSP Community Fixes and this mod: the same rover, loaded on Eve from the same
+save.</em></td>
+<td valign="top"><em>KSP 1.12.5, KSP Community Fixes and this mod: the same heavy rover, loaded on Eve from the same
+save.</em></td>
+</tr>
+</table>
 
 ## In the mod's code
 
