@@ -34,10 +34,10 @@ and stays there.</em></td>
 *KSP 1.12.5 and KSP Community Fixes, without this mod.*
 
 The cause: KSP sizes a suspension with a few simple rules, patched over the years, and some cases slip through: a
-light vessel, or a part lying alone, gets a damper that throws it up instead of slowing it down (see
-[The culprits](#the-culprits)). This mod only changes a suspension in those cases, with or without
+light vessel, a part lying alone, or a heavy rover on light wheels, gets a damper that throws it up instead of slowing
+it down (see [The culprits](#the-culprits)). This mod lowers a damper only as far as those cases need, with or without
 [Terrain Precision Fix](https://github.com/lhervier/KSP-Fix-TerrainPrecision): every other vessel behaves as without
-it.
+it, give or take a few percent of damping.
 
 **How this was made.** The investigation and the code were written with Claude, Anthropic's AI assistant.
 Everything here was reviewed and validated by a human — me. I am saying so up front, because contributions made with
@@ -83,15 +83,17 @@ make the culprits below:
 
 In real life, a damper that is too strong throws nothing: it only makes the leg slow to settle. But KSP works out
 physics in small steps, fifty a second. At each step, the damper slows the leg according to the speed it had at the
-previous step. On a loaded leg, this braking takes off a little speed at each step. On a leg that carries almost
-nothing, it is so strong that in a single step it does more than stop it: it sends it back the other way, faster than
+start of the step, for the whole step. On a loaded leg, this braking takes off a little speed at each step. On a leg
+that carries almost nothing, or a light wheel on a light mount, which the damper pushes before the rest of the vessel
+follows, it is so strong that in a single step it does more than stop it: it sends it back the other way, faster than
 it came. The next step does it again, and in a few steps the vessel leaves at tens of metres per second. Both culprits
 lead there.
 
 ### First culprit: a damper too strong for a light vessel
 
 Because of the floor, a leg carrying 50 kg gets the damper of a leg carrying half a ton, far too strong for it: it
-throws it. A heavy world makes it worse: a small rover that stands still on Kerbin bounces on and on on Eve. The mod
+throws it. A heavy world makes it worse: a small rover that stands still on Kerbin bounces on and on on Eve, and a
+heavy rover whose wheels hang from light trusses bounces higher and higher there, until its wheels break. The mod
 brings the damper down under a limit.
 
 **→ Full chapter: [First culprit: a damper too strong for a light vessel](docs/the-culprits/a-damper-too-strong-for-a-light-vessel.md)**
@@ -121,7 +123,7 @@ on its legs within a fraction of a second, and stays there.
 With `logLevel = Debug` in the settings, the mod writes a line for each leg whose damper it lowers:
 
 ```
-[KSPFixSuspensionBounce] [DEBUG] Damper of miniLandingLeg (749513586) of SuspensionBounce limited to 0.833 for 0.033 t carried, KSP computed 7
+[KSPFixSuspensionBounce] [DEBUG] Damper of miniLandingLeg (749513586) of SuspensionBounce limited to 0.833 for 0.033 t carried and 0.07 t moved, KSP computed 7
 ```
 
 ### A landing leg placed alone
@@ -149,7 +151,7 @@ Minmus, it goes much higher. With this mod, with or without Terrain Precision Fi
 as a leg standing on its foot would, and may roll or stand up again before it comes to rest; the mod writes:
 
 ```
-[KSPFixSuspensionBounce] [DEBUG] Damper of landingLeg1 (1927183636) of Jambes d'atterrissage LT-1 limited to 0.793 for 0.037 t carried, KSP computed 6
+[KSPFixSuspensionBounce] [DEBUG] Damper of landingLeg1 (3552957469) of Jambes d'atterrissage LT-1 limited to 0.924 for 0.037 t carried and 0.05 t moved, KSP computed 6
 ```
 
 ## Limits
@@ -162,14 +164,15 @@ as a leg standing on its foot would, and may roll or stand up again before it co
   0.8 g) for 3 s, and the suspension sizes its spring for that. This fix does not change it: Terrain Precision Fix's
   `fixLonePartMass` does.
 - **A part placed alone that rolls against another vessel can still be pushed off at a few metres per second.** When
-  its suspension's ray grazes the small, curved colliders of a lander, an engine bell for one, the point it hits jumps
-  from one step to the next, and so does the spring's push. A light part rolls away at 2 to 3 m/s; the ground, broad
-  and smooth, does not do this.
+  its suspension's ray grazes the small, curved colliders of a lander, an engine bell for one, the ray can meet one
+  already deep inside it from one step to the next: the suspension reads a very fast compression that the part does
+  not make, and its damper pushes back against it. A light part rolls away at a few metres per second; the ground,
+  broad and smooth, does not do this.
 
 ## Work in progress
 
 - **Other parts with a suspension.** The fix applies to every part with `ModuleWheelSuspension`: landing legs, wheels
-  and landing gear. It has been played with LT-05 and LT-1 legs and RoveMax M1 wheels only.
+  and landing gear. It has been played with LT-05 and LT-1 legs, and RoveMax S2 and TR-2L wheels only.
 
 ## Installing
 

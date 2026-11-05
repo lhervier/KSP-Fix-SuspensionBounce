@@ -12,9 +12,9 @@ namespace com.github.lhervier.ksp.fix.suspensionbounce
     /// Sizes the damper of each suspension so that it can no longer throw its vessel. Two stock flaws are taken care
     /// of. ModuleWheelSuspension.SuspensionSpringUpdate derives the damper from the spring alone, and the spring from a
     /// weight that SuspensionLoadBalancer never lets fall below half a ton: a light vessel gets the damper of a heavy
-    /// one, which reverses its speed at each physics step instead of slowing it. And the game only sizes a suspension
-    /// while its wheel touches the ground, and keeps the last spring and damper while it does not, whatever happens to
-    /// the vessel's mass meanwhile.
+    /// one, which reverses its speed at each physics step instead of slowing it; so does a heavy vessel on light wheels,
+    /// whose damper pushes the wheel's own part first. And the game only sizes a suspension while its wheel touches the
+    /// ground, and keeps the last spring and damper while it does not, whatever happens to the vessel's mass meanwhile.
     /// </summary>
     internal static class SuspensionDamper
     {
@@ -114,9 +114,9 @@ namespace com.github.lhervier.ksp.fix.suspensionbounce
         }
 
         /// <summary>
-        /// Sets on the wheel collider the damper the fix sizes for a suspension carrying <paramref name="share"/> tons,
-        /// or the mass the vessel sets in motion at its wheel when that is less: <paramref name="stockDamper"/>, the
-        /// damper the game last computed, kept under what one physics step can take.
+        /// Sets on the wheel collider the damper the fix sizes from <paramref name="stockDamper"/>, the damper the game
+        /// last computed: made implicit on the mass of the wheel's own part, and kept under what one physics step can
+        /// take for <paramref name="share"/> tons, or the mass the vessel sets in motion at its wheel when that is less.
         /// </summary>
         private static void Apply(ModuleWheelSuspension suspension, KSPWheelController wheel, float share,
             float stockDamper, bool offGround)
@@ -145,6 +145,19 @@ namespace com.github.lhervier.ksp.fix.suspensionbounce
             // vessel's taken as rigid, but a wheel at the end of trusses first sets in motion less than that, its
             // joints giving way: the damper takes off at most half the speed in a step.
             float limit = share / (2f * Time.fixedDeltaTime);
+
+            // The damper pushes the wheel's own part first, and within a step the part's joint only drags the body it
+            // is attached to: a 100 kg wheel on a 400 kg truss, under a 14 t rover on Eve, gets a damper that reverses
+            // their speed at each step, and throws the rover; a 50 kg leg on a 2 t tank sets the tank in motion with
+            // it. The physics applies the force -c * v of the speed at the start of the step for the whole step; the
+            // damper c / (1 + c * dt / m), m the part and the body it is attached to, slows them over the step as c
+            // would with the speed they end the step with. It can stop them, never send them back, whatever c; far
+            // below m / dt, it is the game's damper.
+            float movedMass = MovedMass(suspension.part);
+            if (movedMass > 0f)
+            {
+                limit = Mathf.Min(limit, stockDamper / (1f + stockDamper * Time.fixedDeltaTime / movedMass));
+            }
             bool isLimited = damper > limit;
             bool wasLimited;
             if (isLimited)
@@ -172,8 +185,26 @@ namespace com.github.lhervier.ksp.fix.suspensionbounce
 
             if (Log.IsDebugEnabled)
             {
-                LogChange(suspension, share, stockDamper, damper, isLimited, wasLimited, offGround);
+                LogChange(suspension, share, movedMass, stockDamper, damper, isLimited, wasLimited, offGround);
             }
+        }
+
+        /// <summary>
+        /// Returns the mass a force on <paramref name="part"/> sets in motion within one physics step: its own, and that
+        /// of the body its joint attaches it to; its own alone when it has no joint, and 0 when it has no rigidbody.
+        /// </summary>
+        private static float MovedMass(Part part)
+        {
+            Rigidbody body = part != null ? part.rb : null;
+            if (body == null)
+            {
+                return 0f;
+            }
+            // The joint's body, rather than the parent part's: a parent without physics hands its joint on to its own
+            // parent.
+            Rigidbody attached = part.attachJoint != null && part.attachJoint.Joint != null
+                ? part.attachJoint.Joint.connectedBody : null;
+            return body.mass + (attached != null ? attached.mass : 0f);
         }
 
         /// <summary>
@@ -237,16 +268,16 @@ namespace com.github.lhervier.ksp.fix.suspensionbounce
         /// <summary>
         /// Writes a Debug line when a suspension starts or stops being limited.
         /// </summary>
-        private static void LogChange(ModuleWheelSuspension suspension, float share, float stockDamper, float damper,
-            bool isLimited, bool wasLimited, bool offGround)
+        private static void LogChange(ModuleWheelSuspension suspension, float share, float movedMass,
+            float stockDamper, float damper, bool isLimited, bool wasLimited, bool offGround)
         {
             Part part = suspension.part;
             string name = $"{part.partInfo?.name} ({part.persistentId}) of {suspension.vessel.vesselName}";
             string where = offGround ? ", wheel off the ground" : "";
             if (isLimited && !wasLimited)
             {
-                Log.Debug($"Damper of {name} limited to {damper:0.###} for {share:0.###} t carried{where}, " +
-                    $"KSP computed {stockDamper:0.###}");
+                Log.Debug($"Damper of {name} limited to {damper:0.###} for {share:0.###} t carried and " +
+                    $"{movedMass:0.###} t moved{where}, KSP computed {stockDamper:0.###}");
             }
             else if (!isLimited && wasLimited)
             {

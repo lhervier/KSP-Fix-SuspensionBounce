@@ -39,18 +39,30 @@ ground again, each step amplifies the motion once more.
 *KSP 1.12.5 and KSP Community Fixes, without this mod: a rover of a quarter of a ton on four RoveMax S2 wheels, set
 down on Eve, saved, and loaded there.*
 
+A heavy vessel can meet the same culprit through its wheels. The damper does not push the whole vessel at once: within
+a step, it pushes the wheel, and the wheel's joint drags the part the wheel is attached to; the rest of the vessel
+follows a step later. A 14 t rover on six TR-2L wheels, each pair of three hanging from a 375 kg truss, gets on Eve a
+damper of up to 60 per wheel, sized for the 2.3 t each wheel carries: for the wheel and its truss, half a ton, it is
+far too strong. Wheel and truss are sent back at each step, the rover bounces higher and higher, and its wheels break.
+
 ## What the mod changes
 
 It keeps KSP's spring, the floor included: a vessel sinks on its legs as it would without the mod, and removing the
-floor would bring back the spring stuck at zero that it prevents. It also keeps KSP's damper, unless it is too strong
-for the mass the leg has to slow down. That mass is the share of the weight the leg carries, or less for a wheel far
-from the vessel's centre: pushed there, the vessel turns as much as it rises, and the wheel only sets part of it in
-motion. The mod then brings the damper down to a limit: the damper that takes off at most half the leg's speed in a
-step, well short of sending it back. No more than half: a damper that stopped the leg in one step would already be on
-the edge, and the wheels of a rover, at the end of trusses whose joints give way, first set even less mass in motion.
+floor would bring back the spring stuck at zero that it prevents. It keeps KSP's damper too, made safe twice over:
 
-An ordinary vessel stays far below that limit, and behaves exactly as without the mod; only very light vessels, and
-light rovers on a heavy world, reach it.
+- **For the vessel.** The damper may take off at most half the speed of the mass the leg slows down in a step, well
+  short of sending it back. That mass is the share of the weight the leg carries, or less for a wheel far from the
+  vessel's centre: pushed there, the vessel turns as much as it rises, and the wheel only sets part of it in motion.
+  No more than half: a damper that stopped the leg in one step would already be on the edge.
+- **For the leg itself.** Within a step, the damper moves the leg and the part it is attached to. KSP applies the
+  braking worked out from the speed at the start of the step for the whole step; the mod sizes it from the speed at
+  the end of the step instead: c / (1 + c × dt / m), c KSP's damper, dt the step, m the leg and its parent. Such a
+  damper can stop them, never send them back, however strong c is. Far from that edge, it is KSP's damper, give or
+  take a few percent.
+
+An ordinary vessel stays far from both, and behaves almost exactly as without the mod: a lander on LT-1 legs fixed to
+its tank keeps 95 % of its damper. Only very light vessels, light rovers on a heavy world, and heavy rovers on light
+mounts reach them.
 
 <table>
 <tr>
@@ -95,10 +107,18 @@ local vertical when it touches nothing, the vessel answers as a mass m, with
 share = Mathf.Min(share, (float)inertia.EffectiveMass(point, normal));
 ```
 
-Then the damper is brought down to the limit if it is above it:
+Then the limit is the lower of the two: half the share's speed in a step, and KSP's damper taken from the speed at
+the end of the step, for the leg and the body its joint attaches it to (`MovedMass`: the leg's rigidbody and
+`attachJoint.Joint.connectedBody`, the joint's own body, so that a parent without physics hands it on to its own
+parent):
 
 ```csharp
 float limit = share / (2f * Time.fixedDeltaTime);
+float movedMass = MovedMass(suspension.part);
+if (movedMass > 0f)
+{
+    limit = Mathf.Min(limit, stockDamper / (1f + stockDamper * Time.fixedDeltaTime / movedMass));
+}
 bool isLimited = damper > limit;
 ```
 
