@@ -45,6 +45,11 @@ follows a step later. A 14 t rover on six TR-2L wheels, each pair of three hangi
 damper of up to 60 per wheel, sized for the 2.3 t each wheel carries: for the wheel and its truss, half a ton, it is
 far too strong. Wheel and truss are sent back at each step, the rover bounces higher and higher, and its wheels break.
 
+![A heavy rover loaded on Eve, in stock](../../imgs/bulldozer-stock-eve.gif)
+
+*KSP 1.12.5 and KSP Community Fixes, without this mod: a rover of 14 t on six TR-2L wheels, set down on Eve, saved,
+and loaded there.*
+
 ## What the mod changes
 
 It keeps KSP's spring, the floor included: a vessel sinks on its legs as it would without the mod, and removing the
