@@ -29,6 +29,14 @@ there.</em></td>
 <td valign="top"><b>⚠️ Only with Terrain Precision Fix:</b> <em>the same on Kerbin. In stock, the leg lies down there
 and stays there.</em></td>
 </tr>
+<tr>
+<td><img src="imgs/bulldozer-stock-eve.gif" alt="A heavy rover loaded on Eve"></td>
+<td></td>
+</tr>
+<tr>
+<td valign="top"><em>A rover of 14 t on six TR-2L wheels, set down on Eve, saved, and loaded there.</em></td>
+<td></td>
+</tr>
 </table>
 
 *KSP 1.12.5 and KSP Community Fixes, without this mod.*
