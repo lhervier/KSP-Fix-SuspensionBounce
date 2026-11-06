@@ -116,6 +116,17 @@ the air.
 
 **→ Full chapter: [Second culprit: a suspension in the air keeps its old settings](docs/the-culprits/a-suspension-in-the-air-keeps-its-settings.md)**
 
+### Troisième coupable : une roue en butée cache son poids aux pneus
+
+*(En français, à traduire avant le commit.)* Les pneus de KSP passent par Vehicle Physics Pro (VPP), qui ne pèse pas
+le vaisseau : il lit la charge de chaque roue dans la force de sa suspension, et en tire l'adhérence du pneu, ce qui le
+retient sur une pente et ce qui arrête son glissement. Quand une roue arrive en butée, ce qui arrive sur un rover lourd
+sur la Mune, en travers d'une pente ou avec des ressorts réglés mous, la butée porte le reste du poids, mais sa force
+n'est rapportée nulle part : VPP croit la roue moins chargée qu'elle ne l'est. Le rover perd l'adhérence qui devrait le
+retenir : il glisse de côté sur du plat, et descend une pente à vitesse constante, freins serrés.
+
+**→ Chapitre complet : [Troisième coupable : une roue en butée cache son poids aux pneus](docs/the-culprits/a-bottomed-wheel-hides-its-weight-from-the-tyres.md)**
+
 ## Checked
 
 ### A light probe on the runway
