@@ -16,7 +16,18 @@ namespace com.github.lhervier.ksp.fix.suspensionbounce
         private void Start()
         {
             Settings.Load();
-            Log.Info($"Version {typeof(KSPFixSuspensionBounce).Assembly.GetName().Version}, log level {Log.Level}");
+            Log.Info($"Version {typeof(KSPFixSuspensionBounce).Assembly.GetName().Version}, log level {Log.Level}, " +
+                $"Kerbin curve {Settings.KerbinCurve}, load spring {Settings.LoadSpring}");
+            try
+            {
+                SuspensionSpring.Install(new Harmony(HarmonyId));
+                Log.Info("Suspension spring fix installed");
+            }
+            catch (Exception e)
+            {
+                Log.Error("Could not install the suspension spring fix, the springs are the ones KSP sets, as " +
+                    $"without it: {e}");
+            }
             try
             {
                 SuspensionDamper.Install(new Harmony(HarmonyId));

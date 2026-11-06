@@ -8,9 +8,17 @@ namespace com.github.lhervier.ksp.fix.suspensionbounce
     /// </summary>
     internal static class Settings
     {
+        // Fields, not properties, so that a test can switch them while KSP runs.
+
+        /// <summary>Whether the gravity curve of the spring's boost is held at its value on Kerbin below 1 g.</summary>
+        public static bool KerbinCurve = true;
+
+        /// <summary>Whether the spring of a wheel that carries more than its share is sized on its load.</summary>
+        public static bool LoadSpring = true;
+
         /// <summary>
         /// Reads the settings file and applies its log level. A missing file, a missing value or an unknown
-        /// value leaves the default: logging at Info.
+        /// value leaves the default: logging at Info, both spring fixes on.
         /// </summary>
         public static void Load()
         {
@@ -29,6 +37,28 @@ namespace com.github.lhervier.ksp.fix.suspensionbounce
             }
 
             Log.Level = ReadEnum(node, "logLevel", Log.Level, path);
+            KerbinCurve = ReadBool(node, "kerbinCurve", KerbinCurve, path);
+            LoadSpring = ReadBool(node, "loadSpring", LoadSpring, path);
+        }
+
+        /// <summary>
+        /// Returns the value <paramref name="name"/> of <paramref name="node"/> as a boolean, or
+        /// <paramref name="fallback"/> when it is missing or not a boolean (the latter with a warning).
+        /// </summary>
+        private static bool ReadBool(ConfigNode node, string name, bool fallback, string path)
+        {
+            string value = node.GetValue(name);
+            if (value == null)
+            {
+                return fallback;
+            }
+            bool parsed;
+            if (bool.TryParse(value.Trim(), out parsed))
+            {
+                return parsed;
+            }
+            Log.Warning($"Unknown {name} '{value}' in {path}, using {fallback}");
+            return fallback;
         }
 
         /// <summary>

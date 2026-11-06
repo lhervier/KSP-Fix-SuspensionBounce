@@ -37,7 +37,7 @@ namespace com.github.lhervier.ksp.fix.suspensionbounce
             AccessTools.FieldRefAccess<SuspensionLoadBalancer, List<ModuleWheelSuspension>>("suspensionModules");
 
         /// <summary>How many suspensions a vessel has, and how many touch the ground.</summary>
-        private struct SuspensionCount
+        internal struct SuspensionCount
         {
             public int All;
             public int Grounded;
@@ -232,7 +232,7 @@ namespace com.github.lhervier.ksp.fix.suspensionbounce
         }
 
         /// <summary>Returns how many suspensions the vessel has, and how many have their wheel on the ground.</summary>
-        private static SuspensionCount Count(Vessel vessel)
+        internal static SuspensionCount Count(Vessel vessel)
         {
             // Every suspension of a vessel asks at each step: count them once per vessel and step.
             if (Time.fixedTime != countStep)
