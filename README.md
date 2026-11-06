@@ -3,10 +3,11 @@
 **⚠️ Not finished yet.** This is a new fix, not a finished mod. The code and the conclusions on this page can still
 change.
 
-A fix for stock KSP 1.12, kept small: two Harmony postfixes, in two short source files. Here is what it fixes:
+A fix for stock KSP 1.12, kept small: a few Harmony patches, in three short source files. Here is what it fixes:
 
 > **In KSP, landing legs and wheels often go haywire.** A light probe leaves the runway on its own legs, a landing leg
-> set down alone in EVA construction flies off, a light rover that stands still on Kerbin never comes to rest on Eve.
+> set down alone in EVA construction flies off, a light rover that stands still on Kerbin never comes to rest on Eve,
+> a heavy rover on the Mun slides down a slope with its brakes on.
 
 <table>
 <tr>
@@ -44,21 +45,23 @@ and stays there.</em></td>
 
 The cause: KSP sizes a suspension with a few simple rules, patched over the years, and some cases slip through: a
 light vessel, a part lying alone, or a heavy rover on light wheels, gets a damper that throws it up instead of slowing
-it down (see [The culprits](#the-culprits)). This mod lowers a damper only as far as those cases need, with or without
-[Terrain Precision Fix](https://github.com/lhervier/KSP-Fix-TerrainPrecision): every other vessel behaves as without
-it, give or take a few percent of damping.
+it down; and a wheel at the end of its travel hides part of the weight it carries from its tyre, which loses its grip
+(see [The culprits](#the-culprits)). This mod lowers a damper only as far as those cases need, with or without
+[Terrain Precision Fix](https://github.com/lhervier/KSP-Fix-TerrainPrecision), and tells the tyre of a wheel at the
+end of its travel the weight it really carries: every other vessel behaves as without it, give or take a few percent
+of damping.
 
 **How this was made.** The investigation and the code were written with Claude, Anthropic's AI assistant.
 Everything here was reviewed and validated by a human — me. I am saying so up front, because contributions made with
 an AI deserve a closer look than others, and because some people would rather stop reading here. That look should be
-quick: the stock code involved is named and quoted on this page, and the fix is two postfixes you can read in a
+quick: the stock code involved is named and quoted on these pages, and the fix is a few patches you can read in a
 few minutes.
 
 ## The culprits
 
 How KSP 1.12.5 sets the spring and the damper of a suspension: a simple base model, the patches it got for the cases
-where it was not enough, then what those patches leave unanswered, and what throws a light vessel, or a part placed
-alone, into the air.
+where it was not enough, then what those patches leave unanswered: what throws a light vessel, or a part placed
+alone, into the air, and what makes a rover slide when its wheels reach the end of their travel.
 
 ### The base model
 
@@ -123,94 +126,80 @@ le vaisseau : il lit la charge de chaque roue dans la force de sa suspension, et
 retient sur une pente et ce qui arrête son glissement. Quand une roue arrive en butée, ce qui arrive sur un rover lourd
 sur la Mune, en travers d'une pente ou avec des ressorts réglés mous, la butée porte le reste du poids, mais sa force
 n'est rapportée nulle part : VPP croit la roue moins chargée qu'elle ne l'est. Le rover perd l'adhérence qui devrait le
-retenir : il glisse de côté sur du plat, et descend une pente à vitesse constante, freins serrés.
+retenir : il glisse de côté sur du plat, et descend une pente à vitesse constante, freins serrés. Ni PhysX ni Unity
+ne donnent la force de la butée, et un bug de Unity cache celle des liaisons entre les pièces, qui aurait permis de
+la déduire roue par roue. Le mod la retrouve par un bilan sur le vaisseau entier, où ces liaisons s'annulent : ce que
+gagnent ou perdent sa quantité de mouvement et son moment cinétique, moins toutes les forces connues. Il la partage
+entre les roues en butée, et l'ajoute à celle que VPP lit.
 
 **→ Chapitre complet : [Troisième coupable : une roue en butée cache son poids aux pneus](docs/the-culprits/a-bottomed-wheel-hides-its-weight-from-the-tyres.md)**
 
 ## Checked
 
+Each case has its page: the save it starts from, how to play it by hand, the script that plays it, and what it shows
+without and with this mod. The scripts drive KSP through
+[KSP-Util-MCPServer](https://github.com/lhervier/KSP-Util-MCPServer), and need nothing but Python 3; their figures
+come from [KSP Diag - Suspension](https://github.com/lhervier/KSP-Diag-Suspension) and from `KSP.log`.
+
 ### A light probe on the runway
 
-KSP 1.12.5 with KSP Community Fixes. The probe is [diag/SuspensionBounce.craft](diag/SuspensionBounce.craft): an
-OKTO2 probe core, three LT-05 micro landing struts, a Z-100 battery and two OX-STAT solar panels, about 100 kg in all,
-so about 33 kg per leg. Copy it into `Ships/SPH` of a sandbox game and launch it on the runway.
+A probe of 100 kg on three LT-05 legs, launched on the runway: without this mod, it leaves the runway the moment
+physics starts, and bounces on and on; with it, it settles on its legs within a fraction of a second.
 
-Without this mod, the probe leaves the runway the moment physics starts: the altimeter, which reads 70 m on the
-runway, goes above 230 m, then the probe falls back, bounces up again, and so on. Putting it back on the ground by any
-other means (the *Set Position* tool of the debug menu, for one) ends the same way. With this mod, the probe settles
-on its legs within a fraction of a second, and stays there.
-
-With `logLevel = Debug` in the settings, the mod writes a line for each leg whose damper it lowers:
-
-```
-[KSPFixSuspensionBounce] [DEBUG] Damper of miniLandingLeg (749513586) of SuspensionBounce limited to 0.833 for 0.033 t carried and 0.07 t moved, KSP computed 7
-```
+**→ Full chapter: [A light probe on the runway](docs/checked/a-light-probe-on-the-runway.md)**
 
 ### A landing leg placed alone
 
-The same damper throws a landing leg put down alone in EVA construction, but stock hides it most of the time:
-`ModuleCargoPart.MakePartSettle` makes a part placed alone weigh 4 t for its first 3 s on the ground, 20 t below
-0.8 g. Under that weight, the damper is no longer too stiff, and the leg simply tips over onto its flat side, its
-foot, where its suspension is, off the ground. When its own mass comes back:
+An LT-1 landing leg taken off a lander and set down alone, foot down, in EVA construction: without this mod, it is
+thrown into the air on Minmus, and on Kerbin too with Terrain Precision Fix; with it, it tips over onto its side and
+comes to rest.
 
-- on Kerbin, the leg is lying still, and stays there;
-- on Minmus, it is still rolling: its foot touches the ground again, and the damper throws it.
-
-[Terrain Precision Fix](https://github.com/lhervier/KSP-Fix-TerrainPrecision), with its `fixLonePartMass` setting
-on, gives the part its own mass from the start: its foot is on the ground, and the damper throws it at once, on
-Kerbin too. In a sandbox game, with an engineer on EVA next to a lander that has LT-1 landing legs:
-
-1. Open the EVA construction panel and pick the *Place* tool.
-2. Click one of the lander's legs that does not touch the ground: it is now held.
-3. Click on the ground, foot down.
-
-Without this mod, in stock, the leg tips over onto its side; on Minmus, it leaves the ground a few seconds later and
-climbs tens of metres. With Terrain Precision Fix, the leg leaves the ground within a fraction of a second, spinning:
-on Kerbin, it rises a few metres and is destroyed when it lands (`landingLeg1 (…) Exploded!!` in `KSP.log`); on
-Minmus, it goes much higher. With this mod, with or without Terrain Precision Fix, the leg tips over onto its side,
-as a leg standing on its foot would, and may roll or stand up again before it comes to rest; the mod writes:
-
-```
-[KSPFixSuspensionBounce] [DEBUG] Damper of landingLeg1 (3552957469) of Jambes d'atterrissage LT-1 limited to 0.924 for 0.037 t carried and 0.05 t moved, KSP computed 6
-```
+**→ Full chapter: [A landing leg placed alone](docs/checked/a-landing-leg-placed-alone.md)**
 
 ### A landing leg swung against a fuel tank
 
-A part placed alone that rolls against a lander can be pushed off, but only by chance. This setup makes it every
-time. It needs the rotation servos of Breaking Ground. The save
-[diag/SuspensionBounceCulprit3.sfs](diag/SuspensionBounceCulprit3.sfs) holds two vessels on the runway, docked together
-by a pair of Clamp-O-Tron Jr. docking ports:
+A light vessel swings a landing leg on a rotation servo against the side of a fuel tank: without this mod, it is
+thrown sideways, often hard enough to break apart; with it, it is pushed aside at a walking pace.
 
-- `SuspensionBounceCulprit3`: an FL-T400 tank standing upright, with a probe core;
-- `SuspensionBounceCulprit3 Probe`, about 400 kg: a probe core, batteries and an F-12 rotation servo, with an LT-2
-  landing leg fixed on the servo, lying horizontal, its foot a little away from the FL-T400.
+**→ Full chapter: [A landing leg swung against a fuel tank](docs/checked/a-landing-leg-swung-against-a-fuel-tank.md)**
 
-1. Copy the save into the folder of a sandbox game, under `saves`.
-2. In that game, at the space centre, open the quickload menu (Alt+F9 by default) and load
-   `SuspensionBounceCulprit3`.
-3. Right-click one of the two docking ports and undock, then switch to `SuspensionBounceCulprit3 Probe` (`]`).
-4. Right-click the F-12 servo and set its target angle to 179 (not 180: the slider makes it -179.99, and the
-   servo turns the other way): the servo swings the leg until its foot meets the side of the FL-T400, almost
-   parallel to it.
+### A light rover on Eve
 
-[diag/automation/run-tank-graze.py](diag/automation/run-tank-graze.py) plays these steps several times in a row,
-through [KSP-Util-MCPServer](https://github.com/lhervier/KSP-Util-MCPServer); its first lines say how to run it.
+A rover of a quarter of a ton on four RoveMax S2 wheels, loaded on Eve: without this mod, it bounces higher and
+higher and breaks a wheel; with it, it stays on its wheels.
 
-<img src="imgs/culprit3-modded.gif" alt="A landing leg swung against a fuel tank, with this mod" width="50%">
+**→ Full chapter: [A light rover on Eve](docs/checked/a-light-rover-on-eve.md)**
 
-*KSP 1.12.5, KSP Community Fixes and this mod: the same save as the last image at the top of this page.*
+### A heavy rover on Eve
 
-Without this mod, the light vessel is thrown sideways the moment the foot touches, much harder than the swing of the
-leg can explain; not at every try, but a few tries are enough, and it can be thrown hard enough to break apart. With this mod, it is pushed aside at a walking pace
-and comes to rest, undamaged. Played ten times in a row by the script: without this mod, the light vessel broke apart
-seven times; with it, never. It is not perfect: the suspension still takes the side of the tank for ground, and
-compresses against it where a real leg would just knock against the tank. Its ray, nearly parallel to the curved
-side, can meet it already deep inside from one step to the next: the suspension reads a very fast compression that
-the leg does not make, and its damper pushes back against it. The vessel still gets a short kick whenever the foot
-meets the tank again, but the kick stays small. The ground, broad and smooth, does not do this.
+A rover of 10 t, and the same with a blade of 3.5 t, on six TR-2L wheels at the end of trusses, loaded on Eve:
+without this mod, it hops and breaks its wheels; with it, it stays on its wheels.
+
+**→ Full chapter: [A heavy rover on Eve](docs/checked/a-heavy-rover-on-eve.md)**
+
+### A rover lowered onto its wheels on Eve
+
+A base of 5 t on six TR-2L wheels, lowered onto them by its hinges on Eve: without this mod, its wheels kick it up
+as they touch, unless its springs are set by hand; with it, it settles with its springs left to the game.
+
+**→ Full chapter: [A rover lowered onto its wheels on Eve](docs/checked/a-rover-lowered-onto-its-wheels-on-eve.md)**
+
+### A rover on its end-stops
+
+Rovers whose wheels rest on their end-stops: soft springs on Kerbin, a heavy rover on the Mun. Without this mod,
+their tyres read a fraction of the weight: they slide sideways on flat ground, and slide down a slope, brakes on; with
+it, the tyres read the whole weight, and hold.
+
+**→ Full chapter: [A rover on its end-stops](docs/checked/a-rover-on-its-end-stops.md)**
+
 
 ## Limits
 
+- **A rover resting on its end-stops still creeps a little.** The end-stop of a suspension does not hold the weight
+  steadily: it pushes in jolts, from one physics step to the next, and the rover shakes on it, too fast to be seen.
+  At each shake, the tyres slip a little, and on a slope the rover creeps down, a few centimetres a second where it
+  slid at a metre a second (see [A rover on its end-stops](docs/checked/a-rover-on-its-end-stops.md)). This mod tells the tyres the weight the end-stop carries; it
+  does not change the end-stop.
 - **On a low gravity body, a leg placed alone still hops a little.** Its spring is still the spring of half a ton,
   about 200 times its weight on Minmus: it pushes the leg off the ground as it straightens, and the leg falls back
   slowly. Removing that hop would mean lowering the floor of the spring, which this fix does not do.

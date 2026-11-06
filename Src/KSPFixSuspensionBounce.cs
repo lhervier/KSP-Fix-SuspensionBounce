@@ -27,6 +27,18 @@ namespace com.github.lhervier.ksp.fix.suspensionbounce
                 Log.Error("Could not install the suspension damper fix, the dampers are the ones KSP sets, as " +
                     $"without it: {e}");
             }
+            if (BumpStopLoad.Enabled)
+            {
+                try
+                {
+                    BumpStopLoad.Install(new Harmony(HarmonyId + ".bumpstop"));
+                    Log.Info("Bump-stop load fix installed");
+                }
+                catch (Exception e)
+                {
+                    Log.Error($"Could not install the bump-stop load fix, the tyres read the spring alone: {e}");
+                }
+            }
         }
     }
 }

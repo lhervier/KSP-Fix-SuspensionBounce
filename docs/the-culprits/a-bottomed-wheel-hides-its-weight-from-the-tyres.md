@@ -98,3 +98,103 @@ float supportedMass = (wheel.hit.force + wheel.wheelCol.runtimeExtraDownforce) *
 Vector2 impulseForce = (0f - tireImpulseRatio) * supportedMass * wheel.localWheelVelocity / Time.deltaTime;
 wheel.externalTireForce = impulseForce + wheel.localSurfaceForce;
 ```
+
+## Ce que change le mod
+
+Le mod ne touche pas à la butée : il retrouve sa force, et la donne à VPP. Tout le travail est de la retrouver, car ni
+PhysX ni Unity ne la donnent.
+
+### Une force que personne ne rapporte
+
+La butée d'un `WheelCollider` est une contrainte que PhysX résout avec le reste de la physique, comme un contact. Unity
+ne la rapporte nulle part : `WheelHit.force`, la seule force que donne le `WheelCollider`, est celle du ressort et de
+l'amortisseur. Il n'y a rien d'autre à lire.
+
+### Le chemin direct, fermé par Unity
+
+L'idée la plus simple est un bilan sur la seule pièce de la roue. La physique dit, à chaque pas, de combien sa vitesse
+a changé ; on connaît sa masse, la gravité, le ressort et la force du pneu. Il manquerait les forces des liaisons qui
+la tiennent au reste du vaisseau : Unity les donne en principe par `Joint.currentForce`. Mais sur les liaisons des
+pièces de KSP, `Joint.currentForce` vaut toujours zéro, même sous une charge de plusieurs tonnes : un bug de Unity
+connu depuis des années ([Joint.currentForce and Joint.currentTorque are always
+zero](https://discussions.unity.com/t/joint-currentforce-and-joint-currenttorque-are-always-zero/675232)). Sans ces
+forces, le bilan de la pièce n'a pas de sens.
+
+### Le bilan du vaisseau entier
+
+Le mod fait donc le bilan sur tout le vaisseau, où ces forces n'ont plus besoin d'être connues : une liaison pousse
+une pièce autant qu'elle tire l'autre, et dans la somme sur toutes les pièces, ses deux forces s'annulent.
+
+À chaque pas, le mod relève pour chaque pièce la variation de sa vitesse et de sa rotation : la somme, sur tout le
+vaisseau, de ce que gagnent ou perdent sa quantité de mouvement et son moment cinétique, c'est la somme de toutes les
+forces extérieures reçues pendant le pas, et de leurs couples. Le mod en retire toutes celles qu'il connaît :
+
+- la gravité, telle que KSP l'applique à chaque pièce ;
+- les forces et couples que les modules de KSP ont appliqués (moteurs, roues de réaction…) ;
+- la force de chaque ressort, le long de la normale du contact, à son point de contact ;
+- la force de chaque pneu, telle que VPP l'a appliquée.
+
+Ce qui reste, c'est ce que le sol a donné en plus des ressorts : la force des butées. Quand une seule roue est en
+butée, elle est toute à elle. Quand il y en a plusieurs, le mod la partage de façon à expliquer aussi les couples :
+une roue avant et une roue arrière, une roue en haut et une roue en bas d'une pente, ne portent pas la même part. Il
+cherche les forces, toutes positives, qui expliquent au mieux à la fois la force qui reste et ses couples autour des
+deux axes couchés sur le sol.
+
+Le mod ajoute la part de chaque roue à la force que VPP lit pour elle, juste avant qu'il s'en serve. VPP voit alors ce
+que la roue porte vraiment : son adhérence, son maintien sur la pente et son rappel contre le glissement retrouvent
+toute la charge.
+
+### Le reste
+
+Une roue qui n'est pas en butée n'est pas touchée : VPP lit son ressort, comme sans le mod. La butée ne tient pas le
+poids d'un bloc mais par à-coups, d'un pas à l'autre (voir les *Limits* du [README](../../README.md#limits)) : le mod
+donne à VPP sa force moyenne sur un dixième de seconde. Le module des dégâts des roues, qui lit lui aussi la charge du
+pneu pour y repérer les chocs, garde celle qu'il lisait sans le mod.
+
+Le réglage `bumpStopLoad` du fichier `settings.cfg` coupe cette partie du mod. Le rover qui glisse sur du plat, et
+celui qui descend la pente freins serrés, avec et sans elle :
+[A rover on its end-stops](../checked/a-rover-on-its-end-stops.md).
+
+## Dans le code du mod
+
+Tout est dans [Src/BumpStopLoad.cs](../../Src/BumpStopLoad.cs).
+
+Ce que KSP donne à chaque pièce pour le pas qui vient se note dans un préfixe de `FlightIntegrator.Integrate(Part)`
+(`IntegratePrefix`) : l'accélération du vaisseau (`vessel.precalc.integrationAccel`, la gravité comprise), et les
+forces et couples que ses modules ont rassemblés (`part.force`, `part.forces`, `part.torque`). La force que VPP vient
+d'appliquer à chaque pneu se note dans un postfixe de `VehicleBase.ApplyTireForce` (`ApplyTireForcePostfix`).
+
+Le bilan se fait dans un postfixe de `VehicleBase.CalculateSuspensionForces`, que VPP appelle à chaque pas pour chaque
+roue, une fois la force du ressort lue et avant d'en tirer la charge du pneu ; une seule fois par vaisseau et par pas,
+à sa première roue (`Solve`). Pour chaque pièce, sa variation de quantité de mouvement moins ce que KSP lui a donné :
+
+```csharp
+Vector3 change = body.mass * (body.velocity - state.velocity) / dt;
+Vector3 known = body.mass * a.acceleration + a.force;
+Vector3 excess = change - known;
+force += excess;
+torque += Vector3.Cross(arm, excess) + (Spin(body) - state.spin) / dt - a.torque;
+```
+
+puis, pour chaque roue au sol, la force de son ressort, que PhysX applique le long de la normale du contact, et celle
+de son pneu :
+
+```csharp
+Vector3 spring = p.hit.normal * p.springForce;
+force -= spring;
+torque -= Vector3.Cross(p.hit.point - centre, spring);
+```
+
+Le reste, le long de la normale moyenne du sol, et ses couples autour des deux axes couchés sur le sol, se partagent
+entre les roues en butée (`Share`) : les forces positives qui les expliquent au mieux, par moindres carrés. La part de
+chaque roue, moyennée, s'ajoute à la force que VPP va lire :
+
+```csharp
+probe.smoothed += (probe.missing - probe.smoothed) * weight;
+...
+wheel.hit.force += probe.injected;
+```
+
+Un postfixe de `VehicleBase.CalculateDownforce` garde la charge du pneu telle qu'elle aurait été sans le mod, et un
+préfixe et un postfixe de `ModuleWheelDamage.FixedUpdate` la montrent au module des dégâts le temps de sa mise à
+jour.

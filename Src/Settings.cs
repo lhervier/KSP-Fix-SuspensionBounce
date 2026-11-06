@@ -29,6 +29,27 @@ namespace com.github.lhervier.ksp.fix.suspensionbounce
             }
 
             Log.Level = ReadEnum(node, "logLevel", Log.Level, path);
+            BumpStopLoad.Enabled = ReadBool(node, "bumpStopLoad", BumpStopLoad.Enabled, path);
+        }
+
+        /// <summary>
+        /// Returns the value <paramref name="name"/> of <paramref name="node"/> as a boolean, or
+        /// <paramref name="fallback"/> when it is missing or not a boolean (the latter with a warning).
+        /// </summary>
+        private static bool ReadBool(ConfigNode node, string name, bool fallback, string path)
+        {
+            string value = node.GetValue(name);
+            if (value == null)
+            {
+                return fallback;
+            }
+            bool parsed;
+            if (bool.TryParse(value, out parsed))
+            {
+                return parsed;
+            }
+            Log.Warning($"Unknown {name} '{value}' in {path}, using {fallback}");
+            return fallback;
         }
 
         /// <summary>
