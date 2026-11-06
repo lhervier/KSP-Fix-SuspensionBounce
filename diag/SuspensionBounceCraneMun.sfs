@@ -279,6 +279,36 @@ GAME
 					}
 				}
 			}
+			Mun
+			{
+				reached = 184260549.58169371
+				Landing
+				{
+					completedManned = 184260551.90169495
+					vessel
+					{
+						name = SuspensionBounce Crane
+						flag = Squad/Flags/default
+					}
+					crew
+					{
+						crews = Toudin Kerman, Gamaire Kerman
+					}
+				}
+				Suborbit
+				{
+					completedManned = 184260549.58169371
+					vessel
+					{
+						name = SuspensionBounce Crane
+						flag = Squad/Flags/default
+					}
+					crew
+					{
+						crews = Toudin Kerman, Gamaire Kerman
+					}
+				}
+			}
 		}
 	}
 	SCENARIO
@@ -466,9 +496,9 @@ GAME
 	{
 		name = ScenarioDiscoverableObjects
 		scene = 7, 8, 5
-		lastSeed = 892544407
-		untrackedIDs = 1231011346,2274296593,3455688127,749663267,2801881019,3531709264,6345735,1643786725,2717305772
-		discoveredIDs = 1231011346,2274296593,3455688127,749663267,2801881019,3531709264,6345735,1643786725,2717305772
+		lastSeed = 1644591771
+		untrackedIDs = 3883244952,2933752387
+		discoveredIDs = 1231011346,2274296593,3455688127,749663267,2801881019,3531709264,6345735,1643786725,2717305772,3883244952,2933752387
 		sizeCurve
 		{
 			key = 0 0 1.5 1.5
@@ -481,7 +511,7 @@ GAME
 	{
 		name = SentinelScenario
 		scene = 7, 8, 5
-		NextSpawnTime = 30778.464954370371
+		NextSpawnTime = 184325859.06965542
 	}
 	SCENARIO
 	{
@@ -609,7 +639,7 @@ GAME
 	FLIGHTSTATE
 	{
 		version = 1.12.5
-		UT = 184260548.34169304
+		UT = 184260650.68174794
 		activeVessel = 0
 		mapViewFiltering = -1026
 		commNetUIModeTracking = Network
@@ -629,42 +659,42 @@ GAME
 			landedAt = 
 			displaylandedAt = 
 			splashed = False
-			met = 5628.7389466166496
+			met = 5731.0790015161037
 			lct = 184254919.60274643
-			lastUT = 184260548.34169304
-			distanceTraveled = 98789.676638148652
+			lastUT = 184260650.68174794
+			distanceTraveled = 98793.344956864414
 			root = 0
-			lat = -20.95672315901184
-			lon = 135.54379926305566
-			alt = 449.78790177078918
-			hgt = 1.98120558
-			nrm = -0.00421510637,-0.99998337,-0.00395591557
-			rot = 0.233546138,-0.265765786,0.522162676,-0.775996685
-			CoM = -0.0327232331,-1.1583823,0.0233485401
+			lat = -20.956389490072681
+			lon = 135.54401647184994
+			alt = 449.88184163984261
+			hgt = 2.11448264
+			nrm = 0.00833699107,-0.999961257,-0.00283694826
+			rot = 0.188428372,-0.330801606,0.545245588,-0.746841669
+			CoM = -0.072157383,-1.10958207,0.0122113638
 			stg = 1
 			prst = False
 			ref = 1821805835
 			ctrl = True
 			PQSMin = 2
 			PQSMax = 9
-			GroupOverride = 0
+			GroupOverride = 4
 			OverrideDefault = False,False,False,False
 			OverrideActionControl = 0,0,0,0
 			OverrideAxisControl = 0,0,0,0
 			OverrideGroupNames = ,,,
 			altDispState = ASL
-			cPch = 0.3199213
-			cHdg = -4.080269
+			cPch = 0.214
+			cHdg = -0.728
 			cMod = 0
 			ORBIT
 			{
-				SMA = 100236.48008265902
-				ECC = 0.99978037711350409
-				INC = 20.956719147571192
-				LPE = 90.055191346037063
-				LAN = 10.693865432931091
-				MNA = 3.1416554685148537
-				EPH = 184260548.34169304
+				SMA = 100236.54125464747
+				ECC = 0.99977959059709631
+				INC = 20.956365314618527
+				LPE = 90.034362075286552
+				LAN = 10.981485072096007
+				MNA = 3.1416125410192666
+				EPH = 184260650.68174794
 				REF = 2
 			}
 			PART
@@ -693,8 +723,8 @@ GAME
 				attN = bottom, 1
 				mass = 0.0199999996
 				shielded = False
-				temp = 171.38351704028645
-				tempExt = 171.43213466946079
+				temp = 171.43336778710179
+				tempExt = 171.5076211413969
 				tempExtUnexp = 302.09714612069502
 				staticPressureAtm = 0
 				expt = 0.5
@@ -704,7 +734,7 @@ GAME
 				autostrutMode = Off
 				rigidAttachment = False
 				flag = Squad/Flags/default
-				rTrf = dockingPort3 (Base Mu Rav. ElOx)
+				rTrf = dockingPort3 (SuspensionBounce Crane)
 				modCost = 0
 				modMass = 0
 				moduleVariantName = 
@@ -893,8 +923,8 @@ GAME
 				attN = top, 0
 				mass = 0.125
 				shielded = False
-				temp = 171.19119288498567
-				tempExt = 171.28034475878809
+				temp = 171.25492172090065
+				tempExt = 171.35080193363632
 				tempExtUnexp = 302.09714612069502
 				staticPressureAtm = 0
 				expt = 0.5
@@ -1011,8 +1041,8 @@ GAME
 				attN = bottom, 43
 				mass = 9
 				shielded = False
-				temp = 171.38521061501072
-				tempExt = 171.41839347749956
+				temp = 171.43437825721387
+				tempExt = 171.49778898721652
 				tempExtUnexp = 302.09714612069502
 				staticPressureAtm = 0
 				expt = 0.5
@@ -1148,8 +1178,8 @@ GAME
 				attN = top, -1
 				mass = 0.125
 				shielded = False
-				temp = 172.04351603898701
-				tempExt = 171.84928605165871
+				temp = 172.07205386543808
+				tempExt = 171.93544095622806
 				tempExtUnexp = 302.09714612069502
 				staticPressureAtm = 0
 				expt = 0.5
@@ -1267,8 +1297,8 @@ GAME
 				attN = bottom, -1
 				mass = 0.5
 				shielded = False
-				temp = 172.16386943540479
-				tempExt = 172.08735478213524
+				temp = 172.13484085723098
+				tempExt = 172.09495369582956
 				tempExtUnexp = 4
 				staticPressureAtm = 0
 				expt = 0.5
@@ -1341,58 +1371,6 @@ GAME
 				}
 				MODULE
 				{
-					name = ModuleGimbal
-					isEnabled = True
-					gimbalLock = False
-					gimbalLimiter = 100
-					currentShowToggles = False
-					enableYaw = True
-					enablePitch = True
-					enableRoll = True
-					gimbalActive = True
-					stagingEnabled = True
-					EVENTS
-					{
-					}
-					ACTIONS
-					{
-						ToggleAction
-						{
-							actionGroup = None
-							wasActiveBeforePartWasAdjusted = False
-						}
-						LockAction
-						{
-							actionGroup = None
-							wasActiveBeforePartWasAdjusted = False
-						}
-						FreeAction
-						{
-							actionGroup = None
-							wasActiveBeforePartWasAdjusted = False
-						}
-						TogglePitchAction
-						{
-							actionGroup = None
-							wasActiveBeforePartWasAdjusted = False
-						}
-						ToggleYawAction
-						{
-							actionGroup = None
-							wasActiveBeforePartWasAdjusted = False
-						}
-						ToggleRollAction
-						{
-							actionGroup = None
-							wasActiveBeforePartWasAdjusted = False
-						}
-					}
-					UPGRADESAPPLIED
-					{
-					}
-				}
-				MODULE
-				{
 					name = ModuleEngines
 					isEnabled = True
 					independentThrottle = False
@@ -1447,6 +1425,58 @@ GAME
 							axisIncremental = Pitch, Yaw, Roll, TranslateX, TranslateY, TranslateZ, WheelSteer, WheelThrottle, Custom01, Custom02, Custom03, Custom04
 							axisSpeedMultiplier = 0
 							axisInverted = None
+						}
+					}
+					UPGRADESAPPLIED
+					{
+					}
+				}
+				MODULE
+				{
+					name = ModuleGimbal
+					isEnabled = True
+					gimbalLock = False
+					gimbalLimiter = 100
+					currentShowToggles = False
+					enableYaw = True
+					enablePitch = True
+					enableRoll = True
+					gimbalActive = True
+					stagingEnabled = True
+					EVENTS
+					{
+					}
+					ACTIONS
+					{
+						ToggleAction
+						{
+							actionGroup = None
+							wasActiveBeforePartWasAdjusted = False
+						}
+						LockAction
+						{
+							actionGroup = None
+							wasActiveBeforePartWasAdjusted = False
+						}
+						FreeAction
+						{
+							actionGroup = None
+							wasActiveBeforePartWasAdjusted = False
+						}
+						TogglePitchAction
+						{
+							actionGroup = None
+							wasActiveBeforePartWasAdjusted = False
+						}
+						ToggleYawAction
+						{
+							actionGroup = None
+							wasActiveBeforePartWasAdjusted = False
+						}
+						ToggleRollAction
+						{
+							actionGroup = None
+							wasActiveBeforePartWasAdjusted = False
 						}
 					}
 					UPGRADESAPPLIED
@@ -1585,8 +1615,8 @@ GAME
 				attN = bottom, -1
 				mass = 0.5
 				shielded = False
-				temp = 172.2092906162147
-				tempExt = 172.56743480850855
+				temp = 172.23997204553103
+				tempExt = 172.66364337974451
 				tempExtUnexp = 4
 				staticPressureAtm = 0
 				expt = 0.5
@@ -1659,58 +1689,6 @@ GAME
 				}
 				MODULE
 				{
-					name = ModuleGimbal
-					isEnabled = True
-					gimbalLock = False
-					gimbalLimiter = 100
-					currentShowToggles = False
-					enableYaw = True
-					enablePitch = True
-					enableRoll = True
-					gimbalActive = True
-					stagingEnabled = True
-					EVENTS
-					{
-					}
-					ACTIONS
-					{
-						ToggleAction
-						{
-							actionGroup = None
-							wasActiveBeforePartWasAdjusted = False
-						}
-						LockAction
-						{
-							actionGroup = None
-							wasActiveBeforePartWasAdjusted = False
-						}
-						FreeAction
-						{
-							actionGroup = None
-							wasActiveBeforePartWasAdjusted = False
-						}
-						TogglePitchAction
-						{
-							actionGroup = None
-							wasActiveBeforePartWasAdjusted = False
-						}
-						ToggleYawAction
-						{
-							actionGroup = None
-							wasActiveBeforePartWasAdjusted = False
-						}
-						ToggleRollAction
-						{
-							actionGroup = None
-							wasActiveBeforePartWasAdjusted = False
-						}
-					}
-					UPGRADESAPPLIED
-					{
-					}
-				}
-				MODULE
-				{
 					name = ModuleEngines
 					isEnabled = True
 					independentThrottle = False
@@ -1765,6 +1743,58 @@ GAME
 							axisIncremental = Pitch, Yaw, Roll, TranslateX, TranslateY, TranslateZ, WheelSteer, WheelThrottle, Custom01, Custom02, Custom03, Custom04
 							axisSpeedMultiplier = 0
 							axisInverted = None
+						}
+					}
+					UPGRADESAPPLIED
+					{
+					}
+				}
+				MODULE
+				{
+					name = ModuleGimbal
+					isEnabled = True
+					gimbalLock = False
+					gimbalLimiter = 100
+					currentShowToggles = False
+					enableYaw = True
+					enablePitch = True
+					enableRoll = True
+					gimbalActive = True
+					stagingEnabled = True
+					EVENTS
+					{
+					}
+					ACTIONS
+					{
+						ToggleAction
+						{
+							actionGroup = None
+							wasActiveBeforePartWasAdjusted = False
+						}
+						LockAction
+						{
+							actionGroup = None
+							wasActiveBeforePartWasAdjusted = False
+						}
+						FreeAction
+						{
+							actionGroup = None
+							wasActiveBeforePartWasAdjusted = False
+						}
+						TogglePitchAction
+						{
+							actionGroup = None
+							wasActiveBeforePartWasAdjusted = False
+						}
+						ToggleYawAction
+						{
+							actionGroup = None
+							wasActiveBeforePartWasAdjusted = False
+						}
+						ToggleRollAction
+						{
+							actionGroup = None
+							wasActiveBeforePartWasAdjusted = False
 						}
 					}
 					UPGRADESAPPLIED
@@ -1903,8 +1933,8 @@ GAME
 				attN = top, -1
 				mass = 0.125
 				shielded = False
-				temp = 171.97651855111829
-				tempExt = 171.7674680419056
+				temp = 171.98595665858062
+				tempExt = 171.90842429666679
 				tempExtUnexp = 302.09714612069502
 				staticPressureAtm = 0
 				expt = 0.5
@@ -2022,8 +2052,8 @@ GAME
 				attN = bottom, -1
 				mass = 0.5
 				shielded = False
-				temp = 172.04123528107286
-				tempExt = 171.95356950041327
+				temp = 171.9987771963969
+				tempExt = 171.93961560195561
 				tempExtUnexp = 4
 				staticPressureAtm = 0
 				expt = 0.5
@@ -2096,58 +2126,6 @@ GAME
 				}
 				MODULE
 				{
-					name = ModuleGimbal
-					isEnabled = True
-					gimbalLock = False
-					gimbalLimiter = 100
-					currentShowToggles = False
-					enableYaw = True
-					enablePitch = True
-					enableRoll = True
-					gimbalActive = True
-					stagingEnabled = True
-					EVENTS
-					{
-					}
-					ACTIONS
-					{
-						ToggleAction
-						{
-							actionGroup = None
-							wasActiveBeforePartWasAdjusted = False
-						}
-						LockAction
-						{
-							actionGroup = None
-							wasActiveBeforePartWasAdjusted = False
-						}
-						FreeAction
-						{
-							actionGroup = None
-							wasActiveBeforePartWasAdjusted = False
-						}
-						TogglePitchAction
-						{
-							actionGroup = None
-							wasActiveBeforePartWasAdjusted = False
-						}
-						ToggleYawAction
-						{
-							actionGroup = None
-							wasActiveBeforePartWasAdjusted = False
-						}
-						ToggleRollAction
-						{
-							actionGroup = None
-							wasActiveBeforePartWasAdjusted = False
-						}
-					}
-					UPGRADESAPPLIED
-					{
-					}
-				}
-				MODULE
-				{
 					name = ModuleEngines
 					isEnabled = True
 					independentThrottle = False
@@ -2202,6 +2180,58 @@ GAME
 							axisIncremental = Pitch, Yaw, Roll, TranslateX, TranslateY, TranslateZ, WheelSteer, WheelThrottle, Custom01, Custom02, Custom03, Custom04
 							axisSpeedMultiplier = 0
 							axisInverted = None
+						}
+					}
+					UPGRADESAPPLIED
+					{
+					}
+				}
+				MODULE
+				{
+					name = ModuleGimbal
+					isEnabled = True
+					gimbalLock = False
+					gimbalLimiter = 100
+					currentShowToggles = False
+					enableYaw = True
+					enablePitch = True
+					enableRoll = True
+					gimbalActive = True
+					stagingEnabled = True
+					EVENTS
+					{
+					}
+					ACTIONS
+					{
+						ToggleAction
+						{
+							actionGroup = None
+							wasActiveBeforePartWasAdjusted = False
+						}
+						LockAction
+						{
+							actionGroup = None
+							wasActiveBeforePartWasAdjusted = False
+						}
+						FreeAction
+						{
+							actionGroup = None
+							wasActiveBeforePartWasAdjusted = False
+						}
+						TogglePitchAction
+						{
+							actionGroup = None
+							wasActiveBeforePartWasAdjusted = False
+						}
+						ToggleYawAction
+						{
+							actionGroup = None
+							wasActiveBeforePartWasAdjusted = False
+						}
+						ToggleRollAction
+						{
+							actionGroup = None
+							wasActiveBeforePartWasAdjusted = False
 						}
 					}
 					UPGRADESAPPLIED
@@ -2340,8 +2370,8 @@ GAME
 				attN = bottom, -1
 				mass = 0.5
 				shielded = False
-				temp = 172.04757095580672
-				tempExt = 172.33998876798674
+				temp = 172.13445062065199
+				tempExt = 172.5601265484747
 				tempExtUnexp = 4
 				staticPressureAtm = 0
 				expt = 0.5
@@ -2414,58 +2444,6 @@ GAME
 				}
 				MODULE
 				{
-					name = ModuleGimbal
-					isEnabled = True
-					gimbalLock = False
-					gimbalLimiter = 100
-					currentShowToggles = False
-					enableYaw = True
-					enablePitch = True
-					enableRoll = True
-					gimbalActive = True
-					stagingEnabled = True
-					EVENTS
-					{
-					}
-					ACTIONS
-					{
-						ToggleAction
-						{
-							actionGroup = None
-							wasActiveBeforePartWasAdjusted = False
-						}
-						LockAction
-						{
-							actionGroup = None
-							wasActiveBeforePartWasAdjusted = False
-						}
-						FreeAction
-						{
-							actionGroup = None
-							wasActiveBeforePartWasAdjusted = False
-						}
-						TogglePitchAction
-						{
-							actionGroup = None
-							wasActiveBeforePartWasAdjusted = False
-						}
-						ToggleYawAction
-						{
-							actionGroup = None
-							wasActiveBeforePartWasAdjusted = False
-						}
-						ToggleRollAction
-						{
-							actionGroup = None
-							wasActiveBeforePartWasAdjusted = False
-						}
-					}
-					UPGRADESAPPLIED
-					{
-					}
-				}
-				MODULE
-				{
 					name = ModuleEngines
 					isEnabled = True
 					independentThrottle = False
@@ -2520,6 +2498,58 @@ GAME
 							axisIncremental = Pitch, Yaw, Roll, TranslateX, TranslateY, TranslateZ, WheelSteer, WheelThrottle, Custom01, Custom02, Custom03, Custom04
 							axisSpeedMultiplier = 0
 							axisInverted = None
+						}
+					}
+					UPGRADESAPPLIED
+					{
+					}
+				}
+				MODULE
+				{
+					name = ModuleGimbal
+					isEnabled = True
+					gimbalLock = False
+					gimbalLimiter = 100
+					currentShowToggles = False
+					enableYaw = True
+					enablePitch = True
+					enableRoll = True
+					gimbalActive = True
+					stagingEnabled = True
+					EVENTS
+					{
+					}
+					ACTIONS
+					{
+						ToggleAction
+						{
+							actionGroup = None
+							wasActiveBeforePartWasAdjusted = False
+						}
+						LockAction
+						{
+							actionGroup = None
+							wasActiveBeforePartWasAdjusted = False
+						}
+						FreeAction
+						{
+							actionGroup = None
+							wasActiveBeforePartWasAdjusted = False
+						}
+						TogglePitchAction
+						{
+							actionGroup = None
+							wasActiveBeforePartWasAdjusted = False
+						}
+						ToggleYawAction
+						{
+							actionGroup = None
+							wasActiveBeforePartWasAdjusted = False
+						}
+						ToggleRollAction
+						{
+							actionGroup = None
+							wasActiveBeforePartWasAdjusted = False
 						}
 					}
 					UPGRADESAPPLIED
@@ -2655,8 +2685,8 @@ GAME
 				srfN = srfAttach, 2,COLLIDER
 				mass = 0.049999997
 				shielded = False
-				temp = 171.36596886721674
-				tempExt = 171.37478655280975
+				temp = 171.41708985064034
+				tempExt = 171.44524468464826
 				tempExtUnexp = 302.09714612069502
 				staticPressureAtm = 0
 				expt = 0.5
@@ -2839,8 +2869,8 @@ GAME
 				srfN = srfAttach, 2,COLLIDER
 				mass = 0.049999997
 				shielded = False
-				temp = 171.36596886545146
-				tempExt = 171.37478655224635
+				temp = 171.4170586124807
+				tempExt = 171.44523471390821
 				tempExtUnexp = 302.09714612069502
 				staticPressureAtm = 0
 				expt = 0.5
@@ -3023,8 +3053,8 @@ GAME
 				srfN = srfAttach, 2,COLLIDER
 				mass = 0.049999997
 				shielded = False
-				temp = 171.37000550770992
-				tempExt = 171.4192877829027
+				temp = 171.42138205560707
+				tempExt = 171.48947416439424
 				tempExtUnexp = 302.09714612069502
 				staticPressureAtm = 0
 				expt = 0.5
@@ -3207,8 +3237,8 @@ GAME
 				srfN = srfAttach, 2,COLLIDER
 				mass = 0.049999997
 				shielded = False
-				temp = 171.3699921184708
-				tempExt = 171.4192745824285
+				temp = 171.42121239440144
+				tempExt = 171.4894197200652
 				tempExtUnexp = 302.09714612069502
 				staticPressureAtm = 0
 				expt = 0.5
@@ -3392,8 +3422,8 @@ GAME
 				srfN = srfAttach, 2,COLLIDER
 				mass = 0.0299999993
 				shielded = False
-				temp = 171.34605738712028
-				tempExt = 171.36760597957624
+				temp = 171.40649980277922
+				tempExt = 171.44091158455132
 				tempExtUnexp = 302.09714612069502
 				staticPressureAtm = 0
 				expt = 0.5
@@ -3518,8 +3548,8 @@ GAME
 				srfN = srfAttach, 2,COLLIDER
 				mass = 0.0299999993
 				shielded = False
-				temp = 171.34605738712034
-				tempExt = 171.36760597957627
+				temp = 171.40650647422191
+				tempExt = 171.44091373674075
 				tempExtUnexp = 302.09714612069502
 				staticPressureAtm = 0
 				expt = 0.5
@@ -3644,8 +3674,8 @@ GAME
 				srfN = srfAttach, 2,COLLIDER
 				mass = 0.0299999993
 				shielded = False
-				temp = 171.34605738712028
-				tempExt = 171.36760597957624
+				temp = 171.40649938530942
+				tempExt = 171.44091144987669
 				tempExtUnexp = 302.09714612069502
 				staticPressureAtm = 0
 				expt = 0.5
@@ -3770,8 +3800,8 @@ GAME
 				srfN = srfAttach, 2,COLLIDER
 				mass = 0.0299999993
 				shielded = False
-				temp = 171.3460573871204
-				tempExt = 171.36760597957627
+				temp = 171.40649843029155
+				tempExt = 171.44091114179054
 				tempExtUnexp = 302.09714612069502
 				staticPressureAtm = 0
 				expt = 0.5
@@ -3896,8 +3926,8 @@ GAME
 				srfN = srfAttach, 2,COLLIDER
 				mass = 0.0299999993
 				shielded = False
-				temp = 171.34605738712028
-				tempExt = 171.36760597957624
+				temp = 171.40651542671006
+				tempExt = 171.44091662478931
 				tempExtUnexp = 302.09714612069502
 				staticPressureAtm = 0
 				expt = 0.5
@@ -4022,8 +4052,8 @@ GAME
 				srfN = srfAttach, 2,COLLIDER
 				mass = 0.0299999993
 				shielded = False
-				temp = 171.34605738712037
-				tempExt = 171.36760597957627
+				temp = 171.4065162273921
+				tempExt = 171.44091688308723
 				tempExtUnexp = 302.09714612069502
 				staticPressureAtm = 0
 				expt = 0.5
@@ -4148,8 +4178,8 @@ GAME
 				srfN = srfAttach, 2,COLLIDER
 				mass = 0.0299999993
 				shielded = False
-				temp = 171.34605738712028
-				tempExt = 171.36760597957624
+				temp = 171.40650776478876
+				tempExt = 171.44091415307417
 				tempExtUnexp = 302.09714612069502
 				staticPressureAtm = 0
 				expt = 0.5
@@ -4274,8 +4304,8 @@ GAME
 				srfN = srfAttach, 2,COLLIDER
 				mass = 0.0299999993
 				shielded = False
-				temp = 171.3460573871204
-				tempExt = 171.36760597957627
+				temp = 171.40653327952717
+				tempExt = 171.44092238405989
 				tempExtUnexp = 302.09714612069502
 				staticPressureAtm = 0
 				expt = 0.5
@@ -4400,8 +4430,8 @@ GAME
 				srfN = srfAttach, 2,COLLIDER
 				mass = 0.0149999997
 				shielded = False
-				temp = 171.38202782582087
-				tempExt = 171.37990927332584
+				temp = 171.42821720919267
+				tempExt = 171.4487439865332
 				tempExtUnexp = 302.09714612069502
 				staticPressureAtm = 0
 				expt = 0.5
@@ -4543,8 +4573,8 @@ GAME
 				srfN = srfAttach, 2,COLLIDER
 				mass = 0.0149999997
 				shielded = False
-				temp = 171.38202782582087
-				tempExt = 171.37990927332584
+				temp = 171.4282163501743
+				tempExt = 171.44874370100874
 				tempExtUnexp = 302.09714612069502
 				staticPressureAtm = 0
 				expt = 0.5
@@ -4686,8 +4716,8 @@ GAME
 				srfN = srfAttach, 2,COLLIDER
 				mass = 0.0399999991
 				shielded = False
-				temp = 171.40450267058446
-				tempExt = 171.38667184127485
+				temp = 171.4368383075541
+				tempExt = 171.45088124262455
 				tempExtUnexp = 302.09714612069502
 				staticPressureAtm = 0
 				expt = 0.5
@@ -4842,8 +4872,8 @@ GAME
 				srfN = srfAttach, 2,COLLIDER
 				mass = 0.0399999991
 				shielded = False
-				temp = 171.40450267058446
-				tempExt = 171.38667184127485
+				temp = 171.43684873495971
+				tempExt = 171.45088457492673
 				tempExtUnexp = 302.09714612069502
 				staticPressureAtm = 0
 				expt = 0.5
@@ -4998,8 +5028,8 @@ GAME
 				srfN = srfAttach, 2,COLLIDER
 				mass = 0.0399999991
 				shielded = False
-				temp = 171.40450267058446
-				tempExt = 171.38667184127485
+				temp = 171.43681967535832
+				tempExt = 171.4508752883045
 				tempExtUnexp = 302.09714612069502
 				staticPressureAtm = 0
 				expt = 0.5
@@ -5154,8 +5184,8 @@ GAME
 				srfN = srfAttach, 2,COLLIDER
 				mass = 0.0399999991
 				shielded = False
-				temp = 171.40450267058446
-				tempExt = 171.38667184127485
+				temp = 171.43681967535832
+				tempExt = 171.4508752883045
 				tempExtUnexp = 302.09714612069502
 				staticPressureAtm = 0
 				expt = 0.5
@@ -5310,8 +5340,8 @@ GAME
 				srfN = srfAttach, 2,COLLIDER
 				mass = 0.0399999991
 				shielded = False
-				temp = 171.40450267058446
-				tempExt = 171.38667184127485
+				temp = 171.43681967535832
+				tempExt = 171.4508752883045
 				tempExtUnexp = 302.09714612069502
 				staticPressureAtm = 0
 				expt = 0.5
@@ -5466,8 +5496,8 @@ GAME
 				srfN = srfAttach, 2,COLLIDER
 				mass = 0.0399999991
 				shielded = False
-				temp = 171.40450267058446
-				tempExt = 171.38667184127485
+				temp = 171.43681967535832
+				tempExt = 171.4508752883045
 				tempExtUnexp = 302.09714612069502
 				staticPressureAtm = 0
 				expt = 0.5
@@ -5622,8 +5652,8 @@ GAME
 				srfN = srfAttach, 2,COLLIDER
 				mass = 0.0399999991
 				shielded = False
-				temp = 171.40450267058446
-				tempExt = 171.38667184127485
+				temp = 171.43681967535832
+				tempExt = 171.4508752883045
 				tempExtUnexp = 302.09714612069502
 				staticPressureAtm = 0
 				expt = 0.5
@@ -5778,8 +5808,8 @@ GAME
 				srfN = srfAttach, 2,COLLIDER
 				mass = 0.0399999991
 				shielded = False
-				temp = 171.40450267058446
-				tempExt = 171.38667184127485
+				temp = 171.43681967535832
+				tempExt = 171.4508752883045
 				tempExtUnexp = 302.09714612069502
 				staticPressureAtm = 0
 				expt = 0.5
@@ -5933,8 +5963,8 @@ GAME
 				srfN = srfAttach, 2,COLLIDER
 				mass = 0.0399999991
 				shielded = False
-				temp = 171.40450267058446
-				tempExt = 171.38667184127485
+				temp = 171.4368757648104
+				tempExt = 171.45089321289831
 				tempExtUnexp = 302.09714612069502
 				staticPressureAtm = 0
 				expt = 0.5
@@ -6088,8 +6118,8 @@ GAME
 				srfN = srfAttach, 2,COLLIDER
 				mass = 0.0399999991
 				shielded = False
-				temp = 171.40450267058446
-				tempExt = 171.38667184127485
+				temp = 171.43681967535832
+				tempExt = 171.4508752883045
 				tempExtUnexp = 302.09714612069502
 				staticPressureAtm = 0
 				expt = 0.5
@@ -6244,8 +6274,8 @@ GAME
 				srfN = srfAttach, 2,COLLIDER
 				mass = 0.100000001
 				shielded = False
-				temp = 171.39187716670742
-				tempExt = 171.4461705006118
+				temp = 171.42271178663296
+				tempExt = 171.45053305585523
 				tempExtUnexp = 302.09714612069502
 				staticPressureAtm = 0
 				expt = 0.5
@@ -6476,8 +6506,8 @@ GAME
 				srfN = srfAttach, 2,COLLIDER
 				mass = 0.100000001
 				shielded = False
-				temp = 171.39187148613595
-				tempExt = 171.44527728623117
+				temp = 171.42271113606546
+				tempExt = 171.45053292639537
 				tempExtUnexp = 302.09714612069502
 				staticPressureAtm = 0
 				expt = 0.5
@@ -6708,8 +6738,8 @@ GAME
 				srfN = srfAttach, 2,COLLIDER
 				mass = 0.100000001
 				shielded = False
-				temp = 171.41571193616238
-				tempExt = 171.76029467546644
+				temp = 171.46040048729819
+				tempExt = 171.71649055999984
 				tempExtUnexp = 302.09714612069502
 				staticPressureAtm = 0
 				expt = 0.5
@@ -6940,8 +6970,8 @@ GAME
 				srfN = srfAttach, 2,COLLIDER
 				mass = 0.100000001
 				shielded = False
-				temp = 171.41528059333072
-				tempExt = 171.66157750853702
+				temp = 171.46067903713947
+				tempExt = 171.78497041607579
 				tempExtUnexp = 302.09714612069502
 				staticPressureAtm = 0
 				expt = 0.5
@@ -7174,8 +7204,8 @@ GAME
 				attN = top, -1
 				mass = 0.125
 				shielded = False
-				temp = 171.93790387563288
-				tempExt = 171.69657656764232
+				temp = 171.83980451820676
+				tempExt = 171.68129776220252
 				tempExtUnexp = 302.09714612069502
 				staticPressureAtm = 0
 				expt = 0.5
@@ -7293,8 +7323,8 @@ GAME
 				attN = bottom, -1
 				mass = 0.5
 				shielded = False
-				temp = 171.99905771635989
-				tempExt = 171.92382452702427
+				temp = 171.89106945341919
+				tempExt = 171.88664863598629
 				tempExtUnexp = 4
 				staticPressureAtm = 0
 				expt = 0.5
@@ -7367,58 +7397,6 @@ GAME
 				}
 				MODULE
 				{
-					name = ModuleGimbal
-					isEnabled = True
-					gimbalLock = False
-					gimbalLimiter = 100
-					currentShowToggles = False
-					enableYaw = True
-					enablePitch = True
-					enableRoll = True
-					gimbalActive = True
-					stagingEnabled = True
-					EVENTS
-					{
-					}
-					ACTIONS
-					{
-						ToggleAction
-						{
-							actionGroup = None
-							wasActiveBeforePartWasAdjusted = False
-						}
-						LockAction
-						{
-							actionGroup = None
-							wasActiveBeforePartWasAdjusted = False
-						}
-						FreeAction
-						{
-							actionGroup = None
-							wasActiveBeforePartWasAdjusted = False
-						}
-						TogglePitchAction
-						{
-							actionGroup = None
-							wasActiveBeforePartWasAdjusted = False
-						}
-						ToggleYawAction
-						{
-							actionGroup = None
-							wasActiveBeforePartWasAdjusted = False
-						}
-						ToggleRollAction
-						{
-							actionGroup = None
-							wasActiveBeforePartWasAdjusted = False
-						}
-					}
-					UPGRADESAPPLIED
-					{
-					}
-				}
-				MODULE
-				{
 					name = ModuleEngines
 					isEnabled = True
 					independentThrottle = False
@@ -7473,6 +7451,58 @@ GAME
 							axisIncremental = Pitch, Yaw, Roll, TranslateX, TranslateY, TranslateZ, WheelSteer, WheelThrottle, Custom01, Custom02, Custom03, Custom04
 							axisSpeedMultiplier = 0
 							axisInverted = None
+						}
+					}
+					UPGRADESAPPLIED
+					{
+					}
+				}
+				MODULE
+				{
+					name = ModuleGimbal
+					isEnabled = True
+					gimbalLock = False
+					gimbalLimiter = 100
+					currentShowToggles = False
+					enableYaw = True
+					enablePitch = True
+					enableRoll = True
+					gimbalActive = True
+					stagingEnabled = True
+					EVENTS
+					{
+					}
+					ACTIONS
+					{
+						ToggleAction
+						{
+							actionGroup = None
+							wasActiveBeforePartWasAdjusted = False
+						}
+						LockAction
+						{
+							actionGroup = None
+							wasActiveBeforePartWasAdjusted = False
+						}
+						FreeAction
+						{
+							actionGroup = None
+							wasActiveBeforePartWasAdjusted = False
+						}
+						TogglePitchAction
+						{
+							actionGroup = None
+							wasActiveBeforePartWasAdjusted = False
+						}
+						ToggleYawAction
+						{
+							actionGroup = None
+							wasActiveBeforePartWasAdjusted = False
+						}
+						ToggleRollAction
+						{
+							actionGroup = None
+							wasActiveBeforePartWasAdjusted = False
 						}
 					}
 					UPGRADESAPPLIED
@@ -7611,8 +7641,8 @@ GAME
 				attN = bottom, -1
 				mass = 0.5
 				shielded = False
-				temp = 171.99889384624578
-				tempExt = 171.90136370256752
+				temp = 171.88343909709667
+				tempExt = 171.85691755562576
 				tempExtUnexp = 4
 				staticPressureAtm = 0
 				expt = 0.5
@@ -7685,58 +7715,6 @@ GAME
 				}
 				MODULE
 				{
-					name = ModuleGimbal
-					isEnabled = True
-					gimbalLock = False
-					gimbalLimiter = 100
-					currentShowToggles = False
-					enableYaw = True
-					enablePitch = True
-					enableRoll = True
-					gimbalActive = True
-					stagingEnabled = True
-					EVENTS
-					{
-					}
-					ACTIONS
-					{
-						ToggleAction
-						{
-							actionGroup = None
-							wasActiveBeforePartWasAdjusted = False
-						}
-						LockAction
-						{
-							actionGroup = None
-							wasActiveBeforePartWasAdjusted = False
-						}
-						FreeAction
-						{
-							actionGroup = None
-							wasActiveBeforePartWasAdjusted = False
-						}
-						TogglePitchAction
-						{
-							actionGroup = None
-							wasActiveBeforePartWasAdjusted = False
-						}
-						ToggleYawAction
-						{
-							actionGroup = None
-							wasActiveBeforePartWasAdjusted = False
-						}
-						ToggleRollAction
-						{
-							actionGroup = None
-							wasActiveBeforePartWasAdjusted = False
-						}
-					}
-					UPGRADESAPPLIED
-					{
-					}
-				}
-				MODULE
-				{
 					name = ModuleEngines
 					isEnabled = True
 					independentThrottle = False
@@ -7791,6 +7769,58 @@ GAME
 							axisIncremental = Pitch, Yaw, Roll, TranslateX, TranslateY, TranslateZ, WheelSteer, WheelThrottle, Custom01, Custom02, Custom03, Custom04
 							axisSpeedMultiplier = 0
 							axisInverted = None
+						}
+					}
+					UPGRADESAPPLIED
+					{
+					}
+				}
+				MODULE
+				{
+					name = ModuleGimbal
+					isEnabled = True
+					gimbalLock = False
+					gimbalLimiter = 100
+					currentShowToggles = False
+					enableYaw = True
+					enablePitch = True
+					enableRoll = True
+					gimbalActive = True
+					stagingEnabled = True
+					EVENTS
+					{
+					}
+					ACTIONS
+					{
+						ToggleAction
+						{
+							actionGroup = None
+							wasActiveBeforePartWasAdjusted = False
+						}
+						LockAction
+						{
+							actionGroup = None
+							wasActiveBeforePartWasAdjusted = False
+						}
+						FreeAction
+						{
+							actionGroup = None
+							wasActiveBeforePartWasAdjusted = False
+						}
+						TogglePitchAction
+						{
+							actionGroup = None
+							wasActiveBeforePartWasAdjusted = False
+						}
+						ToggleYawAction
+						{
+							actionGroup = None
+							wasActiveBeforePartWasAdjusted = False
+						}
+						ToggleRollAction
+						{
+							actionGroup = None
+							wasActiveBeforePartWasAdjusted = False
 						}
 					}
 					UPGRADESAPPLIED
@@ -7929,8 +7959,8 @@ GAME
 				attN = top, -1
 				mass = 0.125
 				shielded = False
-				temp = 171.93962036185255
-				tempExt = 171.69784379407088
+				temp = 171.83730145365675
+				tempExt = 171.69078586156118
 				tempExtUnexp = 302.09714612069502
 				staticPressureAtm = 0
 				expt = 0.5
@@ -8048,8 +8078,8 @@ GAME
 				attN = bottom, -1
 				mass = 0.5
 				shielded = False
-				temp = 172.00096873661514
-				tempExt = 171.92571747624081
+				temp = 171.88570528813909
+				tempExt = 171.86302992834905
 				tempExtUnexp = 4
 				staticPressureAtm = 0
 				expt = 0.5
@@ -8122,58 +8152,6 @@ GAME
 				}
 				MODULE
 				{
-					name = ModuleGimbal
-					isEnabled = True
-					gimbalLock = False
-					gimbalLimiter = 100
-					currentShowToggles = False
-					enableYaw = True
-					enablePitch = True
-					enableRoll = True
-					gimbalActive = True
-					stagingEnabled = True
-					EVENTS
-					{
-					}
-					ACTIONS
-					{
-						ToggleAction
-						{
-							actionGroup = None
-							wasActiveBeforePartWasAdjusted = False
-						}
-						LockAction
-						{
-							actionGroup = None
-							wasActiveBeforePartWasAdjusted = False
-						}
-						FreeAction
-						{
-							actionGroup = None
-							wasActiveBeforePartWasAdjusted = False
-						}
-						TogglePitchAction
-						{
-							actionGroup = None
-							wasActiveBeforePartWasAdjusted = False
-						}
-						ToggleYawAction
-						{
-							actionGroup = None
-							wasActiveBeforePartWasAdjusted = False
-						}
-						ToggleRollAction
-						{
-							actionGroup = None
-							wasActiveBeforePartWasAdjusted = False
-						}
-					}
-					UPGRADESAPPLIED
-					{
-					}
-				}
-				MODULE
-				{
 					name = ModuleEngines
 					isEnabled = True
 					independentThrottle = False
@@ -8228,6 +8206,58 @@ GAME
 							axisIncremental = Pitch, Yaw, Roll, TranslateX, TranslateY, TranslateZ, WheelSteer, WheelThrottle, Custom01, Custom02, Custom03, Custom04
 							axisSpeedMultiplier = 0
 							axisInverted = None
+						}
+					}
+					UPGRADESAPPLIED
+					{
+					}
+				}
+				MODULE
+				{
+					name = ModuleGimbal
+					isEnabled = True
+					gimbalLock = False
+					gimbalLimiter = 100
+					currentShowToggles = False
+					enableYaw = True
+					enablePitch = True
+					enableRoll = True
+					gimbalActive = True
+					stagingEnabled = True
+					EVENTS
+					{
+					}
+					ACTIONS
+					{
+						ToggleAction
+						{
+							actionGroup = None
+							wasActiveBeforePartWasAdjusted = False
+						}
+						LockAction
+						{
+							actionGroup = None
+							wasActiveBeforePartWasAdjusted = False
+						}
+						FreeAction
+						{
+							actionGroup = None
+							wasActiveBeforePartWasAdjusted = False
+						}
+						TogglePitchAction
+						{
+							actionGroup = None
+							wasActiveBeforePartWasAdjusted = False
+						}
+						ToggleYawAction
+						{
+							actionGroup = None
+							wasActiveBeforePartWasAdjusted = False
+						}
+						ToggleRollAction
+						{
+							actionGroup = None
+							wasActiveBeforePartWasAdjusted = False
 						}
 					}
 					UPGRADESAPPLIED
@@ -8366,8 +8396,8 @@ GAME
 				attN = bottom, -1
 				mass = 0.5
 				shielded = False
-				temp = 172.00081716204085
-				tempExt = 171.90343561390995
+				temp = 171.88172050632519
+				tempExt = 171.84902984192956
 				tempExtUnexp = 4
 				staticPressureAtm = 0
 				expt = 0.5
@@ -8440,58 +8470,6 @@ GAME
 				}
 				MODULE
 				{
-					name = ModuleGimbal
-					isEnabled = True
-					gimbalLock = False
-					gimbalLimiter = 100
-					currentShowToggles = False
-					enableYaw = True
-					enablePitch = True
-					enableRoll = True
-					gimbalActive = True
-					stagingEnabled = True
-					EVENTS
-					{
-					}
-					ACTIONS
-					{
-						ToggleAction
-						{
-							actionGroup = None
-							wasActiveBeforePartWasAdjusted = False
-						}
-						LockAction
-						{
-							actionGroup = None
-							wasActiveBeforePartWasAdjusted = False
-						}
-						FreeAction
-						{
-							actionGroup = None
-							wasActiveBeforePartWasAdjusted = False
-						}
-						TogglePitchAction
-						{
-							actionGroup = None
-							wasActiveBeforePartWasAdjusted = False
-						}
-						ToggleYawAction
-						{
-							actionGroup = None
-							wasActiveBeforePartWasAdjusted = False
-						}
-						ToggleRollAction
-						{
-							actionGroup = None
-							wasActiveBeforePartWasAdjusted = False
-						}
-					}
-					UPGRADESAPPLIED
-					{
-					}
-				}
-				MODULE
-				{
 					name = ModuleEngines
 					isEnabled = True
 					independentThrottle = False
@@ -8546,6 +8524,58 @@ GAME
 							axisIncremental = Pitch, Yaw, Roll, TranslateX, TranslateY, TranslateZ, WheelSteer, WheelThrottle, Custom01, Custom02, Custom03, Custom04
 							axisSpeedMultiplier = 0
 							axisInverted = None
+						}
+					}
+					UPGRADESAPPLIED
+					{
+					}
+				}
+				MODULE
+				{
+					name = ModuleGimbal
+					isEnabled = True
+					gimbalLock = False
+					gimbalLimiter = 100
+					currentShowToggles = False
+					enableYaw = True
+					enablePitch = True
+					enableRoll = True
+					gimbalActive = True
+					stagingEnabled = True
+					EVENTS
+					{
+					}
+					ACTIONS
+					{
+						ToggleAction
+						{
+							actionGroup = None
+							wasActiveBeforePartWasAdjusted = False
+						}
+						LockAction
+						{
+							actionGroup = None
+							wasActiveBeforePartWasAdjusted = False
+						}
+						FreeAction
+						{
+							actionGroup = None
+							wasActiveBeforePartWasAdjusted = False
+						}
+						TogglePitchAction
+						{
+							actionGroup = None
+							wasActiveBeforePartWasAdjusted = False
+						}
+						ToggleYawAction
+						{
+							actionGroup = None
+							wasActiveBeforePartWasAdjusted = False
+						}
+						ToggleRollAction
+						{
+							actionGroup = None
+							wasActiveBeforePartWasAdjusted = False
 						}
 					}
 					UPGRADESAPPLIED
@@ -8683,8 +8713,8 @@ GAME
 				attN = bottom, 2
 				mass = 0.200000003
 				shielded = False
-				temp = 171.41875306972008
-				tempExt = 171.57701377110857
+				temp = 171.46387537531527
+				tempExt = 171.645453648977
 				tempExtUnexp = 302.09714612069502
 				staticPressureAtm = 0
 				expt = 0.5
@@ -8838,8 +8868,8 @@ GAME
 				srfN = srfAttach, 43,COLLIDER
 				mass = 0.0399999991
 				shielded = False
-				temp = 171.42245325653525
-				tempExt = 171.50455468412042
+				temp = 171.46666229475085
+				tempExt = 171.55130804775118
 				tempExtUnexp = 302.09714612069502
 				staticPressureAtm = 0
 				expt = 0.5
@@ -8995,8 +9025,8 @@ GAME
 				attN = bottom, 2
 				mass = 0.200000003
 				shielded = False
-				temp = 171.3950469125399
-				tempExt = 171.37845431248516
+				temp = 171.43285597663734
+				tempExt = 171.44249205659077
 				tempExtUnexp = 302.09714612069502
 				staticPressureAtm = 0
 				expt = 0.5
@@ -9150,8 +9180,8 @@ GAME
 				srfN = srfAttach, 45,COLLIDER
 				mass = 0.0399999991
 				shielded = False
-				temp = 171.39397254925603
-				tempExt = 171.35261467329596
+				temp = 171.43088755205787
+				tempExt = 171.40867356368986
 				tempExtUnexp = 302.09714612069502
 				staticPressureAtm = 0
 				expt = 0.5
@@ -9306,8 +9336,8 @@ GAME
 				srfN = srfAttach, 2,COLLIDER
 				mass = 0.0199999996
 				shielded = False
-				temp = 171.4047374139229
-				tempExt = 171.38696738453334
+				temp = 171.43725238460149
+				tempExt = 171.45133652828386
 				tempExtUnexp = 302.09714612069502
 				staticPressureAtm = 0
 				expt = 0.5
@@ -9402,7 +9432,7 @@ GAME
 				RESOURCE
 				{
 					name = ElectricCharge
-					amount = 399.99987596899501
+					amount = 400
 					maxAmount = 400
 					flowState = True
 					isTweakable = True
@@ -9436,8 +9466,8 @@ GAME
 				srfN = srfAttach, 2,COLLIDER
 				mass = 0.0199999996
 				shielded = False
-				temp = 171.4047374139229
-				tempExt = 171.38696738453334
+				temp = 171.43725238460149
+				tempExt = 171.45133652828386
 				tempExtUnexp = 302.09714612069502
 				staticPressureAtm = 0
 				expt = 0.5
@@ -9532,7 +9562,7 @@ GAME
 				RESOURCE
 				{
 					name = ElectricCharge
-					amount = 399.99987596899501
+					amount = 400
 					maxAmount = 400
 					flowState = True
 					isTweakable = True
@@ -9566,8 +9596,8 @@ GAME
 				srfN = srfAttach, 2,COLLIDER
 				mass = 0.0199999996
 				shielded = False
-				temp = 171.4047374139229
-				tempExt = 171.38696738453334
+				temp = 171.43725238460149
+				tempExt = 171.45133652828386
 				tempExtUnexp = 302.09714612069502
 				staticPressureAtm = 0
 				expt = 0.5
@@ -9662,7 +9692,7 @@ GAME
 				RESOURCE
 				{
 					name = ElectricCharge
-					amount = 399.99987596899501
+					amount = 400
 					maxAmount = 400
 					flowState = True
 					isTweakable = True
@@ -9696,8 +9726,8 @@ GAME
 				srfN = srfAttach, 2,COLLIDER
 				mass = 0.0199999996
 				shielded = False
-				temp = 171.4047374139229
-				tempExt = 171.38696738453334
+				temp = 171.43725238460149
+				tempExt = 171.45133652828386
 				tempExtUnexp = 302.09714612069502
 				staticPressureAtm = 0
 				expt = 0.5
@@ -9792,7 +9822,7 @@ GAME
 				RESOURCE
 				{
 					name = ElectricCharge
-					amount = 399.99987596899501
+					amount = 400
 					maxAmount = 400
 					flowState = True
 					isTweakable = True
@@ -9825,8 +9855,8 @@ GAME
 				srfN = srfAttach, 2,COLLIDER
 				mass = 0.0399999991
 				shielded = False
-				temp = 171.41067545564698
-				tempExt = 171.41802881584235
+				temp = 171.43728033455511
+				tempExt = 171.4510225018833
 				tempExtUnexp = 302.09714612069502
 				staticPressureAtm = 0
 				expt = 0.5
@@ -9980,8 +10010,8 @@ GAME
 				srfN = srfAttach, 2,COLLIDER
 				mass = 0.0399999991
 				shielded = False
-				temp = 171.40450267058446
-				tempExt = 171.38667184127485
+				temp = 171.43720343394213
+				tempExt = 171.45099792663447
 				tempExtUnexp = 302.09714612069502
 				staticPressureAtm = 0
 				expt = 0.5
@@ -10138,8 +10168,8 @@ GAME
 				attN = bottom, -1
 				mass = 0.5
 				shielded = False
-				temp = 171.3749408705099
-				tempExt = 171.36402444481789
+				temp = 171.42191322778811
+				tempExt = 171.42986226184539
 				tempExtUnexp = 302.09714612069502
 				staticPressureAtm = 0
 				expt = 0.5
@@ -10272,8 +10302,8 @@ GAME
 				srfN = srfAttach, 53,Cyl12
 				mass = 0.049999997
 				shielded = False
-				temp = 171.34710462542284
-				tempExt = 171.33109209475455
+				temp = 171.40065904794471
+				tempExt = 171.3929970698735
 				tempExtUnexp = 302.09714612069502
 				staticPressureAtm = 0
 				expt = 0.5
@@ -10457,8 +10487,8 @@ GAME
 				srfN = srfAttach, 53,Cyl12
 				mass = 0.049999997
 				shielded = False
-				temp = 171.34710462542557
-				tempExt = 171.33109209475535
+				temp = 171.40064795988894
+				tempExt = 171.39299349015857
 				tempExtUnexp = 302.09714612069502
 				staticPressureAtm = 0
 				expt = 0.5
@@ -10644,8 +10674,8 @@ GAME
 				attN = bottom, -1
 				mass = 0.5
 				shielded = False
-				temp = 171.3749408705182
-				tempExt = 171.36402444482255
+				temp = 171.42191270032063
+				tempExt = 171.42986195356141
 				tempExtUnexp = 302.09714612069502
 				staticPressureAtm = 0
 				expt = 0.5
@@ -10778,8 +10808,8 @@ GAME
 				srfN = srfAttach, 56,Cyl12
 				mass = 0.049999997
 				shielded = False
-				temp = 171.34710462553514
-				tempExt = 171.33109209479395
+				temp = 171.40065297748703
+				tempExt = 171.39299489833468
 				tempExtUnexp = 302.09714612069502
 				staticPressureAtm = 0
 				expt = 0.5
@@ -10963,8 +10993,8 @@ GAME
 				srfN = srfAttach, 56,Cyl12
 				mass = 0.049999997
 				shielded = False
-				temp = 171.34710462553221
-				tempExt = 171.33109209479295
+				temp = 171.40063829869314
+				tempExt = 171.39299015937038
 				tempExtUnexp = 302.09714612069502
 				staticPressureAtm = 0
 				expt = 0.5
@@ -11147,8 +11177,8 @@ GAME
 				srfN = srfAttach, 2,COLLIDER
 				mass = 0.00999999978
 				shielded = False
-				temp = 171.37381057669549
-				tempExt = 171.38553279248688
+				temp = 171.42152339110584
+				tempExt = 171.45692021909733
 				tempExtUnexp = 395.17420906428754
 				staticPressureAtm = 0
 				expt = 0.5
@@ -11323,8 +11353,8 @@ GAME
 				attN = bottom, -1
 				mass = 0.0199999996
 				shielded = False
-				temp = 171.40475586499073
-				tempExt = 171.38697192000635
+				temp = 171.43741221921499
+				tempExt = 171.45137996671829
 				tempExtUnexp = 230.56915149229621
 				staticPressureAtm = 0
 				expt = 0.5
@@ -11523,8 +11553,8 @@ GAME
 				attN = bottom, -1
 				mass = 0.00100000005
 				shielded = False
-				temp = 171.87182584468707
-				tempExt = 173.41661568199834
+				temp = 176.61275272166054
+				tempExt = 177.54889873412878
 				tempExtUnexp = 302.09714612069502
 				staticPressureAtm = 0
 				expt = 0.5
@@ -11645,8 +11675,8 @@ GAME
 				attN = top, 63
 				mass = 0.100000001
 				shielded = False
-				temp = 172.37732081661858
-				tempExt = 176.2151565937036
+				temp = 181.79426787858606
+				tempExt = 184.2496144463851
 				tempExtUnexp = 302.09714612069502
 				staticPressureAtm = 0
 				expt = 0
@@ -11897,6 +11927,22 @@ GAME
 				}
 				MODULE
 				{
+					name = ParkingBrakeModule
+					isEnabled = True
+					brakeActive = True
+					stagingEnabled = True
+					EVENTS
+					{
+					}
+					ACTIONS
+					{
+					}
+					UPGRADESAPPLIED
+					{
+					}
+				}
+				MODULE
+				{
 					name = ModuleTripLogger
 					isEnabled = True
 					stagingEnabled = True
@@ -11925,7 +11971,7 @@ GAME
 				RESOURCE
 				{
 					name = ElectricCharge
-					amount = 14.999995348837313
+					amount = 15
 					maxAmount = 15
 					flowState = True
 					isTweakable = True
@@ -11966,8 +12012,8 @@ GAME
 				attN = bottom, 62
 				mass = 0.0199999996
 				shielded = False
-				temp = 173.15644648269952
-				tempExt = 185.14388574145363
+				temp = 182.35132876808225
+				tempExt = 190.73551215895461
 				tempExtUnexp = 302.09714612069502
 				staticPressureAtm = 0
 				expt = 0.5
@@ -12172,8 +12218,8 @@ GAME
 				attN = bottom, 65
 				mass = 0.0199999996
 				shielded = False
-				temp = 219.78285076629163
-				tempExt = 207.45881303239915
+				temp = 214.14048057662714
+				tempExt = 206.71956052807624
 				tempExtUnexp = 305.02877382452414
 				staticPressureAtm = 0
 				expt = 0.5
@@ -12361,7 +12407,7 @@ GAME
 				persistentId = 1748300280
 				launchID = 246
 				parent = 64
-				position = 0.00012855921522714198,-5.3475570678710938,-3.5854758607456461E-05
+				position = 0.00012909960059914738,-5.2914652824401855,-3.0190532925189473E-05
 				rotation = 3.91354224E-05,0.706547141,3.2265918E-05,0.70766598
 				mirror = 1,1,1
 				symMethod = Mirror
@@ -12378,8 +12424,8 @@ GAME
 				attN = top, 64
 				mass = 0.0929999948
 				shielded = False
-				temp = 221.80769992655948
-				tempExt = 217.8713196712884
+				temp = 215.66258940475061
+				tempExt = 216.03574981626949
 				tempExtUnexp = 311.63500080252118
 				staticPressureAtm = 0
 				expt = 0.5
@@ -12466,7 +12512,7 @@ GAME
 					servoMotorSize = 100
 					servoMotorLimit = 100
 					lockPartOnPowerLoss = True
-					servoTransformPosition = 0,0.117557205,0
+					servoTransformPosition = 0,0.0614668839,0
 					servoTransformRotation = 0.707106829,0,0,0.707106709
 					useMultipleDragCubes = False
 					stagingEnabled = True
@@ -12642,7 +12688,7 @@ GAME
 				persistentId = 3107678682
 				launchID = 246
 				parent = 65
-				position = 0.00021379384270403534,-5.5472970008850098,-0.00016477954341098666
+				position = 0.00021433422807604074,-5.4912052154541016,-0.00015911532682366669
 				rotation = -0.500368476,0.499584168,0.499626845,0.500419915
 				mirror = 1,1,1
 				symMethod = Mirror
@@ -12659,8 +12705,8 @@ GAME
 				attN = bottom, 71
 				mass = 0.5
 				shielded = False
-				temp = 222.72163928208482
-				tempExt = 222.40978995887298
+				temp = 222.2846836942133
+				tempExt = 222.06704103234813
 				tempExtUnexp = 311.63500080252118
 				staticPressureAtm = 0
 				expt = 0.5
@@ -12778,7 +12824,7 @@ GAME
 				persistentId = 1554050610
 				launchID = 246
 				parent = 66
-				position = 0.79903912544250488,-5.7476253509521484,0.80104053020477295
+				position = 0.79903990030288696,-5.6915335655212402,0.80104625225067139
 				rotation = 0.79332453,0.000477648544,0.000628948153,-0.608798563
 				mirror = 1,1,1
 				symMethod = Mirror
@@ -12793,8 +12839,8 @@ GAME
 				srfN = srfAttach, 66,Cyl12
 				mass = 0.0149999997
 				shielded = False
-				temp = 222.80002915779568
-				tempExt = 222.50564326948236
+				temp = 222.32572752483998
+				tempExt = 222.09443170207402
 				tempExtUnexp = 4
 				staticPressureAtm = 0
 				expt = 0.5
@@ -13025,7 +13071,7 @@ GAME
 				persistentId = 935314620
 				launchID = 246
 				parent = 66
-				position = -0.80109274387359619,-5.7473440170288086,0.79843366146087646
+				position = -0.80109196901321411,-5.6912522315979004,0.7984393835067749
 				rotation = 0.79332453,0.000477648544,0.000628948153,-0.608798563
 				mirror = 1,1,1
 				symMethod = Mirror
@@ -13040,8 +13086,8 @@ GAME
 				srfN = srfAttach, 66,ReStock/Assets/FuelTank/restock-fueltank-125-1(Clone)
 				mass = 0.0149999997
 				shielded = False
-				temp = 222.80002915779568
-				tempExt = 222.50564326948236
+				temp = 222.32572752483998
+				tempExt = 222.09443170207402
 				tempExtUnexp = 4
 				staticPressureAtm = 0
 				expt = 0.5
@@ -13272,7 +13318,7 @@ GAME
 				persistentId = 3317977737
 				launchID = 246
 				parent = 66
-				position = -0.80043685436248779,-6.0061707496643066,0.45694655179977417
+				position = -0.80043607950210571,-5.9500789642333984,0.45695212483406067
 				rotation = -0.91589874,-0.0496417098,-0.121313244,-0.37940526
 				mirror = 1,1,1
 				symMethod = Mirror
@@ -13287,8 +13333,8 @@ GAME
 				srfN = srfAttach, 66,ReStock/Assets/FuelTank/restock-fueltank-125-1(Clone)
 				mass = 0.0149999997
 				shielded = False
-				temp = 222.84818918327508
-				tempExt = 222.51878671609637
+				temp = 222.35532440794731
+				tempExt = 222.12168635715017
 				tempExtUnexp = 311.63500080252118
 				staticPressureAtm = 0
 				expt = 0.5
@@ -13414,7 +13460,7 @@ GAME
 				persistentId = 2805084040
 				launchID = 246
 				parent = 66
-				position = 0.79942917823791504,-6.0058345794677734,0.45969408750534058
+				position = 0.79942995309829712,-5.9497427940368652,0.45969966053962708
 				rotation = 0.916088343,-0.0502479747,-0.119871758,0.379325986
 				mirror = 1,1,1
 				symMethod = Mirror
@@ -13429,8 +13475,8 @@ GAME
 				srfN = srfAttach, 66,Cyl12
 				mass = 0.0149999997
 				shielded = False
-				temp = 222.84818918327508
-				tempExt = 222.51878671609637
+				temp = 222.35532440794731
+				tempExt = 222.12168635715017
 				tempExtUnexp = 311.63500080252118
 				staticPressureAtm = 0
 				expt = 0.5
@@ -13556,7 +13602,7 @@ GAME
 				persistentId = 3779702283
 				launchID = 246
 				parent = 66
-				position = 2.00020432472229,-5.1473360061645508,0.002981213852763176
+				position = 2.0002021789550781,-5.0912442207336426,0.0029868807177990675
 				rotation = -0.000790028484,-4.85447636E-05,0.999999762,2.11243378E-06
 				mirror = 1,1,1
 				symMethod = Mirror
@@ -13573,8 +13619,8 @@ GAME
 				attN = top, 72
 				mass = 0.519999981
 				shielded = False
-				temp = 222.59826211949201
-				tempExt = 222.44287821488507
+				temp = 222.39008762294219
+				tempExt = 222.30979655568925
 				tempExtUnexp = 311.63500080252118
 				staticPressureAtm = 0
 				expt = 0.5
@@ -13816,6 +13862,21 @@ GAME
 				}
 				MODULE
 				{
+					name = ModuleMirrorPlacement
+					isEnabled = True
+					stagingEnabled = True
+					EVENTS
+					{
+					}
+					ACTIONS
+					{
+					}
+					UPGRADESAPPLIED
+					{
+					}
+				}
+				MODULE
+				{
 					name = ModuleCargoPart
 					isEnabled = True
 					packedVolume = 500
@@ -13843,7 +13904,7 @@ GAME
 				persistentId = 2827207477
 				launchID = 246
 				parent = 71
-				position = 2.9379458427429199,-0.87097537517547607,0.0048637567088007927
+				position = 2.937943696975708,-0.81488466262817383,0.0048694172874093056
 				rotation = -0.000791315397,-5.08677003E-05,0.999999702,1.15774901E-05
 				mirror = 1,1,1
 				symMethod = Mirror
@@ -13860,8 +13921,8 @@ GAME
 				attN = top, 71
 				mass = 0.659999967
 				shielded = False
-				temp = 222.46994439708774
-				tempExt = 222.30959453649561
+				temp = 222.42398616166827
+				tempExt = 222.38978409176244
 				tempExtUnexp = 311.63500080252118
 				staticPressureAtm = 0
 				expt = 0.5
@@ -14124,7 +14185,7 @@ GAME
 				persistentId = 2269606375
 				launchID = 246
 				parent = 72
-				position = 2.9378795623779297,0.57258272171020508,0.0048842458054423332
+				position = 2.9378774166107178,0.628673255443573,0.0048899063840508461
 				rotation = 0.000793336716,5.11540165E-05,-0.999999702,-1.36822146E-05
 				mirror = 1,1,1
 				symMethod = Mirror
@@ -14141,8 +14202,8 @@ GAME
 				attN = bottom, -1
 				mass = 0.125
 				shielded = False
-				temp = 222.43295254100403
-				tempExt = 222.24467802950232
+				temp = 222.40959164036266
+				tempExt = 222.25838705766111
 				tempExtUnexp = 311.63500080252118
 				staticPressureAtm = 0
 				expt = 0.5
@@ -14279,7 +14340,7 @@ GAME
 				persistentId = 4292898527
 				launchID = 246
 				parent = 73
-				position = 2.9377846717834473,1.1727497577667236,0.0050139157101511955
+				position = 2.9377825260162354,1.2288386821746826,0.0050195762887597084
 				rotation = 0.000573098427,0.707143068,-0.707070231,0.000551237143
 				mirror = 1,1,1
 				symMethod = Mirror
@@ -14296,8 +14357,8 @@ GAME
 				attN = bottom, -1
 				mass = 0.5
 				shielded = False
-				temp = 222.43041781438416
-				tempExt = 222.29264882100009
+				temp = 222.42270477632027
+				tempExt = 222.34190861468693
 				tempExtUnexp = 311.63500080252118
 				staticPressureAtm = 0
 				expt = 0.5
@@ -14415,7 +14476,7 @@ GAME
 				persistentId = 1569946399
 				launchID = 246
 				parent = 74
-				position = 3.3353044986724854,1.3724764585494995,1.6057785749435425
+				position = 3.3353023529052734,1.4285656213760376,1.6057817935943604
 				rotation = -0.00078565086,-5.20965004E-05,0.999999762,1.27177573E-05
 				mirror = 1,1,1
 				symMethod = Mirror
@@ -14430,8 +14491,8 @@ GAME
 				srfN = srfAttach, 74,Cyl12
 				mass = 0.104999997
 				shielded = False
-				temp = 222.41908165411186
-				tempExt = 222.28513846099844
+				temp = 222.41355866847681
+				tempExt = 222.31859318853833
 				tempExtUnexp = 311.63500080252118
 				staticPressureAtm = 0
 				expt = 0.5
@@ -14533,7 +14594,7 @@ GAME
 					springTweakable = 1.5
 					damperTweakable = 1.5
 					autoSpringDamper = False
-					suspensionPos = (-0.74600035, -0.155500159, 0.00200079405)
+					suspensionPos = (-0.745999336, -0.155497506, 0.0019957365)
 					suspensionDefaultPos = (-0.74600029, -0.197999999, 0)
 					autoBoost = 2
 					stagingEnabled = True
@@ -14711,7 +14772,7 @@ GAME
 				persistentId = 4013681479
 				launchID = 246
 				parent = 74
-				position = 3.3404738903045654,1.3729031085968018,-1.5944174528121948
+				position = 3.3404717445373535,1.4289922714233398,-1.594414234161377
 				rotation = -0.000782822783,-5.03592419E-05,0.999999762,1.4414346E-05
 				mirror = 1,1,1
 				symMethod = Mirror
@@ -14726,8 +14787,8 @@ GAME
 				srfN = srfAttach, 74,Cyl12
 				mass = 0.104999997
 				shielded = False
-				temp = 222.44029243828925
-				tempExt = 222.47220028997259
+				temp = 222.43251400699648
+				tempExt = 222.51606804862692
 				tempExtUnexp = 311.63500080252118
 				staticPressureAtm = 0
 				expt = 0.5
@@ -14829,7 +14890,7 @@ GAME
 					springTweakable = 1.5
 					damperTweakable = 1.5
 					autoSpringDamper = False
-					suspensionPos = (-0.746000469, -0.159194708, 0.00200004969)
+					suspensionPos = (-0.74600178, -0.155601695, 0.00199696166)
 					suspensionDefaultPos = (-0.74600029, -0.197999999, 0)
 					autoBoost = 2
 					stagingEnabled = True
@@ -15007,7 +15068,7 @@ GAME
 				persistentId = 3458144380
 				launchID = 246
 				parent = 74
-				position = 2.9353711605072021,0.57234549522399902,1.6052169799804688
+				position = 2.9353690147399902,0.62843602895736694,1.6052201986312866
 				rotation = -0.560568571,-0.430082411,-0.561445475,-0.430779725
 				mirror = 1,1,1
 				symMethod = Mirror
@@ -15022,8 +15083,8 @@ GAME
 				srfN = srfAttach, 74,Cyl12
 				mass = 0.0250000004
 				shielded = False
-				temp = 222.36588524594589
-				tempExt = 221.88240048795399
+				temp = 222.35457076408659
+				tempExt = 221.89760596640227
 				tempExtUnexp = 311.63500080252118
 				staticPressureAtm = 0
 				expt = 0.5
@@ -15100,7 +15161,7 @@ GAME
 					isEnabled = True
 					efficiencyMult = 1
 					launchUT = 27002025.20347954
-					currentRotation = (0.0467807613, 0.70919764, -0.702211022, -0.0418332182)
+					currentRotation = (0.00165548897, 0.710434735, -0.703750908, 0.00380617334)
 					storedAnimationTime = 0
 					storedAnimationSpeed = 0
 					deployState = EXTENDED
@@ -15159,7 +15220,7 @@ GAME
 				persistentId = 2310104027
 				launchID = 246
 				parent = 74
-				position = 2.9403691291809082,0.57278084754943848,-1.5949763059616089
+				position = 2.9403669834136963,0.6288713812828064,-1.594973087310791
 				rotation = -0.430779994,-0.561446011,0.430081606,0.560568333
 				mirror = 1,1,1
 				symMethod = Mirror
@@ -15174,8 +15235,8 @@ GAME
 				srfN = srfAttach, 74,Cyl12
 				mass = 0.0250000004
 				shielded = False
-				temp = 222.49577417198785
-				tempExt = 222.37496495052289
+				temp = 222.45241676786583
+				tempExt = 222.62041860420959
 				tempExtUnexp = 311.63500080252118
 				staticPressureAtm = 0
 				expt = 0.5
@@ -15252,7 +15313,7 @@ GAME
 					isEnabled = True
 					efficiencyMult = 1
 					launchUT = 27002025.20347954
-					currentRotation = (-0.701279104, 0.0455925427, -0.043837484, 0.710075557)
+					currentRotation = (-0.702642381, 0.000337928504, 0.000910282019, 0.711542547)
 					storedAnimationTime = 0
 					storedAnimationSpeed = 0
 					deployState = EXTENDED
@@ -15311,7 +15372,7 @@ GAME
 				persistentId = 656855734
 				launchID = 246
 				parent = 74
-				position = 3.5365433692932129,1.1723220348358154,0.80623733997344971
+				position = 3.536541223526001,1.2284109592437744,0.80624306201934814
 				rotation = -0.707668304,-2.4500996E-05,0.706544995,4.78632101E-05
 				mirror = 1,1,1
 				symMethod = Mirror
@@ -15326,8 +15387,8 @@ GAME
 				srfN = srfAttach, 74,Cyl12
 				mass = 0.0199999996
 				shielded = False
-				temp = 222.41719678055085
-				tempExt = 222.25238807569841
+				temp = 222.41257190173386
+				tempExt = 222.29328942295638
 				tempExtUnexp = 311.63500080252118
 				staticPressureAtm = 0
 				expt = 0.5
@@ -15422,7 +15483,7 @@ GAME
 				RESOURCE
 				{
 					name = ElectricCharge
-					amount = 399.99987596899501
+					amount = 400
 					maxAmount = 400
 					flowState = True
 					isTweakable = True
@@ -15440,7 +15501,7 @@ GAME
 				persistentId = 4274876935
 				launchID = 246
 				parent = 74
-				position = 3.5390763282775879,1.1726078987121582,-0.7939985990524292
+				position = 3.539074182510376,1.2286968231201172,-0.79399287700653076
 				rotation = -0.707668304,-2.4500996E-05,0.706544995,4.78632101E-05
 				mirror = 1,1,1
 				symMethod = Mirror
@@ -15455,8 +15516,8 @@ GAME
 				srfN = srfAttach, 74,Cyl12
 				mass = 0.0199999996
 				shielded = False
-				temp = 222.4172180333311
-				tempExt = 222.25239929522797
+				temp = 222.41214431992739
+				tempExt = 222.28803417530051
 				tempExtUnexp = 311.63500080252118
 				staticPressureAtm = 0
 				expt = 0.5
@@ -15551,7 +15612,7 @@ GAME
 				RESOURCE
 				{
 					name = ElectricCharge
-					amount = 399.99987596899501
+					amount = 400
 					maxAmount = 400
 					flowState = True
 					isTweakable = True
@@ -15569,7 +15630,7 @@ GAME
 				persistentId = 328588013
 				launchID = 246
 				parent = 74
-				position = 2.9327890872955322,1.3577386140823364,2.0061979293823242
+				position = 2.9327869415283203,1.4138277769088745,2.0062074661254883
 				rotation = 0.793321311,0.000684807077,0.000697343261,-0.608802676
 				mirror = 1,1,1
 				symMethod = Mirror
@@ -15584,8 +15645,8 @@ GAME
 				srfN = srfAttach, 74,Cyl12
 				mass = 0.0149999997
 				shielded = False
-				temp = 222.41482378781828
-				tempExt = 222.25506413171391
+				temp = 222.41029964678509
+				tempExt = 222.30119158895215
 				tempExtUnexp = 4
 				staticPressureAtm = 0
 				expt = 0.5
@@ -15792,7 +15853,7 @@ GAME
 				persistentId = 546730375
 				launchID = 246
 				parent = 74
-				position = 3.3378667831420898,1.3728461265563965,0.0057157604023814201
+				position = 3.3378646373748779,1.4289352893829346,0.005721420980989933
 				rotation = 0.000781364448,5.28489145E-05,-0.999999702,-1.46345592E-05
 				mirror = 1,1,1
 				symMethod = Mirror
@@ -15807,8 +15868,8 @@ GAME
 				srfN = srfAttach, 74,Cyl12
 				mass = 0.104999997
 				shielded = False
-				temp = 222.41912323666662
-				tempExt = 222.28539221897736
+				temp = 222.41355986906959
+				tempExt = 222.31860535431008
 				tempExtUnexp = 311.63500080252118
 				staticPressureAtm = 0
 				expt = 0.5
@@ -15910,7 +15971,7 @@ GAME
 					springTweakable = 1.5
 					damperTweakable = 1.5
 					autoSpringDamper = False
-					suspensionPos = (-0.745998919, -0.156892404, 0.00199884176)
+					suspensionPos = (-0.74600327, -0.155519441, 0.0020011717)
 					suspensionDefaultPos = (-0.74600029, -0.197999999, 0)
 					autoBoost = 2
 					stagingEnabled = True
@@ -16096,7 +16157,7 @@ GAME
 				persistentId = 3577936641
 				launchID = 246
 				parent = 74
-				position = 2.940748929977417,0.77282530069351196,-1.7947952747344971
+				position = 2.9407467842102051,0.82891571521759033,-1.7947920560836792
 				rotation = 5.04937307E-05,-0.000795332307,-1.52654211E-05,0.999999881
 				mirror = 1,1,1
 				symMethod = Radial
@@ -16111,8 +16172,8 @@ GAME
 				srfN = srfAttach, 74,ReStock/Assets/FuelTank/restock-fueltank-125-1(Clone)
 				mass = 0.00999999978
 				shielded = False
-				temp = 222.42275213780292
-				tempExt = 222.26251915097973
+				temp = 222.41551127271981
+				tempExt = 222.30001581987727
 				tempExtUnexp = 311.63500080252118
 				staticPressureAtm = 0
 				expt = 0.5
@@ -16270,7 +16331,7 @@ GAME
 				persistentId = 1468465231
 				launchID = 0
 				parent = 74
-				position = 2.9491183757781982,0.9512711763381958,2.0840084552764893
+				position = 2.9491162300109863,1.0073599815368652,2.0840179920196533
 				rotation = 0.0183331463,0.704117715,0.709742129,-0.012182802
 				mirror = 1,1,1
 				symMethod = Radial
@@ -16285,8 +16346,8 @@ GAME
 				srfN = srfAttach, 74,Cyl12
 				mass = 0.0500000007
 				shielded = False
-				temp = 222.32468980938171
-				tempExt = 221.83549445216252
+				temp = 222.26206260381537
+				tempExt = 221.73361656684668
 				tempExtUnexp = 290.71520386613514
 				staticPressureAtm = 0
 				expt = 0.5
@@ -16405,6 +16466,22 @@ GAME
 				}
 				MODULE
 				{
+					name = ParkingBrakeModule
+					isEnabled = True
+					brakeActive = True
+					stagingEnabled = True
+					EVENTS
+					{
+					}
+					ACTIONS
+					{
+					}
+					UPGRADESAPPLIED
+					{
+					}
+				}
+				MODULE
+				{
 					name = ModuleTripLogger
 					isEnabled = True
 					stagingEnabled = True
@@ -16440,7 +16517,7 @@ GAME
 				persistentId = 3021068741
 				launchID = 241
 				parent = 84
-				position = 2.9487841129302979,0.89254868030548096,2.1603634357452393
+				position = 2.9487819671630859,0.94863855838775635,2.1603729724884033
 				rotation = 0.0215698164,-0.00397123629,0.999750793,0.00418323139
 				mirror = 1,1,1
 				symMethod = Radial
@@ -16455,8 +16532,8 @@ GAME
 				srfN = , -1
 				mass = 0.0689581633
 				shielded = False
-				temp = 221.58433391665821
-				tempExt = 221.2209364951911
+				temp = 221.20975916989093
+				tempExt = 220.93581800975201
 				tempExtUnexp = 303
 				staticPressureAtm = 0
 				expt = 0
@@ -16943,7 +17020,7 @@ GAME
 								cid = 4294802852
 								uid = 0
 								mid = 0
-								persistentId = 1418505576
+								persistentId = 869005908
 								launchID = 0
 								parent = 0
 								position = 0,0,0
@@ -17110,7 +17187,7 @@ GAME
 				persistentId = 169040990
 				launchID = 246
 				parent = 73
-				position = 3.53782057762146,0.57248377799987793,0.0060725538060069084
+				position = 3.537818431854248,0.62857431173324585,0.0060782143846154213
 				rotation = -0.707667649,-2.71992867E-05,0.706545532,4.58166687E-05
 				mirror = 1,1,1
 				symMethod = Mirror
@@ -17125,8 +17202,8 @@ GAME
 				srfN = srfAttach, 73,Cyl12
 				mass = 0.0700000003
 				shielded = False
-				temp = 222.42518482708385
-				tempExt = 222.2239462203639
+				temp = 222.402570752906
+				tempExt = 222.2233705685166
 				tempExtUnexp = 311.63500080252118
 				staticPressureAtm = 0
 				expt = 0.5
@@ -17414,7 +17491,7 @@ GAME
 				persistentId = 2245439623
 				launchID = 246
 				parent = 66
-				position = -0.59983921051025391,-6.1472945213317871,-0.0013750517973676324
+				position = -0.59983843564987183,-6.0912027359008789,-0.0013693864457309246
 				rotation = 0.499628901,-0.500418127,0.500369906,0.49958241
 				mirror = 1,1,1
 				symMethod = Mirror
@@ -17429,8 +17506,8 @@ GAME
 				srfN = srfAttach, 66,Cyl12
 				mass = 0.00499999989
 				shielded = False
-				temp = 222.74603579385189
-				tempExt = 222.48867363769341
+				temp = 222.2814279923671
+				tempExt = 222.06138755010241
 				tempExtUnexp = 311.63500080252118
 				staticPressureAtm = 0
 				expt = 0.5
@@ -17573,7 +17650,7 @@ GAME
 				persistentId = 1124444600
 				launchID = 246
 				parent = 66
-				position = 0.60018670558929443,-6.1476244926452637,0.00075301236938685179
+				position = 0.60018748044967651,-6.0915327072143555,0.00075867614941671491
 				rotation = 0.499628842,-0.50041765,0.500370681,0.499582261
 				mirror = 1,1,1
 				symMethod = Mirror
@@ -17588,8 +17665,8 @@ GAME
 				srfN = srfAttach, 66,Cyl12
 				mass = 0.00499999989
 				shielded = False
-				temp = 222.74603579385189
-				tempExt = 222.48867363769341
+				temp = 222.2814279923671
+				tempExt = 222.06138755010241
 				tempExtUnexp = 311.63500080252118
 				staticPressureAtm = 0
 				expt = 0.5
@@ -17732,7 +17809,7 @@ GAME
 				persistentId = 907269174
 				launchID = 246
 				parent = 66
-				position = -0.00074297981336712837,-5.5473365783691406,0.59985816478729248
+				position = -0.00074243894778192043,-5.4912447929382324,0.59986388683319092
 				rotation = 0.499630213,0.499578714,0.500416577,0.50037384
 				mirror = 1,1,1
 				symMethod = Mirror
@@ -17750,8 +17827,8 @@ GAME
 				attN = bottom, -1
 				mass = 0.00100000005
 				shielded = False
-				temp = 222.66207622910918
-				tempExt = 222.42523314854643
+				temp = 222.38363483089771
+				tempExt = 222.17246138739992
 				tempExtUnexp = 311.63500080252118
 				staticPressureAtm = 0
 				expt = 0.5
@@ -17855,7 +17932,7 @@ GAME
 				persistentId = 2592903297
 				launchID = 246
 				parent = 89
-				position = -0.00096411327831447124,-5.5476627349853516,0.78962969779968262
+				position = -0.00096357241272926331,-5.4915709495544434,0.78963541984558105
 				rotation = -0.000555707957,0.707071662,0.707141519,0.000564595161
 				mirror = 1,1,1
 				symMethod = Mirror
@@ -17873,8 +17950,8 @@ GAME
 				attN = top, -1
 				mass = 0.0399999991
 				shielded = False
-				temp = 222.64143770481178
-				tempExt = 222.41512867475322
+				temp = 222.47035955364134
+				tempExt = 222.2199705308355
 				tempExtUnexp = 311.63500080252118
 				staticPressureAtm = 0
 				expt = 0
@@ -18051,6 +18128,22 @@ GAME
 				}
 				MODULE
 				{
+					name = ParkingBrakeModule
+					isEnabled = True
+					brakeActive = True
+					stagingEnabled = True
+					EVENTS
+					{
+					}
+					ACTIONS
+					{
+					}
+					UPGRADESAPPLIED
+					{
+					}
+				}
+				MODULE
+				{
 					name = ModuleTripLogger
 					isEnabled = True
 					stagingEnabled = True
@@ -18079,7 +18172,7 @@ GAME
 				RESOURCE
 				{
 					name = ElectricCharge
-					amount = 4.9999984496124377
+					amount = 5
 					maxAmount = 5
 					flowState = True
 					isTweakable = True
@@ -18103,7 +18196,7 @@ GAME
 				persistentId = 3586211805
 				launchID = 246
 				parent = 66
-				position = 0.0010550533188506961,-5.5474052429199219,-0.5999448299407959
+				position = 0.0010555947665125132,-5.4913134574890137,-0.59993910789489746
 				rotation = -0.499580264,0.499632508,-0.500371814,0.500414789
 				mirror = 1,1,1
 				symMethod = Mirror
@@ -18121,8 +18214,8 @@ GAME
 				attN = bottom, -1
 				mass = 0.00100000005
 				shielded = False
-				temp = 222.90033982284774
-				tempExt = 222.84050912952199
+				temp = 222.70140904274277
+				tempExt = 222.71940092578379
 				tempExtUnexp = 311.63500080252118
 				staticPressureAtm = 0
 				expt = 0.5
@@ -18226,7 +18319,7 @@ GAME
 				persistentId = 582181896
 				launchID = 246
 				parent = 91
-				position = 0.0014770542038604617,-5.5474033355712891,-0.7898104190826416
+				position = 0.0014775956515222788,-5.4913115501403809,-0.78980469703674316
 				rotation = -0.707073271,-0.000552982267,-0.000561671332,0.707139969
 				mirror = 1,1,1
 				symMethod = Mirror
@@ -18244,8 +18337,8 @@ GAME
 				attN = top, -1
 				mass = 0.0399999991
 				shielded = False
-				temp = 223.06494002294718
-				tempExt = 223.35041182116251
+				temp = 223.10966687315928
+				tempExt = 223.50823975841533
 				tempExtUnexp = 311.63500080252118
 				staticPressureAtm = 0
 				expt = 0
@@ -18422,6 +18515,22 @@ GAME
 				}
 				MODULE
 				{
+					name = ParkingBrakeModule
+					isEnabled = True
+					brakeActive = True
+					stagingEnabled = True
+					EVENTS
+					{
+					}
+					ACTIONS
+					{
+					}
+					UPGRADESAPPLIED
+					{
+					}
+				}
+				MODULE
+				{
 					name = ModuleTripLogger
 					isEnabled = True
 					stagingEnabled = True
@@ -18450,7 +18559,7 @@ GAME
 				RESOURCE
 				{
 					name = ElectricCharge
-					amount = 4.9999984496124377
+					amount = 5
 					maxAmount = 5
 					flowState = True
 					isTweakable = True
@@ -18468,7 +18577,7 @@ GAME
 				persistentId = 3378134106
 				launchID = 246
 				parent = 66
-				position = -1.9998601675033569,-5.1469640731811523,-0.0033544022589921951
+				position = -1.999859094619751,-5.0908722877502441,-0.0033487353939563036
 				rotation = -0.999999702,1.16207475E-05,-0.000790534774,4.93994849E-05
 				mirror = 1,1,1
 				symMethod = Mirror
@@ -18485,8 +18594,8 @@ GAME
 				attN = top, 94
 				mass = 0.519999981
 				shielded = False
-				temp = 222.60690178394202
-				tempExt = 222.53250547284941
+				temp = 222.3847514156449
+				tempExt = 222.27214808050405
 				tempExtUnexp = 311.63500080252118
 				staticPressureAtm = 0
 				expt = 0.5
@@ -18728,6 +18837,21 @@ GAME
 				}
 				MODULE
 				{
+					name = ModuleMirrorPlacement
+					isEnabled = True
+					stagingEnabled = True
+					EVENTS
+					{
+					}
+					ACTIONS
+					{
+					}
+					UPGRADESAPPLIED
+					{
+					}
+				}
+				MODULE
+				{
 					name = ModuleCargoPart
 					isEnabled = True
 					packedVolume = 500
@@ -18755,7 +18879,7 @@ GAME
 				persistentId = 1920469597
 				launchID = 246
 				parent = 93
-				position = -2.9395720958709717,-0.87000834941864014,-0.0043626697733998299
+				position = -2.9395742416381836,-0.81391769647598267,-0.004357009194791317
 				rotation = -0.000792526698,-4.96673711E-05,0.999999702,-0.000294108555
 				mirror = 1,1,1
 				symMethod = Mirror
@@ -18772,8 +18896,8 @@ GAME
 				attN = top, 93
 				mass = 0.659999967
 				shielded = False
-				temp = 222.47655359927737
-				tempExt = 222.41898914780418
+				temp = 222.41559201658458
+				tempExt = 222.30850412204941
 				tempExtUnexp = 311.63500080252118
 				staticPressureAtm = 0
 				expt = 0.5
@@ -19036,7 +19160,7 @@ GAME
 				persistentId = 908608608
 				launchID = 246
 				parent = 94
-				position = -2.9405527114868164,0.57339894771575928,-0.0041929753497242928
+				position = -2.9405548572540283,0.6294894814491272,-0.0041873147711157799
 				rotation = -0.000792526698,-4.96673711E-05,0.999999702,-0.000294108555
 				mirror = 1,1,1
 				symMethod = Mirror
@@ -19053,8 +19177,8 @@ GAME
 				attN = bottom, -1
 				mass = 0.125
 				shielded = False
-				temp = 222.43389260607509
-				tempExt = 222.27366589278694
+				temp = 222.41550689978632
+				tempExt = 222.25268698421064
 				tempExtUnexp = 311.63500080252118
 				staticPressureAtm = 0
 				expt = 0.5
@@ -19191,7 +19315,7 @@ GAME
 				persistentId = 2064196665
 				launchID = 246
 				parent = 95
-				position = -3.5407688617706299,0.57282733917236328,-0.0051206620410084724
+				position = -3.5407710075378418,0.6289178729057312,-0.0051150014623999596
 				rotation = -0.706546009,-0.000172269167,-0.707667112,0.000242583686
 				mirror = 1,1,1
 				symMethod = Mirror
@@ -19206,8 +19330,8 @@ GAME
 				srfN = srfAttach, 95,Cyl12
 				mass = 0.320000023
 				shielded = False
-				temp = 222.42705837348777
-				tempExt = 222.24492135749131
+				temp = 222.41329328783303
+				tempExt = 222.22534232139674
 				tempExtUnexp = 311.63500080252118
 				staticPressureAtm = 0
 				expt = 0.5
@@ -19664,7 +19788,7 @@ GAME
 				persistentId = 1744832136
 				launchID = 246
 				parent = 95
-				position = -2.9410398006439209,1.1732518672943115,-0.004201558418571949
+				position = -2.9410419464111328,1.2293407917022705,-0.0041958978399634361
 				rotation = -0.707141936,0.00035447441,-0.000766837737,-0.707071245
 				mirror = 1,1,1
 				symMethod = Mirror
@@ -19681,8 +19805,8 @@ GAME
 				attN = bottom, -1
 				mass = 0.5
 				shielded = False
-				temp = 222.42900608117736
-				tempExt = 222.34030562701469
+				temp = 222.42105160927431
+				tempExt = 222.32950049987463
 				tempExtUnexp = 311.63500080252118
 				staticPressureAtm = 0
 				expt = 0.5
@@ -19800,7 +19924,7 @@ GAME
 				persistentId = 865044078
 				launchID = 246
 				parent = 97
-				position = -3.3386552333831787,1.3732450008392334,-1.6047514677047729
+				position = -3.3386573791503906,1.4293341636657715,-1.6047482490539551
 				rotation = 0.999999702,0.000292421639,0.000792355742,-4.98422669E-05
 				mirror = 1,1,1
 				symMethod = Mirror
@@ -19815,8 +19939,8 @@ GAME
 				srfN = srfAttach, 97,Cyl12
 				mass = 0.104999997
 				shielded = False
-				temp = 222.44337139042653
-				tempExt = 222.56323299495702
+				temp = 222.43156685918609
+				tempExt = 222.5198082188482
 				tempExtUnexp = 311.63500080252118
 				staticPressureAtm = 0
 				expt = 0.5
@@ -19918,7 +20042,7 @@ GAME
 					springTweakable = 1.5
 					damperTweakable = 1.5
 					autoSpringDamper = False
-					suspensionPos = (-0.746000588, -0.155499175, 0.00200033048)
+					suspensionPos = (-0.746002078, -0.155493855, 0.00199674652)
 					suspensionDefaultPos = (-0.74600029, -0.197999999, 0)
 					autoBoost = 2
 					stagingEnabled = True
@@ -20096,7 +20220,7 @@ GAME
 				persistentId = 4065356956
 				launchID = 246
 				parent = 97
-				position = -3.3437302112579346,1.372991681098938,1.5952593088150024
+				position = -3.3437323570251465,1.4290808439254761,1.5952625274658203
 				rotation = 0.999999702,0.000289184391,0.000791964063,-4.96250468E-05
 				mirror = 1,1,1
 				symMethod = Mirror
@@ -20111,8 +20235,8 @@ GAME
 				srfN = srfAttach, 97,Cyl12
 				mass = 0.104999997
 				shielded = False
-				temp = 222.41878758451418
-				tempExt = 222.31418290983609
+				temp = 222.41135633355839
+				tempExt = 222.30950762317676
 				tempExtUnexp = 311.63500080252118
 				staticPressureAtm = 0
 				expt = 0.5
@@ -20214,7 +20338,7 @@ GAME
 					springTweakable = 1.5
 					damperTweakable = 1.5
 					autoSpringDamper = False
-					suspensionPos = (-0.74600029, -0.16786015, 0.0020001214)
+					suspensionPos = (-0.745999873, -0.171401039, 0.00199615257)
 					suspensionDefaultPos = (-0.74600029, -0.197999999, 0)
 					autoBoost = 2
 					stagingEnabled = True
@@ -20392,7 +20516,7 @@ GAME
 				persistentId = 3963675787
 				launchID = 246
 				parent = 97
-				position = -2.9379665851593018,0.57345378398895264,-1.6043448448181152
+				position = -2.9379687309265137,0.62954431772232056,-1.6043416261672974
 				rotation = 0.430611253,0.561574697,-0.430250496,-0.560439527
 				mirror = 1,1,1
 				symMethod = Mirror
@@ -20407,8 +20531,8 @@ GAME
 				srfN = srfAttach, 97,Cyl12
 				mass = 0.0250000004
 				shielded = False
-				temp = 222.51403513486315
-				tempExt = 222.88090201393365
+				temp = 222.46115816688447
+				tempExt = 222.6892087578872
 				tempExtUnexp = 311.63500080252118
 				staticPressureAtm = 0
 				expt = 0.5
@@ -20485,7 +20609,7 @@ GAME
 					isEnabled = True
 					efficiencyMult = 1
 					launchUT = 27002025.20347954
-					currentRotation = (-0.698131502, 0.0456241369, -0.0436261296, 0.713181376)
+					currentRotation = (-0.699478447, 0.000360280275, 0.000743329525, 0.714653254)
 					storedAnimationTime = 0
 					storedAnimationSpeed = 0
 					deployState = EXTENDED
@@ -20544,7 +20668,7 @@ GAME
 				persistentId = 2590352015
 				launchID = 246
 				parent = 97
-				position = -2.943112850189209,0.57303440570831299,1.5958700180053711
+				position = -2.9431149959564209,0.62912493944168091,1.595873236656189
 				rotation = 0.560439527,0.43025136,0.561574638,0.430610597
 				mirror = 1,1,1
 				symMethod = Mirror
@@ -20559,8 +20683,8 @@ GAME
 				srfN = srfAttach, 97,Cyl12
 				mass = 0.0250000004
 				shielded = False
-				temp = 222.36405265122417
-				tempExt = 221.90296965749286
+				temp = 222.35221035060411
+				tempExt = 221.88729409475695
 				tempExtUnexp = 311.63500080252118
 				staticPressureAtm = 0
 				expt = 0.5
@@ -20637,7 +20761,7 @@ GAME
 					isEnabled = True
 					efficiencyMult = 1
 					launchUT = 27002025.20347954
-					currentRotation = (0.0464853644, 0.709142447, -0.702245593, -0.0425120294)
+					currentRotation = (0.00142958749, 0.710421026, -0.703768909, 0.0030806358)
 					storedAnimationTime = 0
 					storedAnimationSpeed = 0
 					deployState = EXTENDED
@@ -20696,7 +20820,7 @@ GAME
 				persistentId = 1000489227
 				launchID = 246
 				parent = 97
-				position = -3.539752721786499,1.1729412078857422,-0.80525559186935425
+				position = -3.5397548675537109,1.2290301322937012,-0.80524986982345581
 				rotation = 0.706545711,0.00017095072,0.707667589,-0.000242290756
 				mirror = 1,1,1
 				symMethod = Mirror
@@ -20711,8 +20835,8 @@ GAME
 				srfN = srfAttach, 97,Cyl12
 				mass = 0.0199999996
 				shielded = False
-				temp = 222.41735801616335
-				tempExt = 222.28411702496433
+				temp = 222.41042032270528
+				tempExt = 222.28429816658917
 				tempExtUnexp = 311.63500080252118
 				staticPressureAtm = 0
 				expt = 0.5
@@ -20807,7 +20931,7 @@ GAME
 				RESOURCE
 				{
 					name = ElectricCharge
-					amount = 399.99987596899501
+					amount = 400
 					maxAmount = 400
 					flowState = True
 					isTweakable = True
@@ -20825,7 +20949,7 @@ GAME
 				persistentId = 169107546
 				launchID = 246
 				parent = 97
-				position = -3.54215407371521,1.1730984449386597,0.79479050636291504
+				position = -3.5421562194824219,1.2291873693466187,0.79479622840881348
 				rotation = 0.706545711,0.00017095072,0.707667589,-0.000242290756
 				mirror = 1,1,1
 				symMethod = Mirror
@@ -20840,8 +20964,8 @@ GAME
 				srfN = srfAttach, 97,Cyl12
 				mass = 0.0199999996
 				shielded = False
-				temp = 222.41735192686741
-				tempExt = 222.28411411246722
+				temp = 222.40999494318766
+				tempExt = 222.27906910698519
 				tempExtUnexp = 311.63500080252118
 				staticPressureAtm = 0
 				expt = 0.5
@@ -20936,7 +21060,7 @@ GAME
 				RESOURCE
 				{
 					name = ElectricCharge
-					amount = 399.99987596899501
+					amount = 400
 					maxAmount = 400
 					flowState = True
 					isTweakable = True
@@ -20954,7 +21078,7 @@ GAME
 				persistentId = 2465128757
 				launchID = 246
 				parent = 97
-				position = -2.9455077648162842,1.3491020202636719,1.9949755668640137
+				position = -2.9455099105834961,1.40519118309021,1.9949787855148315
 				rotation = -0.79333514,-0.00086855056,-0.000470707397,0.608784437
 				mirror = 1,1,1
 				symMethod = Mirror
@@ -20969,8 +21093,8 @@ GAME
 				srfN = srfAttach, 97,ReStock/Assets/FuelTank/restock-fueltank-125-1(Clone)
 				mass = 0.0149999997
 				shielded = False
-				temp = 222.41409298790549
-				tempExt = 222.28415461948342
+				temp = 222.40812865186177
+				tempExt = 222.29323202211555
 				tempExtUnexp = 4
 				staticPressureAtm = 0
 				expt = 0.5
@@ -21177,7 +21301,7 @@ GAME
 				persistentId = 1467760724
 				launchID = 246
 				parent = 97
-				position = -3.3411085605621338,1.3732719421386719,-0.004977312870323658
+				position = -3.3411107063293457,1.42936110496521,-0.0049716522917151451
 				rotation = -0.999999702,-0.000295491656,-0.000797027547,5.00229362E-05
 				mirror = 1,1,1
 				symMethod = Mirror
@@ -21192,8 +21316,8 @@ GAME
 				srfN = srfAttach, 97,Tank800_A
 				mass = 0.104999997
 				shielded = False
-				temp = 222.41889179051981
-				tempExt = 222.31422488450062
+				temp = 222.41135496734901
+				tempExt = 222.30949326000999
 				tempExtUnexp = 311.63500080252118
 				staticPressureAtm = 0
 				expt = 0.5
@@ -21295,7 +21419,7 @@ GAME
 					springTweakable = 1.5
 					damperTweakable = 1.5
 					autoSpringDamper = False
-					suspensionPos = (-0.746000111, -0.160981596, 0.00199921336)
+					suspensionPos = (-0.746003211, -0.162916377, 0.00199582987)
 					suspensionDefaultPos = (-0.74600029, -0.197999999, 0)
 					autoBoost = 2
 					stagingEnabled = True
@@ -21481,7 +21605,7 @@ GAME
 				persistentId = 4229166662
 				launchID = 246
 				parent = 97
-				position = -2.9378468990325928,0.7735103964805603,-1.804160475730896
+				position = -2.9378490447998047,0.82960081100463867,-1.8041572570800781
 				rotation = -4.9722119E-05,0.00079311349,-0.000291325414,-0.999999821
 				mirror = 1,1,1
 				symMethod = Radial
@@ -21496,8 +21620,8 @@ GAME
 				srfN = srfAttach, 97,Cyl12
 				mass = 0.00999999978
 				shielded = False
-				temp = 222.42118960488924
-				tempExt = 222.29731767306185
+				temp = 222.41376021245378
+				tempExt = 222.29005147646575
 				tempExtUnexp = 311.63500080252118
 				staticPressureAtm = 0
 				expt = 0.5
@@ -21655,7 +21779,7 @@ GAME
 				persistentId = 3643741020
 				launchID = 250
 				parent = 97
-				position = -2.9504244327545166,0.98285174369812012,2.0625903606414795
+				position = -2.9504265785217285,1.0389399528503418,2.0625998973846436
 				rotation = -0.0156429056,-0.705499768,-0.707502902,0.0382766724
 				mirror = 1,1,1
 				symMethod = Mirror
@@ -21670,8 +21794,8 @@ GAME
 				srfN = srfAttach, 97,ReStock/Assets/FuelTank/restock-fueltank-125-1(Clone)
 				mass = 0.0500000007
 				shielded = False
-				temp = 222.33213964360166
-				tempExt = 221.88955084675723
+				temp = 222.27721674908375
+				tempExt = 221.7800956944416
 				tempExtUnexp = 311.01455082807058
 				staticPressureAtm = 0
 				expt = 0.5
@@ -21790,6 +21914,22 @@ GAME
 				}
 				MODULE
 				{
+					name = ParkingBrakeModule
+					isEnabled = True
+					brakeActive = True
+					stagingEnabled = True
+					EVENTS
+					{
+					}
+					ACTIONS
+					{
+					}
+					UPGRADESAPPLIED
+					{
+					}
+				}
+				MODULE
+				{
 					name = ModuleTripLogger
 					isEnabled = True
 					stagingEnabled = True
@@ -21825,7 +21965,7 @@ GAME
 				persistentId = 2659389790
 				launchID = 239
 				parent = 107
-				position = -2.9436743259429932,0.92249655723571777,2.1386101245880127
+				position = -2.9436764717102051,0.97858625650405884,2.1386196613311768
 				rotation = -0.0380183049,0.00140751526,-0.999146998,0.0160644464
 				mirror = 1,1,1
 				symMethod = Radial
@@ -21840,8 +21980,8 @@ GAME
 				srfN = , -1
 				mass = 0.0868344307
 				shielded = False
-				temp = 221.68314805472116
-				tempExt = 221.305458401869
+				temp = 221.34825113764344
+				tempExt = 221.06153792641902
 				tempExtUnexp = 303
 				staticPressureAtm = 0
 				expt = 0
@@ -22328,7 +22468,7 @@ GAME
 								cid = 4292217686
 								uid = 0
 								mid = 0
-								persistentId = 3301970546
+								persistentId = 2800885241
 								launchID = 0
 								parent = 0
 								position = 0,0,0
@@ -22452,7 +22592,7 @@ GAME
 								cid = 4294802852
 								uid = 0
 								mid = 0
-								persistentId = 3128625060
+								persistentId = 3553400907
 								launchID = 0
 								parent = 0
 								position = 0,0,0
@@ -22619,7 +22759,7 @@ GAME
 				persistentId = 4171552786
 				launchID = 0
 				parent = 97
-				position = -3.247370719909668,0.63727062940597534,-1.0666534900665283
+				position = -3.2473728656768799,0.69336110353469849,-1.0666502714157104
 				rotation = -0.96600455,0.25852406,-0.000792219071,0.00022943315
 				mirror = 1,1,1
 				symMethod = Radial
@@ -22636,8 +22776,8 @@ GAME
 				attN = bottom, -1
 				mass = 0.0199999996
 				shielded = False
-				temp = 222.41751117945864
-				tempExt = 222.28414895817053
+				temp = 222.40980748421589
+				tempExt = 222.27669001880946
 				tempExtUnexp = 309.51264058969883
 				staticPressureAtm = 0
 				expt = 0.5
@@ -22819,7 +22959,7 @@ GAME
 				persistentId = 192320361
 				launchID = 246
 				parent = 66
-				position = 1.3040547370910645,-6.2302999496459961,0.0018591558327898383
+				position = 1.3040558099746704,-6.1742081642150879,0.0018648211844265461
 				rotation = 0.707659245,3.71437236E-05,-0.706553996,-4.44961915E-05
 				mirror = 1,1,1
 				symMethod = Mirror
@@ -22835,8 +22975,8 @@ GAME
 				attN = top, -1
 				mass = 0.0299999993
 				shielded = False
-				temp = 222.7834044979484
-				tempExt = 222.60715037759883
+				temp = 222.27427116989205
+				tempExt = 222.05865497530851
 				tempExtUnexp = 311.63500080252118
 				staticPressureAtm = 0
 				expt = 0.5
@@ -23060,7 +23200,7 @@ GAME
 				persistentId = 116200897
 				launchID = 246
 				parent = 66
-				position = 0.00014453324547503144,-6.1474165916442871,-0.0002227748918812722
+				position = 0.00014507363084703684,-6.0913248062133789,-0.00021711068984586746
 				rotation = -0.70654887,3.65006636E-05,-0.707664192,3.03648485E-05
 				mirror = 1,1,1
 				symMethod = Mirror
@@ -23077,8 +23217,8 @@ GAME
 				attN = bottom, -1
 				mass = 0.0199999996
 				shielded = False
-				temp = 222.75848177553712
-				tempExt = 222.49320559823641
+				temp = 222.27914796919501
+				tempExt = 222.06046726585348
 				tempExtUnexp = 311.63500080252118
 				staticPressureAtm = 0
 				expt = 0.5
@@ -23088,7 +23228,7 @@ GAME
 				autostrutMode = Off
 				rigidAttachment = False
 				flag = Squad/Flags/default
-				rTrf = dockingPort3 (Base 1.25D - Grue)
+				rTrf = dockingPort3
 				modCost = 0
 				modMass = 0
 				moduleVariantName = 
@@ -23258,7 +23398,7 @@ GAME
 				Light = False, 0
 				RCS = True, 184254922.082748
 				SAS = False, 184258292.158037
-				Brakes = False, 0
+				Brakes = True, 0
 				Abort = False, 0
 				Custom01 = False, 0
 				Custom02 = False, 0
@@ -23281,11 +23421,6 @@ GAME
 			}
 			FLIGHTPLAN
 			{
-			}
-			TARGET
-			{
-				type = Vessel
-				vesselID = b01b0dfa-68de-4fbe-9c9b-66abac9762c4
 			}
 			CTRLSTATE
 			{
@@ -23315,13 +23450,10 @@ GAME
 				}
 				ParkingBrake
 				{
-					lat = 0
-					lon = 0
-					alt = 0
-					positionSet = False
-				}
-				VesselModuleSave
-				{
+					lat = -20.956388928191203
+					lon = 135.54401653879333
+					alt = 449.88505575354793
+					positionSet = True
 				}
 			}
 		}
@@ -23343,16 +23475,19 @@ GAME
 		ModuleManager.Physics = True
 		ModuleManager.TechTree = True
 		KSPDiagSuspension v1.0.9806.28591 = False
-		KSPFixAutoStrut v0.1.0.0 / v0.1.0+b368e32c4303ced537829d163a27c8d502be829b = True
+		KSPFixAutoStrut v0.1.0.0 / v0.1.0+b368e32c4303ced537829d163a27c8d502be829b = False
 		KSPFixTerrainPrecision v0.3.0.0 / v0.3.0+576ea9ebf41254de8f2d4be2828bd0e366c01537 = True
 		KSPDiagSuspension = True
-		KSPFixAutoStrut = True
+		KSPFixAutoStrut = False
 		KSPFixTerrainPrecision = True
 		KSPDiagSuspension v1.0.9806.35471 = False
 		KSPFixSuspensionBounce v0.1.0.0 / v0.1.0+b6fed4dcb79d19bc6663b34ca8cd30cbe2cd2ae0 = False
-		KSPFixSuspensionBounce = True
+		KSPFixSuspensionBounce = False
 		KSPDiagSuspension v1.0.9806.36801 = True
-		KSPFixSuspensionBounce v0.1.0.0 / v0.1.0+d82efd8770eb4395bab73072fda67acdcc4bcf3e = True
+		KSPFixSuspensionBounce v0.1.0.0 / v0.1.0+d82efd8770eb4395bab73072fda67acdcc4bcf3e = False
+		ParkingBrake v0.4.4.0 = True
+		KSPModBulldozer = True
+		ParkingBrake = True
 	}
 	ROSTER
 	{
@@ -24552,7 +24687,7 @@ GAME
 							cid = 4294802852
 							uid = 0
 							mid = 0
-							persistentId = 1418505576
+							persistentId = 869005908
 							launchID = 0
 							parent = 0
 							position = 0,0,0
@@ -24823,7 +24958,7 @@ GAME
 							cid = 4292217686
 							uid = 0
 							mid = 0
-							persistentId = 3301970546
+							persistentId = 2800885241
 							launchID = 0
 							parent = 0
 							position = 0,0,0
@@ -24947,7 +25082,7 @@ GAME
 							cid = 4294802852
 							uid = 0
 							mid = 0
-							persistentId = 3128625060
+							persistentId = 3553400907
 							launchID = 0
 							parent = 0
 							position = 0,0,0

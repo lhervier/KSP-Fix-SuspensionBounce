@@ -30,6 +30,7 @@ namespace com.github.lhervier.ksp.fix.suspensionbounce
 
             Log.Level = ReadEnum(node, "logLevel", Log.Level, path);
             BumpStopLoad.Enabled = ReadBool(node, "bumpStopLoad", BumpStopLoad.Enabled, path);
+            SpringGravityCurve.Enabled = ReadBool(node, "kerbinCurve", SpringGravityCurve.Enabled, path);
         }
 
         /// <summary>

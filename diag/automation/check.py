@@ -18,9 +18,12 @@ Cases, and the save or craft each one loads (in the folder diag of the repositor
     bulldozer-eve    SuspensionBounceBulldozerEve: the same with a blade of 3.5 t, 14 t in all (the blade needs
                      KSP-Mod-Bulldozer)
     rover-mun        SuspensionBounceRoverMun: the rover of 10 t, brakes on, on the Mun
+    rover-kerbin     SuspensionBounceRoverKerbin: the same rover on Kerbin
+    rover-minmus     SuspensionBounceRoverMinmus: the same rover on Minmus
     hinge-rover-eve  SuspensionBounceHingeRoverEve: a rover on Eve lowered on its wheels by its hinges
     hinge-rover-eve-manual  SuspensionBounceHingeRoverEveManual: the same, its springs set by hand
-    crane-mun        SuspensionBounceCraneMun: a crane of 33 t on the Mun, brakes off, its springs set by hand
+    crane-mun        SuspensionBounceCraneMun: a crane of 33 t on the Mun, brakes on, its springs set by hand,
+                     held by Parking Brake (which must be installed) until it is still, then let go
     crane-mun-auto   SuspensionBounceCraneMunAuto: the same, its springs left to the game
     end-stops-flat   SuspensionBounceEndStopsFlat: a rover whose springs are at their lowest, driven at 24 m/s
     end-stops-slope  SuspensionBounceEndStopsSlope: a rover with soft springs, braked across a slope of about 20 deg
@@ -53,10 +56,12 @@ CASES = {
     "heavy-rover-eve": dict(save="SuspensionBounceHeavyRoverEve", seconds=30),
     "bulldozer-eve": dict(save="SuspensionBounceBulldozerEve", seconds=30),
     "rover-mun": dict(save="SuspensionBounceRoverMun", seconds=60),
+    "rover-kerbin": dict(save="SuspensionBounceRoverKerbin", seconds=60),
+    "rover-minmus": dict(save="SuspensionBounceRoverMinmus", seconds=60),
     "hinge-rover-eve": dict(save="SuspensionBounceHingeRoverEve", seconds=45, hinges=True),
     "hinge-rover-eve-manual": dict(save="SuspensionBounceHingeRoverEveManual", seconds=45, hinges=True),
-    "crane-mun": dict(save="SuspensionBounceCraneMun", seconds=30),
-    "crane-mun-auto": dict(save="SuspensionBounceCraneMunAuto", seconds=30),
+    "crane-mun": dict(save="SuspensionBounceCraneMun", seconds=60, parking=True),
+    "crane-mun-auto": dict(save="SuspensionBounceCraneMunAuto", seconds=60, parking=True),
     "end-stops-flat": dict(save="SuspensionBounceEndStopsFlat", drive=dict(heading=201, speed=24, distance=800)),
     "end-stops-slope": dict(save="SuspensionBounceEndStopsSlope", seconds=30),
 }
@@ -114,6 +119,35 @@ def lower_hinges():
     """Plays the rover's KAL-1000 sequence backwards at full speed: its hinges lower the rover onto its wheels."""
     for method, args in (("SetPlaySpeed", [100]), ("ToggleDirection", []), ("SequencePlay", [])):
         call("call_method", type="ModuleRoboticController", method=method, arguments=args)
+
+
+def set_brakes(percent):
+    """Sets the brake force of every wheel of the active vessel, as its slider in the wheel's window does."""
+    for part in call("list_parts"):
+        if "wheel" in part:
+            try:
+                call("set_member", type="ModuleWheelBrakes", match="part.persistentId=%d" % part["id"],
+                     member="brakeTweakable", value=percent)
+            except RuntimeError:
+                pass  # a suspension without brakes: a landing leg
+
+
+def release_parking_brake():
+    """Waits until Parking Brake has nothing left to cancel, then lets the vessel go, as its button in the window of a
+    command part does. The save was made with the parking brake on, the vessel at rest: loaded, the vessel is pushed
+    out of the ground and set in motion, which the parking brake stops at every physics step."""
+    still = 0
+    for attempt in range(120):
+        state = call("get_member", type="FlightGlobals",
+                     members=["ActiveVessel.srfSpeed", "ActiveVessel.angularVelocity"])["values"]
+        spin = state["ActiveVessel.angularVelocity"]
+        turning = (spin["x"] ** 2 + spin["y"] ** 2 + spin["z"] ** 2) ** 0.5
+        still = still + 1 if state["ActiveVessel.srfSpeed"] < 0.01 and turning < 0.01 else 0
+        if still >= 4 and attempt >= 6:
+            call("call_method", type="ParkingBrake.ParkingBrakeModule", method="ToggleParkingBrake")
+            return
+        call("wait", seconds=0.5)
+    raise RuntimeError("the vessel never came to rest under the parking brake")
 
 
 def place_leg(case):
@@ -183,6 +217,13 @@ def summary(path, moving_from=None):
         share_none_grounded=round(sum(1 for v in vessel if int(v["grounded"]) == 0) / len(vessel), 3),
         share_bottomed=round(sum(1 for v in vessel if int(v["bottomed"]) > 0) / len(vessel), 3),
         supported_pct_median=round(percentile([number(v["supported_pct"]) for v in vessel], 0.5) or 0, 1))
+    # The wheels on the ground over the last third: how far they sink, and their spring.
+    late_wheels = [w for r in rows[len(rows) * 2 // 3:] for w in r if w["is_grounded"] in ("1", "True", "true")]
+    if late_wheels:
+        result["late_compression_mean"] = round(
+            sum(number(w["compression"]) or 0 for w in late_wheels) / len(late_wheels), 3)
+        result["late_spring_mean"] = round(
+            sum(number(w["spring_kN_m"]) or 0 for w in late_wheels) / len(late_wheels), 1)
     if moving_from is not None:
         moving = [v for v in vessel if (number(v["speed_mm_s"]) or 0) > moving_from * 1000]
         if moving:
@@ -226,6 +267,10 @@ def trial(n, name, case, options, out):
         switch(case["vessel"])
     if case.get("hinges"):
         lower_hinges()
+    if options.brakes is not None:
+        set_brakes(options.brakes)
+    if case.get("parking"):
+        release_parking_brake()
     if "ground" in case:
         # KSP Diag - Suspension reads nothing of the leg: its window would only hide the scene.
         call("suspension_show_window", visible=False)
@@ -261,6 +306,8 @@ def main():
     parser.add_argument("--ground", type=int, nargs=2, metavar=("X", "Y"),
                         help="for the lone leg, the point of the ground it is set down at, in pixels of the KSP window "
                         "(default: the case's, for a window of 1286 x 795)")
+    parser.add_argument("--brakes", type=float,
+                        help="the brake force of every wheel, in percent as its slider gives it (default: the save's)")
     parser.add_argument("--label", default="run", help="a word for the files of this run: stock, modded...")
     parser.add_argument("--ksp", help="the KSP folder, to count the lines KSP.log gains")
     parser.add_argument("--out", default="out", help="where lines.json, the CSV files and the screenshots go")

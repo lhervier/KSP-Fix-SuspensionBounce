@@ -17,6 +17,19 @@ namespace com.github.lhervier.ksp.fix.suspensionbounce
         {
             Settings.Load();
             Log.Info($"Version {typeof(KSPFixSuspensionBounce).Assembly.GetName().Version}, log level {Log.Level}");
+            if (SpringGravityCurve.Enabled)
+            {
+                // Ahead of the damper fix, which starts from the damper the spring fix sets.
+                try
+                {
+                    SpringGravityCurve.Install(new Harmony(HarmonyId + ".gravitycurve"));
+                    Log.Info("Spring gravity curve fix installed");
+                }
+                catch (Exception e)
+                {
+                    Log.Error($"Could not install the spring gravity curve fix, the springs are the game's: {e}");
+                }
+            }
             try
             {
                 SuspensionDamper.Install(new Harmony(HarmonyId));

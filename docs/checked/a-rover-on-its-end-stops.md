@@ -19,29 +19,27 @@ default).
   all four wheels rest on their end-stops.
 - [diag/SuspensionBounceEndStopsSlope.sfs](../../diag/SuspensionBounceEndStopsSlope.sfs): the same rover, brakes on,
   on a slope of about 20° west of the space centre, its springs set by hand at 0.3.
-- [diag/SuspensionBounceRoverMun.sfs](../../diag/SuspensionBounceRoverMun.sfs): `SuspensionBounce Heavy Rover`,
-  about 10 t on six TR-2L wheels, brakes on, on the Mun, its springs left to the game: they are too soft for it there,
-  and its wheels rest on their end-stops.
 
 ## By hand
 
 - **On flat ground**: drive the rover at full speed, about 24 m/s, in a straight line. Without this mod, it slides
   sideways as it goes, as on ice: on the navball, the speed marker drifts away from the heading. With this mod, it
   holds its line.
-- **On the slope, and on the Mun**: load the save and wait. Without this mod, the rover slides down, brakes on. With
+- **On the slope**: load the save and wait. Without this mod, the rover slides down, brakes on. With
   this mod, it holds.
 
 ## By script
 
 [diag/automation/check.py](../../diag/automation/check.py) loads the save through
 [KSP-Util-MCPServer](https://github.com/lhervier/KSP-Util-MCPServer) and records KSP Diag - Suspension: during a
-drive of 800 m at 24 m/s on flat ground, for 30 s on the slope, for 60 s on the Mun. Its first lines say how to run it:
+drive of 800 m at 24 m/s on flat ground, for 30 s on the slope. Its first lines say how to run it:
 
     python check.py end-stops-flat --folder <your sandbox game> --label stock
     python check.py end-stops-slope --folder <your sandbox game> --label stock
-    python check.py rover-mun --folder <your sandbox game> --label stock
 
-Played once in each configuration, KSP 1.12.5 and KSP Community Fixes:
+Played once in each configuration, KSP 1.12.5 and KSP Community Fixes. A heavy rover on the Mun rests on its
+end-stops too, for another reason, the fourth culprit:
+[A heavy rover on Kerbin, the Mun and Minmus](a-heavy-rover-on-kerbin-the-mun-and-minmus.md).
 
 | | Without this mod | `bumpStopLoad = false` | This mod |
 |---|---|---|---|
@@ -51,5 +49,3 @@ Played once in each configuration, KSP 1.12.5 and KSP Community Fixes:
 | Wheel readings where the tyre skids | 64 % | 64 % | 1 % |
 | **Slope**: share of the weight the tyres read (median) | 31 % | 31 % | 100 % |
 | Speed over the last 10 s | up to 1.1 m/s | up to 1.1 m/s | up to 37 mm/s |
-| **Mun**: share of the weight the tyres read (median) | 71 % | 71 % | 100 % |
-| Speed over the last 20 s | up to 153 mm/s | up to 142 mm/s | up to 4.5 mm/s |

@@ -45,10 +45,11 @@ and stays there.</em></td>
 
 The cause: KSP sizes a suspension with a few simple rules, patched over the years, and some cases slip through: a
 light vessel, a part lying alone, or a heavy rover on light wheels, gets a damper that throws it up instead of slowing
-it down; and a wheel at the end of its travel hides part of the weight it carries from its tyre, which loses its grip
-(see [The culprits](#the-culprits)). This mod lowers a damper only as far as those cases need, with or without
-[Terrain Precision Fix](https://github.com/lhervier/KSP-Fix-TerrainPrecision), and tells the tyre of a wheel at the
-end of its travel the weight it really carries: every other vessel behaves as without it, give or take a few percent
+it down; on a light world, a heavy rover gets a spring too soft for it, and sinks to the end of its travel; and a
+wheel at the end of its travel hides part of the weight it carries from its tyre, which loses its grip (see
+[The culprits](#the-culprits)). This mod lowers a damper only as far as those cases need, with or without
+[Terrain Precision Fix](https://github.com/lhervier/KSP-Fix-TerrainPrecision), stiffens the spring of a heavy rover on a light world as
+it would be on Kerbin, and tells the tyre of a wheel at the end of its travel the weight it really carries: every other vessel behaves as without it, give or take a few percent
 of damping.
 
 **How this was made.** The investigation and the code were written with Claude, Anthropic's AI assistant.
@@ -88,6 +89,8 @@ make the culprits below:
   the whole vessel, not from what each leg carries.
 - **The automatic sliders**: set at the first contact, the damper up to 2 on Eve.
 - **High gravity**: above 1.5 g, so on Eve, the spring is tripled and the damper multiplied by 1.2.
+- **The gravity curve**: the boost with compression grows at a pace set by a curve of the body's gravity: the whole
+  boost on Kerbin, a tenth of it on the Mun, none on Minmus.
 
 **→ Full chapter: [The patches](docs/the-culprits/the-patches.md)**
 
@@ -133,6 +136,19 @@ gagnent ou perdent sa quantité de mouvement et son moment cinétique, moins tou
 entre les roues en butée, et l'ajoute à celle que VPP lit.
 
 **→ Chapitre complet : [Troisième coupable : une roue en butée cache son poids aux pneus](docs/the-culprits/a-bottomed-wheel-hides-its-weight-from-the-tyres.md)**
+
+### Quatrième coupable : sous 1 g, le ressort automatique est trop mou
+
+*(En français, à traduire avant le commit.)* KSP renforce le ressort d'une suspension à mesure qu'elle s'enfonce,
+mais à un rythme pondéré par une courbe de la gravité du corps : tout le renfort sur Kerbin, un dixième sur la Mune,
+rien sur Minmus. Or la charge pour laquelle le ressort est calculé suit déjà la gravité : la courbe n'a pas de raison
+physique, et sous 1 g, elle donne au ressort d'un rover lourd bien moins que ce qu'il aurait sur Kerbin pour la même
+charge. Sur la Mune, ses roues s'enfoncent jusqu'en butée, et le troisième coupable le fait glisser, freins serrés.
+Sur les corps les plus légers, c'est le plancher d'une demi-tonne qui protège les rovers de taille raisonnable :
+le trou est sur la Mune. Le mod calcule le ressort
+avec la courbe de Kerbin sur tous les corps plus légers.
+
+**→ Chapitre complet : [Quatrième coupable : sous 1 g, le ressort automatique est trop mou](docs/the-culprits/the-automatic-spring-too-soft-below-1-g.md)**
 
 ## Checked
 
@@ -186,11 +202,19 @@ as they touch, unless its springs are set by hand; with it, it settles with its 
 
 ### A rover on its end-stops
 
-Rovers whose wheels rest on their end-stops: soft springs on Kerbin, a heavy rover on the Mun. Without this mod,
-their tyres read a fraction of the weight: they slide sideways on flat ground, and slide down a slope, brakes on; with
-it, the tyres read the whole weight, and hold.
+A rover whose springs are set soft, on Kerbin: its wheels rest on their end-stops. Without this mod, its tyres read a
+fraction of its weight: it slides sideways on flat ground, and slides down a slope, brakes on; with it, the tyres read
+the whole weight, and it holds.
 
 **→ Full chapter: [A rover on its end-stops](docs/checked/a-rover-on-its-end-stops.md)**
+
+### A heavy rover on Kerbin, the Mun and Minmus
+
+The same rover of 10 t, its springs left to the game, on three worlds: without this mod, it sinks to three quarters
+of its travel on Kerbin, to half of it on Minmus, and to the end of it on the Mun, where it slides down a slope, brakes
+on; with it, it sinks on the Mun about as far as on Kerbin, and holds.
+
+**→ Full chapter: [A heavy rover on Kerbin, the Mun and Minmus](docs/checked/a-heavy-rover-on-kerbin-the-mun-and-minmus.md)**
 
 
 ## Limits
