@@ -155,8 +155,10 @@ forces, never pulling, such that by the end of the coming step no wheel has gone
 wheels are handled together: a force on one wheel also tilts the vessel, and changes what the others have to hold. A
 wheel resting on its end-stop gets its share of the load, beyond what its spring carries; a wheel leaving it, or still
 far from it, gets nothing; a wheel coming fast is slowed just enough to reach it. These forces are applied to the
-wheels' parts, at the contact point, along the normal of the ground: PhysX's end-stop has nothing left to correct, and
-no longer beats.
+wheels' parts, at the contact point, along the axis of the suspension, as the end-stop they replace: PhysX's end-stop
+has nothing left to correct, and no longer beats. The axis matters at speed: measured along the normal of the ground
+instead, a normal tilted for a single step, by a bump or a seam between two pieces of terrain, would turn part of the
+forward speed into a speed towards the end-stop, and call for a force many times the weight.
 
 ### Sharing between the wheels
 
@@ -213,7 +215,7 @@ first wheel (`Solve`). It first reads the contact of each wheel, and follows the
 its end-stop during the step:
 
 ```csharp
-float closing = -Vector3.Dot(p.body.GetPointVelocity(p.hit.point), p.hit.normal);
+float closing = -Vector3.Dot(p.body.GetPointVelocity(p.hit.point), p.axis);
 near = (1f - p.compression) * travel <= Mathf.Max(0f, closing + fall) * dt;
 ```
 
@@ -232,9 +234,9 @@ Vector3 acceleration = known / mass;
 Vector3 angularAcceleration = inverse.Times(knownTorque);
 ```
 
-For each wheel on the ground, the speed at which its contact would leave the ground at the end of the step without the
-mod's force, plus the speed that would just close the travel it has left; the mod's forces must not bring it below
-zero:
+For each wheel on the ground, along the axis of its suspension (`normal` is that axis, read with the contact), the
+speed at which its contact would move away from its end-stop at the end of the step without the mod's force, plus the
+speed that would just close the travel it has left; the mod's forces must not bring it below zero:
 
 ```csharp
 float gap = Mathf.Max(0f, (1f - p.compression) * travel);
@@ -263,7 +265,7 @@ value = float.IsNaN(value) || value < 0f ? 0f : value;
 Each force is applied to its wheel's part, at the contact point:
 
 ```csharp
-p.heldForce = p.hit.normal * f[k];
+p.heldForce = p.axis * f[k];
 p.heldPoint = p.hit.point;
 if (f[k] > 0f && p.body != null)
 {
