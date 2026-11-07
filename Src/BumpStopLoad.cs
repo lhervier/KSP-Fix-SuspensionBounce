@@ -91,6 +91,8 @@ namespace com.github.lhervier.ksp.fix.suspensionbounce
             /// <summary>The contact PhysX reports for the last step, read before VPP reads it.</summary>
             internal WheelHit hit;
             internal bool grounded;
+            /// <summary>The axis of the suspension, upwards, read with the contact.</summary>
+            internal Vector3 axis;
         }
 
         /// <summary>What the fix found for one vessel at the last physics step, kept for reading in game.</summary>
@@ -547,11 +549,13 @@ namespace com.github.lhervier.ksp.fix.suspensionbounce
                 VPWheelCollider col = p.state.wheelCol;
                 p.grounded = col.GetGroundHit(out p.hit);
                 float travel = col.lastRuntimeSuspensionTravel;
+                // The end-stop works along the axis of the suspension, as PhysX's does.
+                p.axis = col.cachedTransform.up;
                 p.compression = p.grounded && travel > 0f ? col.GetContactDepth(p.hit.point, travel) / travel : 0f;
                 p.springForce = p.grounded ? p.hit.force : 0f;
                 if (p.grounded && !near)
                 {
-                    float closing = -Vector3.Dot(p.body.GetPointVelocity(p.hit.point), p.hit.normal);
+                    float closing = -Vector3.Dot(p.body.GetPointVelocity(p.hit.point), p.axis);
                     near = (1f - p.compression) * travel <= Mathf.Max(0f, closing + fall) * dt;
                 }
             }
@@ -804,7 +808,7 @@ namespace com.github.lhervier.ksp.fix.suspensionbounce
             for (int k = 0; k < n; k++)
             {
                 Probe p = groundedProbes[k];
-                Vector3 normal = p.hit.normal;
+                Vector3 normal = p.axis;
                 Vector3 arm = p.hit.point - centre;
                 holdArm[k] = Vector3.Cross(arm, normal);
                 holdTurn[k] = inverse.Times(holdArm[k]);
@@ -818,10 +822,10 @@ namespace com.github.lhervier.ksp.fix.suspensionbounce
             }
             for (int k = 0; k < n; k++)
             {
-                Vector3 normal = groundedProbes[k].hit.normal;
+                Vector3 normal = groundedProbes[k].axis;
                 for (int j = 0; j < n; j++)
                 {
-                    a[k * n + j] = Vector3.Dot(normal, groundedProbes[j].hit.normal) / mass +
+                    a[k * n + j] = Vector3.Dot(normal, groundedProbes[j].axis) / mass +
                         Vector3.Dot(holdArm[k], holdTurn[j]);
                 }
                 trace += a[k * n + k];
@@ -853,7 +857,7 @@ namespace com.github.lhervier.ksp.fix.suspensionbounce
                 Probe p = groundedProbes[k];
                 p.held = f[k];
                 p.heldTime = now;
-                p.heldForce = p.hit.normal * f[k];
+                p.heldForce = p.axis * f[k];
                 p.heldPoint = p.hit.point;
                 if (f[k] > 0f && p.body != null)
                 {
