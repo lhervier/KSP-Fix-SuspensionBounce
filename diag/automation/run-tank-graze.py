@@ -25,13 +25,19 @@ PROBE = "SuspensionBounceCulprit3 Probe"
 
 
 def call(name, **args):
-    """Calls one tool of KSP-Util-MCPServer and returns its answer, decoded from JSON when it is JSON."""
+    """Calls one tool of KSP-Util-MCPServer and returns its answer, decoded from JSON when it is JSON. Right after a
+    save is loaded, the game can still say it is not in flight for a moment: the call is then tried again, for up to
+    ten seconds."""
     body = json.dumps({"jsonrpc": "2.0", "id": 1, "method": "tools/call",
                        "params": {"name": name, "arguments": args}}).encode()
-    request = urllib.request.Request(URL, body, {"Content-Type": "application/json"})
-    with urllib.request.urlopen(request, timeout=900) as response:
-        result = json.loads(response.read())["result"]
-    text = result["content"][0].get("text", "") if result["content"] else ""
+    for attempt in range(20):
+        request = urllib.request.Request(URL, body, {"Content-Type": "application/json"})
+        with urllib.request.urlopen(request, timeout=900) as response:
+            result = json.loads(response.read())["result"]
+        text = result["content"][0].get("text", "") if result["content"] else ""
+        if not (result.get("isError") and text.startswith("Not in flight")):
+            break
+        time.sleep(0.5)
     if result.get("isError"):
         raise RuntimeError(name + ": " + text)
     try:

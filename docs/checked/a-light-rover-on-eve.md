@@ -42,5 +42,5 @@ Played once without this mod and once with it, KSP 1.12.5 and KSP Community Fixe
 |---|---|---|
 | Top speed over the ground | 24 m/s | 0.04 m/s |
 | Time with no wheel on the ground | 47 % | 0 |
-| Speed over the last 10 s | up to 0.40 m/s | up to 0.4 mm/s |
+| Speed over the last 10 s | up to 0.40 m/s | up to 0.2 mm/s |
 | `KSP.log` | `roverWheel2 Exploded!!` | nothing |

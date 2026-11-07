@@ -7,7 +7,8 @@ wheel hides its weight from the tyres
 Each case is played three times: without this mod, with this mod and `bumpStopLoad = false` in its settings (the
 part of the mod that answers this culprit is off), and with this mod as installed.
 [KSP Diag - Suspension](https://github.com/lhervier/KSP-Diag-Suspension) shows, among others, the share of the
-vessel's weight its suspensions carry, as the tyres read it: this mod adds what the end-stops carry to it.
+vessel's weight its suspensions carry, as the tyres read it: this mod holds the end-stops itself, and adds the force it
+holds to it.
 
 ## The saves
 
@@ -43,9 +44,9 @@ end-stops too, for another reason, the fourth culprit:
 
 | | Without this mod | `bumpStopLoad = false` | This mod |
 |---|---|---|---|
-| **Flat ground, above 20 m/s**: share of the weight the tyres read (5th percentile, median, 95th) | -1 %, 0 %, 1 % | 0 %, 0 %, 0 % | 82 %, 99 %, 116 % |
-| Speed across the heading, 95th percentile | 0.15 m/s | 0.21 m/s | 0.03 m/s |
-| Angle between the speed and the heading, 95th percentile | 0.36° | 0.51° | 0.08° |
-| Wheel readings where the tyre skids | 64 % | 64 % | 1 % |
-| **Slope**: share of the weight the tyres read (median) | 31 % | 31 % | 100 % |
-| Speed over the last 10 s | up to 1.1 m/s | up to 1.1 m/s | up to 37 mm/s |
+| **Flat ground, above 20 m/s**: share of the weight the tyres read (5th percentile, median, 95th) | -1 %, 0 %, 1 % | 0 %, 0 %, 0 % | 97 %, 99 %, 100 % |
+| Speed across the heading, 95th percentile | 0.15 m/s | 0.32 m/s | 0.04 m/s |
+| Angle between the speed and the heading, 95th percentile | 0.36° | 0.79° | 0.09° |
+| Wheel readings where the tyre skids | 64 % | 64 % | 2 % |
+| **Slope**: share of the weight the tyres read (median) | 31 % | 31 % | 99 % |
+| Speed over the last 10 s | up to 1.1 m/s | up to 1.1 m/s | up to 0.5 mm/s |

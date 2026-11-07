@@ -47,8 +47,8 @@ Played without this mod and with it, KSP 1.12.5 and KSP Community Fixes (and KSP
 |---|---|---|
 | Rover of 10 t, once: top speed over the ground | 2.9 m/s | 0.05 m/s |
 | Time with no wheel on the ground | 11 % | 0 |
-| Speed over the last 10 s | up to 0.85 m/s | up to 1.5 mm/s |
+| Speed over the last 10 s | up to 0.85 m/s | up to 1.8 mm/s |
 | `KSP.log` | `Hit Eve … at 73.5 m.s and damaged wheel.` | nothing |
-| Bulldozer, 3 times: top speed over the ground | 2.2 to 3.4 m/s | 0.07 m/s |
-| Time with no wheel on the ground | 4 to 20 % | 0 |
-| `KSP.log` | `Hit Eve … at 58.0 to 125.3 m.s and damaged wheel`, at every trial | nothing |
+| Bulldozer, 3 times: top speed over the ground | 1.7 to 2.4 m/s | 0.06 to 0.08 m/s |
+| Time with no wheel on the ground | 8 to 14 % | 0 |
+| `KSP.log` | `Hit Eve … at 48.0 to 123.3 m.s and damaged wheel`, at 2 trials out of 3 | nothing |

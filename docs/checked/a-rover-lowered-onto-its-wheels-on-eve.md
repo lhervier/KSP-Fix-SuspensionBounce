@@ -38,7 +38,7 @@ time with no wheel on the ground counts the descent.
 
 | | Without this mod, springs left to the game | Without this mod, springs set by hand | This mod, springs left to the game |
 |---|---|---|---|
-| Top speed over the ground | 3.5 to 12 m/s | 0.24 to 0.31 m/s | 0.23 to 0.28 m/s |
+| Top speed over the ground | 3.5 to 12 m/s | 0.24 to 0.31 m/s | 0.28 to 0.33 m/s |
 | Time with no wheel on the ground | 13 to 49 % | 6 % | 6 % |
-| Speed over the last 15 s | up to 0.3 mm/s, 1.7 m/s and 12 m/s | up to 0.13 mm/s | up to 0.33 mm/s |
+| Speed over the last 15 s | up to 0.3 mm/s, 1.7 m/s and 12 m/s | up to 0.13 mm/s | up to 0.23 mm/s |
 | Parts | 63, none lost | 63, none lost | 63, none lost |

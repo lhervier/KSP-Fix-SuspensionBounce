@@ -211,7 +211,7 @@ the whole weight, and it holds.
 
 The same rover of 10 t, its springs left to the game, on three worlds: without this mod, it sinks to three quarters
 of its travel on Kerbin, to half of it on Minmus, and to the end of it on the Mun, where it slides down a slope, brakes
-on; with it, it sinks on the Mun about as far as on Kerbin, and holds.
+on; with it, it stays clear of its end-stops on the Mun, and holds.
 
 **→ Full chapter: [A heavy rover on Kerbin, the Mun and Minmus](docs/checked/a-heavy-rover-on-kerbin-the-mun-and-minmus.md)**
 

@@ -43,11 +43,11 @@ their spring are averaged over the last 20 s.
 | | Without this mod | `kerbinCurve = false` | `bumpStopLoad = false` | This mod |
 |---|---|---|---|---|
 | **Kerbin**: how far the wheels sink, spring | 0.73, 289 kN/m | 0.73, 289 kN/m | 0.73, 289 kN/m | 0.73, 289 kN/m |
-| **Mun**: how far the wheels sink, spring | bottomed out, 23 kN/m | bottomed out, 23 kN/m | 0.67, 61 kN/m | 0.67, 61 kN/m |
+| **Mun**: how far the wheels sink, spring | bottomed out, 23 kN/m | 0.86, 23 kN/m | 0.60, 57 kN/m | 0.56, 55 kN/m |
 | Mun: time with a wheel bottomed out | 100 % | 100 % | 0 | 0 |
-| Mun: share of the weight the tyres read (median) | 71 % | 100 % | 100 % | 100 % |
-| Mun: speed over the last 20 s | up to 115 mm/s | up to 8.5 mm/s | up to 2.8 mm/s | up to 1.3 mm/s |
+| Mun: share of the weight the tyres read (median) | 71 % | 98 % | 100 % | 100 % |
+| Mun: speed over the last 20 s | up to 115 mm/s | up to 2.1 mm/s | up to 2.8 mm/s | up to 1.4 mm/s |
 | **Minmus**: how far the wheels sink, spring | 0.50, 20 kN/m | 0.50, 20 kN/m | 0.44, 24 kN/m | 0.44, 24 kN/m |
 
 On the Mun with `kerbinCurve = false`, the share of the weight the tyres read includes the force of the end-stops,
-which the mod hands them: the wheels are still bottomed out.
+which the mod holds and hands them: some wheels still rest on their end-stops, the others sink less.
