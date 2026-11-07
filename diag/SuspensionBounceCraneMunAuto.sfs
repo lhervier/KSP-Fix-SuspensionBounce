@@ -8791,9 +8791,9 @@ GAME
 					isEnabled = True
 					actuatorModeCycle = 0
 					authorityLimiter = 100
-					stateString = En attente
+					stateString = Désactivé
 					stagingEnabled = True
-					WheelState = Active
+					WheelState = Disabled
 					EVENTS
 					{
 					}
@@ -9103,9 +9103,9 @@ GAME
 					isEnabled = True
 					actuatorModeCycle = 0
 					authorityLimiter = 100
-					stateString = En attente
+					stateString = Désactivé
 					stagingEnabled = True
-					WheelState = Active
+					WheelState = Disabled
 					EVENTS
 					{
 					}
@@ -23396,7 +23396,7 @@ GAME
 				Stage = False, 0
 				Gear = False, 184260544.861691
 				Light = False, 0
-				RCS = True, 184254922.082748
+				RCS = False, 184254922.082748
 				SAS = False, 184258292.158037
 				Brakes = True, 0
 				Abort = False, 0
