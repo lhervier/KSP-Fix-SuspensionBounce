@@ -46,8 +46,13 @@ namespace com.github.lhervier.ksp.fix.suspensionbounce
         /// </summary>
         public static float Regularization = 0.1f;
 
-        /// <summary>Gauss-Seidel sweeps of each pass of the end-stop solve.</summary>
+        /// <summary>Most Gauss-Seidel sweeps of each pass of the end-stop solve.</summary>
         public static int Iterations = 30;
+
+        /// <summary>
+        /// A pass of the end-stop solve ends once no force changed by more than this over a sweep (kN).
+        /// </summary>
+        public static float Tolerance = 1e-4f;
 
         /// <summary>
         /// Passes of the end-stop solve: each makes up the shortfall the regularisation leaves, by a factor of about
@@ -658,7 +663,7 @@ namespace com.github.lhervier.ksp.fix.suspensionbounce
             groundedProbes.Clear();
             for (int i = 0; i < count; i++)
             {
-                BodyNow b = bodiesNow[i];
+                ref BodyNow b = ref bodiesNow[i];
                 Applied a = AppliedAt(b.body, now - dt);
                 Vector3 f = b.mass * acceleration + a.force;
                 known += f;
@@ -725,7 +730,7 @@ namespace com.github.lhervier.ksp.fix.suspensionbounce
             for (int i = 0; i < count; i++)
             {
                 balance.bodies[i] = bodiesNow[i].body;
-                BodyNow b = bodiesNow[i];
+                ref BodyNow b = ref bodiesNow[i];
                 balance.states[i] = new BodyState
                 {
                     velocity = b.velocity, spin = b.spin, mass = b.mass, inertia = b.inertia,
@@ -774,7 +779,7 @@ namespace com.github.lhervier.ksp.fix.suspensionbounce
             Sym3 inertia = default(Sym3);
             for (int i = 0; i < count; i++)
             {
-                BodyNow b = bodiesNow[i];
+                ref BodyNow b = ref bodiesNow[i];
                 Vector3 offset = b.centre - centre;
                 Vector3 p = b.mass * b.velocity;
                 momentum += p;
@@ -860,7 +865,8 @@ namespace com.github.lhervier.ksp.fix.suspensionbounce
         }
 
         /// <summary>
-        /// Runs <see cref="Iterations"/> sweeps of projected Gauss-Seidel on the end-stop forces of
+        /// Runs at most <see cref="Iterations"/> sweeps of projected Gauss-Seidel, until no force changes by more than
+        /// <see cref="Tolerance"/>, on the end-stop forces of
         /// <see cref="HoldEndStops"/>: <see cref="holdF"/> (n of them, also the starting point) such that
         /// (A + lambda) F = -rhs / dt + lambda * target, none negative, with A in <see cref="holdA"/>, rhs in
         /// <see cref="holdB"/> and the target in <see cref="holdBefore"/>.
@@ -870,6 +876,7 @@ namespace com.github.lhervier.ksp.fix.suspensionbounce
             float[] a = holdA, rhs = holdB, f = holdF, target = holdBefore;
             for (int iteration = 0; iteration < Iterations; iteration++)
             {
+                float change = 0f;
                 for (int k = 0; k < n; k++)
                 {
                     float s = -rhs[k] / dt + lambda * target[k];
@@ -881,7 +888,14 @@ namespace com.github.lhervier.ksp.fix.suspensionbounce
                         }
                     }
                     float value = s / (a[k * n + k] + lambda);
-                    f[k] = float.IsNaN(value) || value < 0f ? 0f : value;
+                    value = float.IsNaN(value) || value < 0f ? 0f : value;
+                    change = Mathf.Max(change, Mathf.Abs(value - f[k]));
+                    f[k] = value;
+                }
+                // Converged: the start from the step before usually leaves only a few sweeps to do.
+                if (change <= Tolerance)
+                {
+                    break;
                 }
             }
         }
