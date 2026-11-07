@@ -3,7 +3,7 @@
 **⚠️ Not finished yet.** This is a new fix, not a finished mod. The code and the conclusions on this page can still
 change.
 
-A fix for stock KSP 1.12, kept small: a few Harmony patches, in three short source files. Here is what it fixes:
+A fix for stock KSP 1.12: a few Harmony patches, in four source files. Here is what it fixes:
 
 > **In KSP, landing legs and wheels often go haywire.** A light probe leaves the runway on its own legs, a landing leg
 > set down alone in EVA construction flies off, a light rover that stands still on Kerbin never comes to rest on Eve,
@@ -46,17 +46,18 @@ and stays there.</em></td>
 The cause: KSP sizes a suspension with a few simple rules, patched over the years, and some cases slip through: a
 light vessel, a part lying alone, or a heavy rover on light wheels, gets a damper that throws it up instead of slowing
 it down; on a light world, a heavy rover gets a spring too soft for it, and sinks to the end of its travel; and a
-wheel at the end of its travel hides part of the weight it carries from its tyre, which loses its grip (see
-[The culprits](#the-culprits)). This mod lowers a damper only as far as those cases need, with or without
-[Terrain Precision Fix](https://github.com/lhervier/KSP-Fix-TerrainPrecision), stiffens the spring of a heavy rover on a light world as
-it would be on Kerbin, and tells the tyre of a wheel at the end of its travel the weight it really carries: every other vessel behaves as without it, give or take a few percent
-of damping.
+wheel at the end of its travel hides part of the weight it carries from its tyre, which loses its grip, while the
+end-stop holds the vessel in jolts (see [The culprits](#the-culprits)). This mod lowers a damper only as far as those
+cases need, with or without [Terrain Precision Fix](https://github.com/lhervier/KSP-Fix-TerrainPrecision), stiffens the
+spring of a heavy rover on a light world as it would be on Kerbin, and holds a wheel at the end of its travel itself,
+telling its tyre the weight it really carries: every other vessel behaves as without it, give or take a few percent of
+damping.
 
 **How this was made.** The investigation and the code were written with Claude, Anthropic's AI assistant.
 Everything here was reviewed and validated by a human — me. I am saying so up front, because contributions made with
 an AI deserve a closer look than others, and because some people would rather stop reading here. That look should be
-quick: the stock code involved is named and quoted on these pages, and the fix is a few patches you can read in a
-few minutes.
+quick: the stock code involved is named and quoted on these pages, and each patch of the fix is quoted and explained
+in the page of its culprit.
 
 ## The culprits
 
@@ -128,11 +129,12 @@ KSP's tyres go through Vehicle Physics Pro (VPP), which does not weigh the vesse
 force of its suspension, and draws from it the tyre's grip, what holds it on a slope and what stops it sliding. When a
 wheel reaches its end-stop, as happens on a heavy rover on the Mun, across a slope or with springs set soft, the
 end-stop carries the rest of the weight, but its force is reported nowhere: VPP believes the wheel carries less than it
-does. The rover loses the grip that should hold it back: it slides sideways on flat ground, and goes down a slope at a
-constant speed, brakes on. Neither PhysX nor Unity gives the force of the end-stop, and a Unity bug hides that of the
-joints between parts, which would have let it be worked out wheel by wheel. The mod finds it through a balance of the
-whole vessel, where those joints cancel out: what its momentum and its angular momentum gain or lose, minus all the
-known forces. It shares it between the bottomed wheels, and adds it to the force VPP reads.
+does. And the end-stop only acts at the steps that start with the wheel already past the end of its travel: it holds
+the vessel in jolts, one step on, one step off, and the tyres slip at each one. The rover loses the grip that should
+hold it back: it slides sideways on flat ground, and goes down a slope, brakes on. VPP is written for a car made of
+one rigid body; KSP makes each wheel a vehicle of its own, on its own part. The mod takes the vessel as one body, and
+holds the end-stops of its wheels itself, one step ahead: the smallest forces, all wheels together, that keep every
+wheel from going past the end of its travel. It applies them to the wheels, and adds them to the force VPP reads.
 
 **→ Full chapter: [Third culprit: a bottomed wheel hides its weight from the tyres](docs/the-culprits/a-bottomed-wheel-hides-its-weight-from-the-tyres.md)**
 
@@ -216,11 +218,9 @@ on; with it, it sinks on the Mun about as far as on Kerbin, and holds.
 
 ## Limits
 
-- **A rover resting on its end-stops still creeps a little.** The end-stop of a suspension does not hold the weight
-  steadily: it pushes in jolts, from one physics step to the next, and the rover shakes on it, too fast to be seen.
-  At each shake, the tyres slip a little, and on a slope the rover creeps down, a few centimetres a second where it
-  slid at a metre a second (see [A rover on its end-stops](docs/checked/a-rover-on-its-end-stops.md)). This mod tells the tyres the weight the end-stop carries; it
-  does not change the end-stop.
+- **A wheel landing hard enough to cross its whole travel in a single physics step still meets the game's end-stop.**
+  The mod holds an end-stop one step ahead; a wheel that goes from the top of its travel to past the end of it within
+  one step is caught by the game's end-stop, as without this mod, and held by the mod from the next step on.
 - **On a low gravity body, a leg placed alone still hops a little.** Its spring is still the spring of half a ton,
   about 200 times its weight on Minmus: it pushes the leg off the ground as it straightens, and the leg falls back
   slowly. Removing that hop would mean lowering the floor of the spring, which this fix does not do.

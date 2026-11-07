@@ -26,17 +26,30 @@ As long as the suspension carries the whole weight, these three calculations are
 A suspension has a travel. When the wheel carries more than the spring can hold within that travel, it reaches its
 end-stop, and the end-stop carries the rest: nothing unusual, a real car does the same. In KSP, a wheel reaches its
 end-stop on a heavy rover on the Mun, under the low wheel of a rover standing across a slope, under the front wheels
-when braking, or when the player sets their springs very soft.
+when braking, or when the player sets their springs very soft. But the end-stop of the physics has two faults.
 
-But the physics applies the force of the end-stop without reporting it: the contact force VPP reads only holds the
-spring's. For VPP, a bottomed wheel carries what its spring pushes, not what it really carries. The share that goes
-through the end-stop vanishes from its three calculations:
+**It does not say what it carries.** The contact force VPP reads only holds the spring's. For VPP, a bottomed wheel
+carries what its spring pushes, not what it really carries, and the share that goes through the end-stop vanishes from
+its three calculations:
 
 - grip drops, down to the floor VPP keeps for each tyre;
 - holding on the slope only makes up for part of the slope;
 - the pull back against sliding weakens as much.
 
 No force is made up: it is a force that is missing, and the rover no longer gets the one that should hold it back.
+
+**It does not hold steadily.** The physics moves in small steps, fifty a second. The end-stop only exists at the steps
+that start with the wheel *already* past the end of its travel, and it puts the wheel back, in one step, exactly at the
+end of its travel. At the next step, the wheel is no longer past it: there is no end-stop, and the vessel falls for a
+step; at the step after, the end-stop is back and pushes twice the weight. The vessel shakes on its end-stops, too fast
+to be seen, and at each beat the tyres slip a little.
+
+## Why KSP suffers from it
+
+VPP is written for a car made of one rigid body, which carries all its wheels. KSP does otherwise: each wheel is a VPP
+vehicle of its own, on its own part, joined to the others. The end-stop of a wheel only holds its part, about a hundred
+kilos for a TR-2L, and the rest of the vessel weighs on it through the joints between parts; none of them sees the
+whole vessel.
 
 ## What you see
 
@@ -48,7 +61,8 @@ heading.
 
 **On a slope**, even with the brakes on and the tyres below their limit, the rover goes down. It does not pick up
 speed: the tyre only holds back the missing share by sliding, and holds back all the more as it slides faster. The
-rover finds the speed where the two balance, and keeps it.
+rover finds the speed where the two balance, and keeps it. The shaking of the end-stops adds to it: at each beat, the
+tyres slip, and the rover goes down a little more.
 
 <ROVER SLIDING DOWN A SLOPE WITHOUT SPEEDING UP>
 
@@ -98,59 +112,90 @@ Vector2 impulseForce = (0f - tireImpulseRatio) * supportedMass * wheel.localWhee
 wheel.externalTireForce = impulseForce + wheel.localSurfaceForce;
 ```
 
+The end-stop is the one of PhysX's vehicle SDK, which Unity's `WheelCollider` is built on; the source of PhysX 4.1,
+the version of Unity 2019, is public. Before each step, a ray gives how far the wheel has sunk (`dx`); the end-stop is
+only switched on when that goes past the travel, and its error is the overshoot
+([PxVehicleUpdate.cpp](https://github.com/NVIDIAGameWorks/PhysX/blob/4.1/physx/source/physxvehicle/src/PxVehicleUpdate.cpp),
+`processSuspTireWheels`):
+
+```cpp
+suspLimitErrors[i] = (w.dot(hitNorm))*(-dx + susp.mMaxCompression);
+suspLimitActiveFlags[i] = (dx > susp.mMaxCompression);
+```
+
+The solver then asks for the whole error to be corrected within the step
+([DyConstraintSetup.cpp](https://github.com/NVIDIAGameWorks/PhysX/blob/4.1/physx/source/lowleveldynamics/src/DyConstraintSetup.cpp)
+and [DySolverConstraint1D.h](https://github.com/NVIDIAGameWorks/PhysX/blob/4.1/physx/source/lowleveldynamics/src/DySolverConstraint1D.h)):
+
+```cpp
+const PxReal erp = 1.0f;
+...
+constant = recipResponse * (c.velocityTarget - geomError*recipdt);
+```
+
+The wheel starts the next step exactly at the end of its travel, not past it: no end-stop for that step.
+
 ## What the mod changes
 
-The mod does not touch the end-stop: it finds its force, and gives it to VPP. All the work is in finding it, since
-neither PhysX nor Unity gives it.
+The mod holds the end-stops of the wheels on the ground itself, and tells the tyres what it holds. A single mechanism
+answers both faults: the force is its own, it no longer has to look for it.
 
-### A force nobody reports
+### The vessel taken as one body
 
-The end-stop of a `WheelCollider` is a constraint PhysX solves along with the rest of the physics, like a contact.
-Unity reports it nowhere: `WheelHit.force`, the only force the `WheelCollider` gives, is the spring and damper's.
-There is nothing else to read.
+At each step, the mod makes the vessel the rigid body VPP expects: its mass, its centre of mass, its inertia (that of
+each part, brought back to the centre of mass), its velocity and its rotation, drawn from the momentum and the angular
+momentum of all its parts. To that it adds the forces known for the step: gravity, as KSP applies it to each part; the
+forces and torques of KSP's modules (engines, reaction wheels…); the spring of each wheel; the force of each tyre, as
+VPP applied it.
 
-### The direct way, closed by Unity
+### One step ahead
 
-The simplest idea is a balance on the wheel's part alone. The physics says, at each step, how much its velocity
-changed; its mass, the gravity, the spring and the tyre force are known. What would be missing are the forces of the
-joints that hold it to the rest of the vessel: Unity gives them in principle through `Joint.currentForce`. But on the
-joints between KSP parts, `Joint.currentForce` is always zero, even under a load of several tons: a Unity bug known
-for years ([Joint.currentForce and Joint.currentTorque are always
-zero](https://discussions.unity.com/t/joint-currentforce-and-joint-currenttorque-are-always-zero/675232)). Without
-these forces, the balance of the part means nothing.
+For each wheel on the ground, the mod knows the travel it has left before its end-stop. It looks for the smallest
+forces, never pulling, such that by the end of the coming step no wheel has gone past the end of its travel. The
+wheels are handled together: a force on one wheel also tilts the vessel, and changes what the others have to hold. A
+wheel resting on its end-stop gets its share of the load, beyond what its spring carries; a wheel leaving it, or still
+far from it, gets nothing; a wheel coming fast is slowed just enough to reach it. These forces are applied to the
+wheels' parts, at the contact point, along the normal of the ground: PhysX's end-stop has nothing left to correct, and
+no longer beats.
 
-### The balance of the whole vessel
+### Sharing between the wheels
 
-So the mod does the balance on the whole vessel, where these forces no longer need to be known: a joint pushes one
-part as much as it pulls the other, and in the sum over all parts, its two forces cancel out.
+Four wheels for three equations (one force, two torques): there are endless ways to carry the same vessel. The mod
+takes the evenest. A sharing left free to drift from one step to the next changes neither the weight carried nor the
+torques, but ends up putting the whole vessel on two wheels across a diagonal: the other two tyres have no load left,
+and the rover slides. The mod works it out in passes: the first finds the evenest sharing, the next ones keep that
+sharing and make up what the first left short.
 
-At each step, the mod records for each part the change in its velocity and its rotation: the sum, over the whole
-vessel, of what its momentum and its angular momentum gain or lose is the sum of all the outside forces received
-during the step, and of their torques. The mod takes out all those it knows:
+### What the tyres see
 
-- gravity, as KSP applies it to each part;
-- the forces and torques KSP's modules applied (engines, reaction wheels…);
-- the force of each spring, along the contact normal, at its contact point;
-- the force of each tyre, as VPP applied it.
+The force the mod applies to a wheel is added, as it is, to the one VPP reads for it, at the same step: grip, holding
+on the slope and the pull back against sliding get the whole load back.
 
-What is left is what the ground gave on top of the springs: the force of the end-stops. When only one wheel is on its
-end-stop, it is all its own. When several are, the mod shares it so as to explain the torques as well: a front wheel
-and a rear wheel, a wheel at the top and one at the bottom of a slope, do not carry the same share. It looks for the
-forces, all positive, that best explain at once the force left over and its torques about the two axes lying on the
-ground.
+### When it works
 
-The mod adds each wheel's share to the force VPP reads for it, just before VPP uses it. VPP then sees what the wheel
-really carries: its grip, its holding on the slope and its pull back against sliding get the whole load back.
+The mod only follows a vessel while one of its wheels could reach its end-stop during the coming step: while the travel
+the wheel has left is no more than what it would cover in a step, at its speed towards the end-stop plus a step of
+free fall. The rest of the time, it only reads the wheels' contacts.
+
+### Checking it
+
+What PhysX's end-stop still pushes is read through a balance of the whole vessel: what its momentum and its angular
+momentum gain or lose over a step, minus all the known forces and the mod's own. The joints between parts cancel out
+in it: a joint pushes one part as much as it pulls the other. The same balance on the wheel's part alone would need the
+forces of its joints, which Unity gives in principle through `Joint.currentForce`; but on the joints between KSP parts,
+`Joint.currentForce` is always zero, even under a load of several tons, a Unity bug known for years
+([Joint.currentForce and Joint.currentTorque are always
+zero](https://discussions.unity.com/t/joint-currentforce-and-joint-currenttorque-are-always-zero/675232)). While the
+mod holds the end-stops, what is left is close to zero.
 
 ### The rest
 
-A wheel that is not on its end-stop is left alone: VPP reads its spring, as without the mod. The end-stop does not
-hold the weight in one piece but in jolts, from one step to the next (see the *Limits* of the
-[README](../../README.md#limits)): the mod gives VPP its average force over a tenth of a second. The wheel damage
-module, which also reads the tyre's load to spot impacts in it, keeps the one it read without the mod.
+A wheel that lands hard enough to cross its whole travel in a single step reaches the end of it before the mod could
+slow it: PhysX's end-stop catches it, as without the mod, and the mod holds the wheel from the next step on. The wheel
+damage module, which also reads the tyre's load to spot impacts in it, keeps the one it read without the mod.
 
-The `bumpStopLoad` setting of the `settings.cfg` file turns this part of the mod off. The rover sliding on flat ground,
-and the one going down the slope with its brakes on, with and without it:
+The `bumpStopLoad` setting of the `settings.cfg` file turns this part of the mod off. The rover resting on its
+end-stops, on flat ground and on a slope, with and without it:
 [A rover on its end-stops](../checked/a-rover-on-its-end-stops.md).
 
 ## In the mod's code
@@ -162,34 +207,74 @@ What KSP gives each part for the coming step is recorded in a prefix of `FlightI
 and torques its modules gathered (`part.force`, `part.forces`, `part.torque`). The force VPP has just applied to each
 tyre is recorded in a postfix of `VehicleBase.ApplyTireForce` (`ApplyTireForcePostfix`).
 
-The balance is done in a postfix of `VehicleBase.CalculateSuspensionForces`, which VPP calls at each step for each
-wheel, once the spring force is read and before the tyre's load is drawn from it; only once per vessel and per step,
-at its first wheel (`Solve`). For each part, its change in momentum minus what KSP gave it:
+The work is done in a postfix of `VehicleBase.CalculateSuspensionForces`, which VPP calls at each step for each wheel,
+once the spring force is read and before the tyre's load is drawn from it; only once per vessel and per step, at its
+first wheel (`Solve`). It first reads the contact of each wheel, and follows the vessel only if one of them could reach
+its end-stop during the step:
 
 ```csharp
-Vector3 change = body.mass * (body.velocity - state.velocity) / dt;
-Vector3 known = body.mass * a.acceleration + a.force;
-Vector3 excess = change - known;
-force += excess;
-torque += Vector3.Cross(arm, excess) + (Spin(body) - state.spin) / dt - a.torque;
+float closing = -Vector3.Dot(p.body.GetPointVelocity(p.hit.point), p.hit.normal);
+near = (1f - p.compression) * travel <= Mathf.Max(0f, closing + fall) * dt;
 ```
 
-then, for each wheel on the ground, the force of its spring, which PhysX applies along the contact normal, and that of
-its tyre:
+The vessel as one body (`HoldEndStops`): the momentum, the angular momentum and the inertia of all its parts, about
+its centre of mass:
 
 ```csharp
-Vector3 spring = p.hit.normal * p.springForce;
-force -= spring;
-torque -= Vector3.Cross(p.hit.point - centre, spring);
-```
-
-The rest, along the average normal of the ground, and its torques about the two axes lying on the ground, are shared
-between the bottomed wheels (`Share`): the positive forces that best explain them, by least squares. Each wheel's
-share, averaged, is added to the force VPP is about to read:
-
-```csharp
-probe.smoothed += (probe.missing - probe.smoothed) * weight;
+momentum += p;
+angularMomentum += b.spin + Vector3.Cross(offset, p);
+inertia.AddPrincipal(b.frame, b.inertia);
+inertia.AddPoint(b.mass, offset);
 ...
+Vector3 velocity = momentum / mass;
+Vector3 spin = inverse.Times(angularMomentum);
+Vector3 acceleration = known / mass;
+Vector3 angularAcceleration = inverse.Times(knownTorque);
+```
+
+For each wheel on the ground, the speed at which its contact would leave the ground at the end of the step without the
+mod's force, plus the speed that would just close the travel it has left; the mod's forces must not bring it below
+zero:
+
+```csharp
+float gap = Mathf.Max(0f, (1f - p.compression) * travel);
+float separating = Vector3.Dot(normal, velocity + Vector3.Cross(spin, arm));
+rhs[k] = separating + dt * (Vector3.Dot(normal, acceleration) + Vector3.Dot(holdArm[k], angularAcceleration)) +
+    gap / dt;
+```
+
+How a force on one wheel moves the contact of another, through the mass and the inertia of the vessel, is
+`a[k * n + j]`. The forces are found by projected Gauss-Seidel, none negative, in passes (`Sweep`): the first pulls
+them towards zero, the next ones towards the answer of the pass before:
+
+```csharp
+float s = -rhs[k] / dt + lambda * target[k];
+for (int j = 0; j < n; j++)
+{
+    if (j != k)
+    {
+        s -= a[k * n + j] * f[j];
+    }
+}
+float value = s / (a[k * n + k] + lambda);
+value = float.IsNaN(value) || value < 0f ? 0f : value;
+```
+
+Each force is applied to its wheel's part, at the contact point:
+
+```csharp
+p.heldForce = p.hit.normal * f[k];
+p.heldPoint = p.hit.point;
+if (f[k] > 0f && p.body != null)
+{
+    p.body.AddForceAtPosition(p.heldForce, p.heldPoint, ForceMode.Force);
+}
+```
+
+and added to the force VPP is about to read for that wheel:
+
+```csharp
+probe.injected = probe.held;
 wheel.hit.force += probe.injected;
 ```
 
