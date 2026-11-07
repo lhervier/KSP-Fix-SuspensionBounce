@@ -1,21 +1,19 @@
-# Quatrième coupable : sous 1 g, le ressort automatique est trop mou
+# Fourth culprit: below 1 g, the automatic spring is too soft
 
-Part of [Suspension Bounce Fix](../../README.md), [the culprits](../../README.md#the-culprits) : un coupable qui met
-les roues en butée.
+Part of [Suspension Bounce Fix](../../README.md), [the culprits](../../README.md#the-culprits): a culprit that puts
+wheels on their end-stops.
 
-*(Page en français, à traduire avant le commit.)*
+On Kerbin, a rover at rest sinks to three quarters of its suspension travel. On the Mun, the same rover, if it is
+heavy, sinks all the way: its wheels rest on their end-stops. It is not that the rover weighs too much there, nor that
+its wheels are too weak: it is that KSP, under a gravity weaker than Kerbin's, gives it a spring much softer than it
+would on Kerbin for the same load.
 
-Sur Kerbin, un rover au repos s'enfonce aux trois quarts de la course de ses suspensions. Sur la Mune, le même rover,
-s'il est lourd, s'enfonce jusqu'au bout : ses roues reposent sur leur butée. Ce n'est pas que le rover y pèse trop, ni
-que ses roues soient trop faibles : c'est que KSP lui donne, sous une gravité plus faible que celle de Kerbin, un
-ressort bien plus mou qu'il ne le ferait sur Kerbin pour la même charge.
+## The spring's boost
 
-## Le renfort du ressort
-
-KSP règle le ressort d'une suspension, à chaque pas où sa roue touche le sol, dans
-`ModuleWheelSuspension.SuspensionSpringUpdate`. Il part de la charge que la roue porte (`sprungMassGravity`, qui suit
-déjà la gravité du corps : sur la Mune, une roue porte six fois moins que sur Kerbin) et la multiplie par un renfort
-qui grandit à mesure que la suspension s'enfonce :
+KSP sets a suspension's spring, at each step its wheel touches the ground, in
+`ModuleWheelSuspension.SuspensionSpringUpdate`. It starts from the load the wheel carries (`sprungMassGravity`, which
+already follows the body's gravity: on the Mun, a wheel carries six times less than on Kerbin) and multiplies it by a
+boost that grows as the suspension sinks:
 
 ```csharp
 boost = 1f + Mathf.Clamp(suspCompression * BoostCurve((float)base.vessel.mainBody.GeeASL * (float)base.vessel.gravityMultiplier, 1f), -1f, boostClamp);
@@ -23,14 +21,14 @@ boost = 1f + Mathf.Clamp(suspCompression * BoostCurve((float)base.vessel.mainBod
 spring = Mathf.Clamp(springTweakable * springRatio * sprungMassGravity * BoostCurve(boost, boostRatio + autoBoost), 0.01f, springClampMax);
 ```
 
-Ce renfort est ce qui permet à une roue de rover de porter son poids dans sa course : sans lui, le ressort d'une
-TR-2L ou d'une RoveMax ne porte, enfoncé jusqu'au bout, que la moitié environ de la charge pour laquelle il est
-calculé. Avec lui, sur Kerbin, une roue aux trois quarts de sa course a un ressort trois fois plus raide, et tient.
+This boost is what lets a rover wheel carry its weight within its travel: without it, the spring of a TR-2L or a
+RoveMax, sunk all the way, only carries about half the load it is worked out for. With it, on Kerbin, a wheel at three
+quarters of its travel has a spring three times stiffer, and holds.
 
-## La courbe de gravité
+## The gravity curve
 
-Mais la vitesse à laquelle ce renfort grandit avec l'enfoncement est pondérée par une courbe de la gravité du corps,
-`BoostCurve(GeeASL, 1)`, qui vaut 1 / |1 − 2 / G| (G la gravité de surface en g), arrondie au dixième :
+But the pace at which this boost grows with how far the wheel sinks is weighted by a curve of the body's gravity,
+`BoostCurve(GeeASL, 1)`, which is 1 / |1 − 2 / G| (G the surface gravity in g), rounded to the tenth:
 
 ```csharp
 private float BoostCurve(float b, float power)
@@ -39,85 +37,85 @@ private float BoostCurve(float b, float power)
 }
 ```
 
-Elle vaut 1 sur Kerbin, plus de 1 au-dessus (5,7 sur Eve), et tombe vite en dessous :
+It is 1 on Kerbin, more than 1 above (5.7 on Eve), and drops fast below:
 
-| Corps | Gravité | Courbe |
+| Body | Gravity | Curve |
 |---|---|---|
-| Eve | 1,7 g | 5,7 |
+| Eve | 1.7 g | 5.7 |
 | Kerbin | 1 g | 1 |
-| Laythe, Tylo | 0,8 g | 0,7 |
-| Moho, Duna | 0,28-0,3 g | 0,2 |
-| Mune, Ike, Dres, Vall, Eeloo | 0,11-0,24 g | 0,1 |
-| Minmus, Gilly, Bop, Pol | 0,05 g et moins | 0 |
+| Laythe, Tylo | 0.8 g | 0.7 |
+| Moho, Duna | 0.28-0.3 g | 0.2 |
+| Mun, Ike, Dres, Vall, Eeloo | 0.11-0.24 g | 0.1 |
+| Minmus, Gilly, Bop, Pol | 0.05 g and less | 0 |
 
-Le renfort plafonne à 1,5 (`boostClamp`). Sur Kerbin, une roue l'atteint aux deux tiers de sa course : son ressort est
-alors trois fois plus raide. Sur la Mune, enfoncée jusqu'au bout, elle n'atteint que 1,1 : son ressort n'est que 1,2
-fois plus raide. Sur Minmus, il n'y a plus de renfort du tout.
+The boost tops out at 1.5 (`boostClamp`). On Kerbin, a wheel reaches it at two thirds of its travel: its spring is
+then three times stiffer. On the Mun, sunk all the way, it only reaches 1.1: its spring is only 1.2 times stiffer. On
+Minmus, there is no boost at all any more.
 
-Rien, dans la physique, ne justifie cette courbe : le ressort part déjà d'une charge qui suit la gravité. Une roue qui
-porte six fois moins, sous un ressort calculé pour six fois moins, s'enfoncerait autant que sur Kerbin si le renfort
-était le même. Avec la courbe, elle s'enfonce bien plus, et un rover assez lourd arrive en butée.
+Nothing in physics justifies this curve: the spring already starts from a load that follows gravity. A wheel that
+carries six times less, under a spring worked out for six times less, would sink as far as on Kerbin if the boost were
+the same. With the curve, it sinks much further, and a heavy enough rover reaches its end-stops.
 
-## Le plancher d'une demi-tonne
+## The half-ton floor
 
-Un autre patch s'en mêle : la charge pour laquelle KSP calcule le ressort ne descend jamais sous le poids d'une
-demi-tonne sur Kerbin, environ 4,9 kN, quel que soit le corps (le plancher, voir
-[The patches](the-patches.md)). Sur un corps léger, ce plancher pèse lourd : une roue y est souvent calculée pour
-bien plus qu'elle ne porte, et son ressort, même sans renfort, la tient sans peine.
+Another patch joins in: the load KSP works out the spring for never goes below the weight of half a ton on Kerbin,
+about 4.9 kN, whatever the body (the floor, see [The patches](the-patches.md)). On a light body, this floor weighs
+heavily: a wheel there is often worked out for much more than it carries, and its spring, even without a boost, holds
+it easily.
 
-- **Sur Minmus** (0,05 g), une roue d'un rover de 10 t sur six roues porte environ 0,8 kN. Son ressort, calculé pour
-  4,9 kN, en tient à peu près la moitié au bout de sa course sans aucun renfort : bien plus que sa charge. Pour qu'une
-  TR-2L y arrive en butée, il lui faudrait porter près de cinq tonnes.
-- **Sur la Mune** (0,17 g), la même roue porte environ 2,8 kN, toujours sous le plancher. Mais la moitié de 4,9 kN,
-  multipliée par le renfort de 1,2 que la courbe lui laisse, n'en tient que 2,7 : la roue arrive en butée.
+- **On Minmus** (0.05 g), a wheel of a 10 t rover on six wheels carries about 0.8 kN. Its spring, worked out for
+  4.9 kN, holds roughly half of that at the end of its travel without any boost: far more than its load. For a TR-2L
+  to reach its end-stop there, it would have to carry nearly five tons.
+- **On the Mun** (0.17 g), the same wheel carries about 2.8 kN, still below the floor. But half of 4.9 kN, multiplied
+  by the boost of 1.2 the curve leaves it, only holds 2.7: the wheel reaches its end-stop.
 
-C'est le plancher qui place le trou sur la Mune. Sans lui, Minmus serait pire, puisque sa courbe vaut 0 ; avec lui,
-un vaisseau de taille raisonnable n'y arrive pas en butée. Le coupable frappe là où la gravité est assez faible pour
-que la courbe casse le renfort, mais assez forte pour que la charge d'une roue dépasse ce que tient un ressort
-calculé sur le plancher : la Mune, et d'après ces formules (seule la Mune est mesurée ici) les corps de gravité voisine,
-Ike, Dres, Vall, Eeloo, et dans une moindre mesure Duna et Moho. Sur Minmus, Gilly, Bop et Pol, seul un rover très
-lourd y arrive. Laythe et Tylo perdent peu : leur courbe vaut 0,7, et le renfort y atteint encore son plafond.
+It is the floor that puts the gap on the Mun. Without it, Minmus would be worse, since its curve is 0; with it, a
+vessel of reasonable size does not reach its end-stops there. The culprit strikes where gravity is weak enough for the
+curve to break the boost, but strong enough for a wheel's load to exceed what a spring worked out on the floor holds:
+the Mun, and going by these formulas (only the Mun is measured here) the bodies of similar gravity, Ike, Dres, Vall,
+Eeloo, and to a lesser extent Duna and Moho. On Minmus, Gilly, Bop and Pol, only a very heavy rover gets there. Laythe
+and Tylo lose little: their curve is 0.7, and the boost still reaches its cap there.
 
-## Ce qu'on voit
+## What you see
 
-Un rover en butée tombe sous le [troisième coupable](a-bottomed-wheel-hides-its-weight-from-the-tyres.md) : la butée
-porte le reste de son poids, que les pneus ne voient pas. Sur la Mune, un rover lourd garé freins serrés glisse :
-sur une pente, il descend lentement, à vitesse constante, sans jamais s'arrêter.
+A rover on its end-stops falls to the [third culprit](a-bottomed-wheel-hides-its-weight-from-the-tyres.md): the
+end-stop carries the rest of its weight, which the tyres do not see. On the Mun, a heavy rover parked with its brakes on
+slides: on a slope, it goes down slowly, at a constant speed, without ever stopping.
 
-Le joueur qui le remarque passe ses ressorts en manuel et les durcit au curseur, jusqu'à sortir ses roues de la
-butée ; ou il les règle au hasard, faute de savoir ce qui se passe.
+The player who notices it switches their springs to *Override* and stiffens them with the slider, until the wheels come off
+their end-stops; or sets them at random, for lack of knowing what is going on.
 
-## Ce que change le mod
+## What the mod changes
 
-Sous 1 g, le mod refait le ressort que KSP vient de calculer, avec les mêmes formules, mais la courbe de Kerbin, 1, à
-la place de celle du corps. Une roue s'enfonce alors comme sur Kerbin, sur tous les corps plus légers. Il ne garde ce
-ressort que s'il est plus raide que celui de KSP, et ne l'écrit sur la roue qu'avec les mêmes seuils que KSP. En mode
-automatique comme en manuel : la courbe n'est pas un curseur, et un ressort réglé à la main en dépend aussi.
+Below 1 g, the mod redoes the spring KSP has just worked out, with the same formulas, but with Kerbin's curve, 1, in
+place of the body's. A wheel then sinks as on Kerbin, on every lighter body. It only keeps this spring if it is stiffer
+than KSP's, and only writes it on the wheel with the same thresholds as KSP. In automatic mode as in manual: the curve
+is not a slider, and a spring set by hand depends on it too.
 
-Sur Kerbin et au-dessus, la courbe vaut 1 ou plus : le mod ne change rien. Le plancher reste celui de KSP : sur un
-corps très léger, le ressort d'une roue peu chargée était déjà plus raide que sa charge ne le demande, et le renfort,
-qui grandit avec l'enfoncement, y reste faible puisqu'elle s'enfonce peu. Le réglage `kerbinCurve` du fichier
-`settings.cfg` coupe cette partie du mod.
+On Kerbin and above, the curve is 1 or more: the mod changes nothing. The floor stays KSP's: on a very light body, the
+spring of a lightly loaded wheel was already stiffer than its load calls for, and the boost, which grows with how far
+the wheel sinks, stays small there since it sinks little. The `kerbinCurve` setting of the `settings.cfg` file turns
+this part of the mod off.
 
-## Le voir
+## Seeing it
 
-Avec [KSP Diag - Suspension](https://github.com/lhervier/KSP-Diag-Suspension), qui donne roue par roue
-l'enfoncement de la suspension, la butée et le ressort. Le même rover de 10 t sur six TR-2L, freins serrés, ressorts
-laissés au jeu, chargé sur Kerbin, sur la Mune et sur Minmus : les sauvegardes et le script sont dans
-[A heavy rover on Kerbin, the Mun and Minmus](../checked/a-heavy-rover-on-kerbin-the-mun-and-minmus.md). Sans le
-mod, il s'enfonce aux trois quarts sur Kerbin, à moitié sur Minmus, et jusqu'en butée sur la Mune.
+With [KSP Diag - Suspension](https://github.com/lhervier/KSP-Diag-Suspension), which gives, wheel by wheel, how far
+the suspension has sunk, the end-stop and the spring. The same 10 t rover on six TR-2L, brakes on, springs left to the
+game, loaded on Kerbin, on the Mun and on Minmus: the saves and the script are in
+[A heavy rover on Kerbin, the Mun and Minmus](../checked/a-heavy-rover-on-kerbin-the-mun-and-minmus.md). Without the
+mod, it sinks to three quarters on Kerbin, to half on Minmus, and down to its end-stops on the Mun.
 
-Attention à une lecture du Diag : la part du poids qu'il montre portée par les suspensions est celle que lisent les
-pneus. Avec le mod, elle comprend la force de la butée que le mod leur donne (le troisième coupable) : elle ne dit rien
-de ce coupable-ci, que montrent l'enfoncement et la butée.
+Beware of one reading of the Diag: the share of the weight it shows carried by the suspensions is the one the tyres
+read. With the mod, it includes the end-stop force the mod gives them (the third culprit): it says nothing about this
+culprit, which the sinking and the end-stop show.
 
-## Dans le code du mod
+## In the mod's code
 
-Un postfixe de `ModuleWheelSuspension.SuspensionSpringUpdate`, dans
-[Src/SpringGravityCurve.cs](../../Src/SpringGravityCurve.cs), qui passe avant celui de l'amortisseur (celui-ci part de
-l'amortisseur écrit ici). Il ne fait rien quand la courbe du corps n'est pas plus faible que celle de Kerbin ; il lit
-la gravité du corps seule, sans `Vessel.gravityMultiplier`, que KSP abaisse le temps de poser un vaisseau au
-chargement, sur Kerbin aussi :
+A postfix of `ModuleWheelSuspension.SuspensionSpringUpdate`, in
+[Src/SpringGravityCurve.cs](../../Src/SpringGravityCurve.cs), which runs before the damper's (that one starts from
+the damper written here). It does nothing when the body's curve is not weaker than Kerbin's; it reads the body's
+gravity alone, without `Vessel.gravityMultiplier`, which KSP lowers while it puts a vessel down on loading, on Kerbin
+too:
 
 ```csharp
 float gee = (float)s.vessel.mainBody.GeeASL;
@@ -129,7 +127,7 @@ if (geeCurve >= kerbinCurve)
 }
 ```
 
-Puis les formules de KSP, la courbe de Kerbin à la place de celle du corps :
+Then KSP's formulas, with Kerbin's curve in place of the body's:
 
 ```csharp
 float boost = 1f + Mathf.Clamp(s.suspCompression * kerbinCurve, -1f, BoostClamp(s));

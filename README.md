@@ -122,33 +122,30 @@ the air.
 
 **→ Full chapter: [Second culprit: a suspension in the air keeps its old settings](docs/the-culprits/a-suspension-in-the-air-keeps-its-settings.md)**
 
-### Troisième coupable : une roue en butée cache son poids aux pneus
+### Third culprit: a bottomed wheel hides its weight from the tyres
 
-*(En français, à traduire avant le commit.)* Les pneus de KSP passent par Vehicle Physics Pro (VPP), qui ne pèse pas
-le vaisseau : il lit la charge de chaque roue dans la force de sa suspension, et en tire l'adhérence du pneu, ce qui le
-retient sur une pente et ce qui arrête son glissement. Quand une roue arrive en butée, ce qui arrive sur un rover lourd
-sur la Mune, en travers d'une pente ou avec des ressorts réglés mous, la butée porte le reste du poids, mais sa force
-n'est rapportée nulle part : VPP croit la roue moins chargée qu'elle ne l'est. Le rover perd l'adhérence qui devrait le
-retenir : il glisse de côté sur du plat, et descend une pente à vitesse constante, freins serrés. Ni PhysX ni Unity
-ne donnent la force de la butée, et un bug de Unity cache celle des liaisons entre les pièces, qui aurait permis de
-la déduire roue par roue. Le mod la retrouve par un bilan sur le vaisseau entier, où ces liaisons s'annulent : ce que
-gagnent ou perdent sa quantité de mouvement et son moment cinétique, moins toutes les forces connues. Il la partage
-entre les roues en butée, et l'ajoute à celle que VPP lit.
+KSP's tyres go through Vehicle Physics Pro (VPP), which does not weigh the vessel: it reads each wheel's load in the
+force of its suspension, and draws from it the tyre's grip, what holds it on a slope and what stops it sliding. When a
+wheel reaches its end-stop, as happens on a heavy rover on the Mun, across a slope or with springs set soft, the
+end-stop carries the rest of the weight, but its force is reported nowhere: VPP believes the wheel carries less than it
+does. The rover loses the grip that should hold it back: it slides sideways on flat ground, and goes down a slope at a
+constant speed, brakes on. Neither PhysX nor Unity gives the force of the end-stop, and a Unity bug hides that of the
+joints between parts, which would have let it be worked out wheel by wheel. The mod finds it through a balance of the
+whole vessel, where those joints cancel out: what its momentum and its angular momentum gain or lose, minus all the
+known forces. It shares it between the bottomed wheels, and adds it to the force VPP reads.
 
-**→ Chapitre complet : [Troisième coupable : une roue en butée cache son poids aux pneus](docs/the-culprits/a-bottomed-wheel-hides-its-weight-from-the-tyres.md)**
+**→ Full chapter: [Third culprit: a bottomed wheel hides its weight from the tyres](docs/the-culprits/a-bottomed-wheel-hides-its-weight-from-the-tyres.md)**
 
-### Quatrième coupable : sous 1 g, le ressort automatique est trop mou
+### Fourth culprit: below 1 g, the automatic spring is too soft
 
-*(En français, à traduire avant le commit.)* KSP renforce le ressort d'une suspension à mesure qu'elle s'enfonce,
-mais à un rythme pondéré par une courbe de la gravité du corps : tout le renfort sur Kerbin, un dixième sur la Mune,
-rien sur Minmus. Or la charge pour laquelle le ressort est calculé suit déjà la gravité : la courbe n'a pas de raison
-physique, et sous 1 g, elle donne au ressort d'un rover lourd bien moins que ce qu'il aurait sur Kerbin pour la même
-charge. Sur la Mune, ses roues s'enfoncent jusqu'en butée, et le troisième coupable le fait glisser, freins serrés.
-Sur les corps les plus légers, c'est le plancher d'une demi-tonne qui protège les rovers de taille raisonnable :
-le trou est sur la Mune. Le mod calcule le ressort
-avec la courbe de Kerbin sur tous les corps plus légers.
+KSP stiffens a suspension's spring as it sinks, but at a pace weighted by a curve of the body's gravity: the whole
+boost on Kerbin, a tenth of it on the Mun, none on Minmus. Yet the load the spring is worked out for already follows
+gravity: the curve has no physical reason, and below 1 g, it gives a heavy rover's spring much less than it would get
+on Kerbin for the same load. On the Mun, its wheels sink down to their end-stops, and the third culprit makes it
+slide, brakes on. On the lightest bodies, the half-ton floor protects rovers of reasonable size: the gap is on the
+Mun. The mod works out the spring with Kerbin's curve on every lighter body.
 
-**→ Chapitre complet : [Quatrième coupable : sous 1 g, le ressort automatique est trop mou](docs/the-culprits/the-automatic-spring-too-soft-below-1-g.md)**
+**→ Full chapter: [Fourth culprit: below 1 g, the automatic spring is too soft](docs/the-culprits/the-automatic-spring-too-soft-below-1-g.md)**
 
 ## Checked
 
