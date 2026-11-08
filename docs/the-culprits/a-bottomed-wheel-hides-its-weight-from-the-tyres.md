@@ -142,11 +142,18 @@ answers both faults: the force is its own, it no longer has to look for it.
 
 ### The vessel taken as one body
 
-At each step, the mod makes the vessel the rigid body VPP expects: its mass, its centre of mass, its inertia (that of
-each part, brought back to the centre of mass), its velocity and its rotation, drawn from the momentum and the angular
-momentum of all its parts. To that it adds the forces known for the step: gravity, as KSP applies it to each part; the
-forces and torques of KSP's modules (engines, reaction wheels…); the spring of each wheel; the force of each tyre, as
-VPP applied it.
+At each step where it follows the vessel ([When it works](#when-it-works)), the mod makes the vessel the rigid body VPP
+expects: its mass, its centre of mass, its inertia (that of each part, brought back to the centre of mass), its
+velocity and its rotation, drawn from the momentum and the angular momentum of all its parts. To that it adds the forces
+known for the step: gravity, as KSP applies it to each part; the forces and torques of KSP's modules (engines, reaction
+wheels…); the spring of each wheel; the force of each tyre, as VPP applied it.
+
+The parts are read once per step for the whole mod: the dampers of the
+[first culprit](a-damper-too-strong-for-a-light-vessel.md#in-the-mods-code) read the same ones. Where each part is and
+how it is turned are read at every step, and how fast it moves only when the end-stops need it. Its mass and its own
+inertia change only with its resources and the vessel's structure: they are kept from one step to the next, and read
+again as soon as KSP changes the part's mass, as when fuel burns. Why: [Keeping the cost
+low](../performance.md#keeping-the-cost-low).
 
 ### One step ahead
 
@@ -217,6 +224,19 @@ its end-stop during the step:
 ```csharp
 float closing = -Vector3.Dot(p.body.GetPointVelocity(p.hit.point), p.axis);
 near = (1f - p.compression) * travel <= Mathf.Max(0f, closing + fall) * dt;
+```
+
+The vessel's rigidbodies come from [Src/VesselBodies.cs](../../Src/VesselBodies.cs), read once per vessel and per step
+for the whole mod (`VesselBodies.Of`), the dampers' fix included: each body's centre of mass and rotation, the latter
+from the part's transform (`Rigidbody.rotation` would first sync the transforms of the whole scene); its mass and its
+own inertia kept from one step to the next, read again as soon as the mass KSP gives the part changes, and every 50
+steps in any case. `Solve` adds what only the end-stops need, read at the steps it follows the vessel: each body's
+velocity and angular momentum (`ReadMotion`). Why the reads are kept this short:
+[Keeping the cost low](../performance.md#keeping-the-cost-low).
+
+```csharp
+VesselBodies read = VesselBodies.Of(vessel);
+read.ReadMotion();
 ```
 
 The vessel as one body (`HoldEndStops`): the momentum, the angular momentum and the inertia of all its parts, about

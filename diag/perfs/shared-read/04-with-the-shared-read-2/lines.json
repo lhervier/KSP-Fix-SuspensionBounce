@@ -1,0 +1,255 @@
+[
+ {
+  "scenario": "crane-rest",
+  "save": "SuspensionBounceCraneMunAuto",
+  "windowInFront": [
+   true,
+   true,
+   true
+  ],
+  "parkedStill": true,
+  "cost": [
+   {
+    "steps": 501.0,
+    "suspensions": 10.0,
+    "total": 285.9,
+    "wheels": 229.3,
+    "mod": 56.6,
+    "dampers": 36.5,
+    "endStops": 20.1,
+    "records": 8.1,
+    "solver": 0.0,
+    "solverRuns": 0.0
+   },
+   {
+    "steps": 500.0,
+    "suspensions": 10.0,
+    "total": 291.1,
+    "wheels": 234.1,
+    "mod": 56.9,
+    "dampers": 36.6,
+    "endStops": 20.3,
+    "records": 8.2,
+    "solver": 0.0,
+    "solverRuns": 0.0
+   },
+   {
+    "steps": 501.0,
+    "suspensions": 10.0,
+    "total": 282.8,
+    "wheels": 227.0,
+    "mod": 55.8,
+    "dampers": 35.9,
+    "endStops": 19.9,
+    "records": 7.9,
+    "solver": 0.0,
+    "solverRuns": 0.0
+   }
+  ],
+  "speed": 0.0025392510178456665,
+  "heading": [
+   177.6659374282938,
+   177.4483755386358
+  ]
+ },
+ {
+  "scenario": "crane-end-stops",
+  "save": "SuspensionBounceCraneMunAuto",
+  "windowInFront": [
+   true,
+   true,
+   true
+  ],
+  "parkedStill": true,
+  "cost": [
+   {
+    "steps": 501.0,
+    "suspensions": 10.0,
+    "total": 338.0,
+    "wheels": 50.0,
+    "mod": 287.9,
+    "dampers": 18.7,
+    "endStops": 269.2,
+    "records": 7.7,
+    "solver": 205.2,
+    "solverRuns": 501.0
+   },
+   {
+    "steps": 500.0,
+    "suspensions": 10.0,
+    "total": 337.3,
+    "wheels": 50.0,
+    "mod": 287.3,
+    "dampers": 18.8,
+    "endStops": 268.5,
+    "records": 7.6,
+    "solver": 204.5,
+    "solverRuns": 500.0
+   },
+   {
+    "steps": 501.0,
+    "suspensions": 10.0,
+    "total": 340.2,
+    "wheels": 50.0,
+    "mod": 290.2,
+    "dampers": 18.7,
+    "endStops": 271.6,
+    "records": 7.7,
+    "solver": 207.5,
+    "solverRuns": 501.0
+   }
+  ],
+  "speed": 0.003370814485658494,
+  "heading": [
+   177.37171935048963,
+   176.95793637730327
+  ]
+ },
+ {
+  "scenario": "rover-driving",
+  "save": "SuspensionBounceRoverFlat",
+  "windowInFront": [
+   true,
+   true,
+   true
+  ],
+  "parkedStill": true,
+  "cost": [
+   {
+    "steps": 500.0,
+    "suspensions": 4.0,
+    "total": 49.4,
+    "wheels": 32.4,
+    "mod": 17.0,
+    "dampers": 8.4,
+    "endStops": 8.6,
+    "records": 1.2,
+    "solver": 0.0,
+    "solverRuns": 0.0
+   },
+   {
+    "steps": 501.0,
+    "suspensions": 4.0,
+    "total": 49.8,
+    "wheels": 32.6,
+    "mod": 17.2,
+    "dampers": 8.6,
+    "endStops": 8.6,
+    "records": 1.2,
+    "solver": 0.0,
+    "solverRuns": 0.0
+   },
+   {
+    "steps": 501.0,
+    "suspensions": 4.0,
+    "total": 49.5,
+    "wheels": 32.3,
+    "mod": 17.2,
+    "dampers": 8.4,
+    "endStops": 8.8,
+    "records": 1.2,
+    "solver": 0.0,
+    "solverRuns": 4.0
+   }
+  ],
+  "speed": 29.2316441141864,
+  "heading": [
+   201.0718583091992,
+   200.2686912372964
+  ]
+ },
+ {
+  "scenario": "rover-end-stops-driving",
+  "save": "SuspensionBounceEndStopsFlat",
+  "windowInFront": [
+   true,
+   true,
+   true
+  ],
+  "parkedStill": false,
+  "cost": [
+   {
+    "steps": 500.0,
+    "suspensions": 4.0,
+    "total": 66.4,
+    "wheels": 31.2,
+    "mod": 35.3,
+    "dampers": 6.8,
+    "endStops": 28.5,
+    "records": 1.2,
+    "solver": 14.3,
+    "solverRuns": 500.0
+   },
+   {
+    "steps": 500.0,
+    "suspensions": 4.0,
+    "total": 65.9,
+    "wheels": 31.4,
+    "mod": 34.5,
+    "dampers": 6.7,
+    "endStops": 27.8,
+    "records": 1.2,
+    "solver": 13.7,
+    "solverRuns": 499.0
+   }
+  ],
+  "speed": 29.25086572840004,
+  "heading": [
+   200.9119981275849,
+   200.04697341462045
+  ]
+ },
+ {
+  "scenario": "light-rover-eve",
+  "save": "SuspensionBounceLightRoverEve",
+  "windowInFront": [
+   true,
+   true,
+   true
+  ],
+  "parkedStill": true,
+  "cost": [
+   {
+    "steps": 500.0,
+    "suspensions": 4.0,
+    "total": 201.8,
+    "wheels": 183.5,
+    "mod": 18.4,
+    "dampers": 8.4,
+    "endStops": 10.0,
+    "records": 0.8,
+    "solver": 0.0,
+    "solverRuns": 0.0
+   },
+   {
+    "steps": 501.0,
+    "suspensions": 4.0,
+    "total": 202.4,
+    "wheels": 184.3,
+    "mod": 18.1,
+    "dampers": 8.3,
+    "endStops": 9.8,
+    "records": 0.7,
+    "solver": 0.0,
+    "solverRuns": 0.0
+   },
+   {
+    "steps": 500.0,
+    "suspensions": 4.0,
+    "total": 205.4,
+    "wheels": 186.9,
+    "mod": 18.6,
+    "dampers": 8.4,
+    "endStops": 10.2,
+    "records": 0.7,
+    "solver": 0.0,
+    "solverRuns": 0.0
+   }
+  ],
+  "speed": 0.00010043198365923229,
+  "heading": [
+   71.57431466365823,
+   71.56555559790976
+  ]
+ }
+]

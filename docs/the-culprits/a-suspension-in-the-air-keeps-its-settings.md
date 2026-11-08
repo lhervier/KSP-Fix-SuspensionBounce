@@ -60,6 +60,10 @@ float share = (float)vessel.totalMass / Mathf.Max(count.All, 1);
 Apply(__instance, wheel, share, StockDamper(__instance), true);
 ```
 
+`Apply` is the one of the first culprit: it caps the share by the mass the vessel sets in motion at the wheel, from the
+same read of the vessel's rigidbodies, made once per vessel and per step
+([In the mod's code](a-damper-too-strong-for-a-light-vessel.md#in-the-mods-code)).
+
 In `Apply`, a limited suspension stays marked as such as long as its wheel is in the air: at the next contact, if
 KSP's damper no longer needs capping, the mod writes it on the wheel in place of its own.
 

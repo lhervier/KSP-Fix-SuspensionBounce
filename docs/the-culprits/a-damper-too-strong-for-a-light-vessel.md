@@ -113,7 +113,19 @@ Apply(__instance, wheel, share, StockDamper(__instance), false);
 In `Apply`, the share is capped by the mass the vessel sets in motion at the point of contact, worked out by
 `VesselInertia.EffectiveMass` in [Src/VesselInertia.cs](../../Src/VesselInertia.cs). `VesselInertia` adds up, once per
 vessel and per step, the mass, the centre of mass and the inertia tensor of the parts' rigidbodies (each part's own
-inertia, turned to world axes, plus its mass about the centre of mass). At the point of contact
+inertia, turned to world axes, plus its mass about the centre of mass).
+
+The rigidbodies themselves are read in [Src/VesselBodies.cs](../../Src/VesselBodies.cs) (`VesselBodies.Of`): once per
+vessel and per step, for this fix and for the [end-stops](a-bottomed-wheel-hides-its-weight-from-the-tyres.md#in-the-mods-code)
+alike, whichever asks first. Each step reads the centre of mass of every rigidbody and its rotation, the latter from
+the part's transform: `Rigidbody.rotation` would first sync the transforms of the whole scene. A rigidbody's mass and
+its own inertia only change with the part's resources and the vessel's structure: they are kept from one step to the
+next, and read again as soon as the mass KSP gives the part changes (`Part.physicsMass`, which
+`FlightIntegrator.UpdateMassStats` writes on the rigidbody at each step), and every 50 steps in any case. A vessel at
+rest pays every step for these reads, which is why they are kept short:
+[Keeping the cost low](../performance.md#keeping-the-cost-low).
+
+At the point of contact
 (`wheelState[0].hit.point`), along the normal of the surface (`wheelState[0].hit.normal`), or at the wheel along the
 local vertical when it touches nothing, the vessel answers as a mass m, with
 1 / m = 1 / M + (r × n) · I⁻¹ · (r × n), r the point from the centre of mass, n the normal:
