@@ -17,6 +17,8 @@ namespace com.github.lhervier.ksp.fix.suspensionbounce
         {
             Settings.Load();
             Log.Info($"Version {typeof(KSPFixSuspensionBounce).Assembly.GetName().Version}, log level {Log.Level}");
+            // The read of the vessels' bodies that the damper and end-stop fixes share.
+            VesselBodies.Install();
             if (SpringGravityCurve.Enabled)
             {
                 // Ahead of the damper fix, which starts from the damper the spring fix sets.

@@ -60,9 +60,6 @@ namespace com.github.lhervier.ksp.fix.suspensionbounce
         /// </summary>
         public static int Passes = 4;
 
-        /// <summary>How many physics steps a body's mass and inertia are kept before being read again.</summary>
-        public static int RefreshSteps = 50;
-
         /// <summary>What the fix found for one wheel at the last physics step, kept for reading in game.</summary>
         public class Probe
         {
@@ -116,25 +113,13 @@ namespace com.github.lhervier.ksp.fix.suspensionbounce
             internal Vessel vessel;
             internal float time = -1f;
             internal readonly List<Probe> wheels = new List<Probe>();
-            /// <summary>The bodies followed, and their state at the end of the step before (same index).</summary>
+            /// <summary>The bodies followed, and their velocity at the end of the step before (same index).</summary>
             internal readonly List<Rigidbody> bodies = new List<Rigidbody>();
-            internal readonly List<BodyState> states = new List<BodyState>();
+            internal readonly List<Vector3> velocities = new List<Vector3>();
             internal float statesTime = -1f;
             /// <summary>The vessel's acceleration KSP applied at the last two steps, the latest second.</summary>
             internal float accelerationTime0 = -1f, accelerationTime1 = -1f;
             internal Vector3 acceleration0, acceleration1;
-        }
-
-        internal struct BodyState
-        {
-            public Vector3 velocity;
-            public Vector3 spin;
-            // Read from Unity every RefreshSteps steps only: they change with the resources and the structure.
-            public float mass;
-            public Vector3 inertia;
-            public Quaternion inertiaRotation;
-            public Transform transform;
-            public int age;
         }
 
         /// <summary>Forces a part's modules handed its body for one physics step (FlightIntegrator.Integrate).</summary>
@@ -489,23 +474,6 @@ namespace com.github.lhervier.ksp.fix.suspensionbounce
             return balance;
         }
 
-        /// <summary>A body of the vessel as it ends the last step: read once from Unity.</summary>
-        private struct BodyNow
-        {
-            public Rigidbody body;
-            public float mass;
-            public Vector3 centre;
-            public Vector3 velocity;
-            public Vector3 spin;
-            public Vector3 inertia;
-            public Quaternion inertiaRotation;
-            /// <summary>The body's principal axes in world axes.</summary>
-            public Quaternion frame;
-            public Transform transform;
-            public int age;
-        }
-
-        private static BodyNow[] bodiesNow = new BodyNow[64];
         private static readonly List<Probe> groundedProbes = new List<Probe>();
 
         /// <summary>
@@ -571,63 +539,19 @@ namespace com.github.lhervier.ksp.fix.suspensionbounce
             }
             balance.watching = true;
 
-            // The bodies of the vessel as they end the last step, read once.
+            // The bodies of the vessel as they end the last step, read once per step for all the fixes (VesselBodies):
+            // their mass and inertia kept from the steps before, their velocities read now.
             bool followed = Mathf.Abs(now - balance.statesTime - dt) < dt * 0.25f;
-            int count = 0;
+            VesselBodies read = VesselBodies.Of(vessel);
+            read.ReadMotion();
+            VesselBodies.Body[] bodiesNow = read.bodies;
+            int count = read.count;
             float mass = 0f;
             Vector3 centre = Vector3.zero;
-            List<Part> parts = vessel.parts;
-            for (int i = 0; i < parts.Count; i++)
+            for (int i = 0; i < count; i++)
             {
-                Part part = parts[i];
-                if (part == null)
-                {
-                    continue;
-                }
-                for (int k = 0; k < 2; k++)
-                {
-                    Rigidbody body = k == 0 ? part.rb : part.servoRb;
-                    if (body == null)
-                    {
-                        continue;
-                    }
-                    if (count == bodiesNow.Length)
-                    {
-                        Array.Resize(ref bodiesNow, count * 2);
-                    }
-                    // The mass and inertia kept from the step before, when they are of the same body and not too old.
-                    BodyState kept = default(BodyState);
-                    bool keep = followed && count < balance.bodies.Count && ReferenceEquals(balance.bodies[count], body);
-                    if (keep)
-                    {
-                        kept = balance.states[count];
-                        keep = kept.age < RefreshSteps;
-                    }
-                    if (!keep)
-                    {
-                        kept.mass = body.mass;
-                        kept.inertia = body.inertiaTensor;
-                        kept.inertiaRotation = body.inertiaTensorRotation;
-                        kept.transform = body.transform;
-                        kept.age = 0;
-                    }
-                    BodyNow b;
-                    b.body = body;
-                    b.mass = kept.mass;
-                    b.inertia = kept.inertia;
-                    b.inertiaRotation = kept.inertiaRotation;
-                    b.transform = kept.transform;
-                    b.age = kept.age + 1;
-                    b.centre = body.worldCenterOfMass;
-                    b.velocity = body.velocity;
-                    // The transform's rotation, which the physics wrote back at the end of the step: Rigidbody.rotation would
-                    // sync every transform of the scene first (Physics.autoSyncTransforms), at a high cost.
-                    b.frame = kept.transform.rotation * kept.inertiaRotation;
-                    b.spin = Spin(b.frame, kept.inertia, body.angularVelocity);
-                    bodiesNow[count++] = b;
-                    mass += b.mass;
-                    centre += b.mass * b.centre;
-                }
+                mass += bodiesNow[i].mass;
+                centre += bodiesNow[i].mass * bodiesNow[i].centre;
             }
             balance.totalMass = mass;
             if (mass > 0f)
@@ -667,14 +591,14 @@ namespace com.github.lhervier.ksp.fix.suspensionbounce
             groundedProbes.Clear();
             for (int i = 0; i < count; i++)
             {
-                ref BodyNow b = ref bodiesNow[i];
+                ref VesselBodies.Body b = ref bodiesNow[i];
                 Applied a = AppliedAt(b.body, now - dt);
                 Vector3 f = b.mass * acceleration + a.force;
                 known += f;
                 knownTorque += Vector3.Cross(b.centre - centre, f) + a.torque;
                 if (complete)
                 {
-                    change += b.mass * (b.velocity - balance.states[i].velocity) / dt;
+                    change += b.mass * (b.velocity - balance.velocities[i]) / dt;
                 }
             }
             for (int i = 0; i < balance.wheels.Count; i++)
@@ -717,29 +641,24 @@ namespace com.github.lhervier.ksp.fix.suspensionbounce
 
             if (Hold && accelerationKnown && mass > 0f && groundedProbes.Count > 0)
             {
-                HoldEndStops(balance, centre, count, known, knownTorque, now, dt);
+                HoldEndStops(balance, bodiesNow, count, centre, known, knownTorque, now, dt);
             }
 
             // Kept for the next step.
             if (balance.bodies.Count != count)
             {
                 balance.bodies.Clear();
-                balance.states.Clear();
+                balance.velocities.Clear();
                 for (int i = 0; i < count; i++)
                 {
                     balance.bodies.Add(null);
-                    balance.states.Add(default(BodyState));
+                    balance.velocities.Add(Vector3.zero);
                 }
             }
             for (int i = 0; i < count; i++)
             {
                 balance.bodies[i] = bodiesNow[i].body;
-                ref BodyNow b = ref bodiesNow[i];
-                balance.states[i] = new BodyState
-                {
-                    velocity = b.velocity, spin = b.spin, mass = b.mass, inertia = b.inertia,
-                    inertiaRotation = b.inertiaRotation, transform = b.transform, age = b.age
-                };
+                balance.velocities[i] = bodiesNow[i].velocity;
             }
             balance.statesTime = now;
         }
@@ -753,8 +672,8 @@ namespace com.github.lhervier.ksp.fix.suspensionbounce
 
         /// <summary>
         /// Holds the wheels on the ground at their end-stops for the coming physics step, in place of PhysX's limit. The
-        /// vessel is taken as one rigid body (the bodies of <see cref="bodiesNow"/>, <paramref name="count"/> of them,
-        /// about <paramref name="centre"/>), pushed by the <paramref name="known"/> forces and
+        /// vessel is taken as one rigid body (the first <paramref name="count"/> of <paramref name="bodies"/>, about
+        /// <paramref name="centre"/>, their velocities read for this step), pushed by the <paramref name="known"/> forces and
         /// <paramref name="knownTorque"/> of the last step. Finds the least normal forces, none pulling, that keep every
         /// wheel of <see cref="groundedProbes"/> from going past the end of its travel by the end of the coming step,
         /// all wheels at once; applies them to the wheels' bodies at their contacts, and records them in
@@ -762,8 +681,8 @@ namespace com.github.lhervier.ksp.fix.suspensionbounce
         /// resting on its end-stop gets its share of the load beyond its spring; a wheel leaving it, or far from it, gets
         /// nothing; a wheel coming fast is slowed to just reach it.
         /// </summary>
-        private static void HoldEndStops(Balance balance, Vector3 centre, int count, Vector3 known, Vector3 knownTorque,
-            float now, float dt)
+        private static void HoldEndStops(Balance balance, VesselBodies.Body[] bodies, int count, Vector3 centre,
+            Vector3 known, Vector3 knownTorque, float now, float dt)
         {
             int n = groundedProbes.Count;
             if (holdB.Length < n)
@@ -783,7 +702,7 @@ namespace com.github.lhervier.ksp.fix.suspensionbounce
             Sym3 inertia = default(Sym3);
             for (int i = 0; i < count; i++)
             {
-                ref BodyNow b = ref bodiesNow[i];
+                ref VesselBodies.Body b = ref bodies[i];
                 Vector3 offset = b.centre - centre;
                 Vector3 p = b.mass * b.velocity;
                 momentum += p;
@@ -912,9 +831,11 @@ namespace com.github.lhervier.ksp.fix.suspensionbounce
             /// <summary>Adds a body's inertia, given by its principal axes in world axes and its principal moments.</summary>
             public void AddPrincipal(Quaternion frame, Vector3 moments)
             {
-                AddOuter(frame * Vector3.right, moments.x);
-                AddOuter(frame * Vector3.up, moments.y);
-                AddOuter(frame * Vector3.forward, moments.z);
+                Vector3 ex, ey, ez;
+                VesselBodies.Axes(frame, out ex, out ey, out ez);
+                AddOuter(ex, moments.x);
+                AddOuter(ey, moments.y);
+                AddOuter(ez, moments.z);
             }
 
             /// <summary>Adds the inertia of a point mass at <paramref name="offset"/> (parallel axis theorem).</summary>
@@ -967,16 +888,6 @@ namespace com.github.lhervier.ksp.fix.suspensionbounce
                 inverse.zz = (xx * yy - xy * xy) / det;
                 return true;
             }
-        }
-
-        /// <summary>
-        /// The angular momentum of a body about its centre of mass, in world axes, from its principal axes
-        /// <paramref name="frame"/>, its principal moments <paramref name="inertia"/> and its angular velocity.
-        /// </summary>
-        private static Vector3 Spin(Quaternion frame, Vector3 inertia, Vector3 angularVelocity)
-        {
-            Vector3 local = Quaternion.Inverse(frame) * angularVelocity;
-            return frame * Vector3.Scale(inertia, local);
         }
     }
 }
