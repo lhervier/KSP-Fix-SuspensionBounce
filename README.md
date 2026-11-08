@@ -3,7 +3,7 @@
 **⚠️ Not finished yet.** This is a new fix, not a finished mod. The code and the conclusions on this page can still
 change.
 
-A fix for stock KSP 1.12: a few Harmony patches, in four source files. Here is what it fixes:
+A fix for stock KSP 1.12: a few Harmony patches, in four source files, and a fifth that measures their cost. Here is what it fixes:
 
 > **In KSP, landing legs and wheels often go haywire.** A light probe leaves the runway on its own legs, a landing leg
 > set down alone in EVA construction flies off, a light rover that stands still on Kerbin never comes to rest on Eve,
@@ -215,6 +215,15 @@ on; with it, it stays clear of its end-stops on the Mun, and holds.
 
 **→ Full chapter: [A heavy rover on Kerbin, the Mun and Minmus](docs/checked/a-heavy-rover-on-kerbin-the-mun-and-minmus.md)**
 
+## Performance
+
+The mod works at every physics step, on every wheel of every vessel in flight. Timed by its own measure
+(`measureCost = true` in its `settings.cfg`, off by default and then not installed at all) and by KSPProfiler, against
+the same scenarios without the fixes: a rover driving on flat ground pays about 0.02 ms more per physics step, which
+no frame shows; the dearest case found, a crane of 112 parts resting on its end-stops, about 0.14 ms more per physics
+step, or about 0.05 ms per frame.
+
+**→ Full chapter: [Performance](docs/performance.md)**
 
 ## Limits
 

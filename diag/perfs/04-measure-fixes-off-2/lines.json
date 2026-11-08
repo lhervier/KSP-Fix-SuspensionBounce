@@ -1,0 +1,230 @@
+[
+ {
+  "scenario": "crane-rest",
+  "save": "SuspensionBounceCraneMunAuto",
+  "windowInFront": [
+   true,
+   true,
+   true
+  ],
+  "cost": [
+   {
+    "steps": 501.0,
+    "suspensions": 10.0,
+    "total": 266.9,
+    "wheels": 262.7,
+    "mod": 4.2,
+    "dampers": 0.5,
+    "endStops": 3.7,
+    "records": 2.7,
+    "solver": 0.0,
+    "solverRuns": 0.0
+   },
+   {
+    "steps": 500.0,
+    "suspensions": 10.0,
+    "total": 266.3,
+    "wheels": 262.3,
+    "mod": 4.1,
+    "dampers": 0.4,
+    "endStops": 3.7,
+    "records": 2.7,
+    "solver": 0.0,
+    "solverRuns": 0.0
+   }
+  ],
+  "speed": 0.00962712847065956
+ },
+ {
+  "scenario": "crane-end-stops",
+  "save": "SuspensionBounceCraneMunAuto",
+  "windowInFront": [
+   true,
+   true,
+   true
+  ],
+  "cost": [
+   {
+    "steps": 501.0,
+    "suspensions": 10.0,
+    "total": 265.4,
+    "wheels": 261.3,
+    "mod": 4.1,
+    "dampers": 0.4,
+    "endStops": 3.7,
+    "records": 2.7,
+    "solver": 0.0,
+    "solverRuns": 0.0
+   },
+   {
+    "steps": 500.0,
+    "suspensions": 10.0,
+    "total": 266.2,
+    "wheels": 262.1,
+    "mod": 4.1,
+    "dampers": 0.4,
+    "endStops": 3.7,
+    "records": 2.7,
+    "solver": 0.0,
+    "solverRuns": 0.0
+   },
+   {
+    "steps": 501.0,
+    "suspensions": 10.0,
+    "total": 267.0,
+    "wheels": 262.9,
+    "mod": 4.1,
+    "dampers": 0.4,
+    "endStops": 3.7,
+    "records": 2.7,
+    "solver": 0.0,
+    "solverRuns": 0.0
+   }
+  ],
+  "speed": 0.1355160708893448
+ },
+ {
+  "scenario": "rover-driving",
+  "save": "SuspensionBounceRoverFlat",
+  "windowInFront": [
+   true,
+   true,
+   true
+  ],
+  "cost": [
+   {
+    "steps": 501.0,
+    "suspensions": 4.0,
+    "total": 34.3,
+    "wheels": 33.1,
+    "mod": 1.2,
+    "dampers": 0.2,
+    "endStops": 1.0,
+    "records": 0.5,
+    "solver": 0.0,
+    "solverRuns": 0.0
+   },
+   {
+    "steps": 500.0,
+    "suspensions": 4.0,
+    "total": 34.3,
+    "wheels": 33.2,
+    "mod": 1.2,
+    "dampers": 0.2,
+    "endStops": 1.0,
+    "records": 0.5,
+    "solver": 0.0,
+    "solverRuns": 0.0
+   },
+   {
+    "steps": 500.0,
+    "suspensions": 4.0,
+    "total": 34.6,
+    "wheels": 33.3,
+    "mod": 1.3,
+    "dampers": 0.2,
+    "endStops": 1.1,
+    "records": 0.5,
+    "solver": 0.0,
+    "solverRuns": 0.0
+   }
+  ],
+  "speed": 29.226616548540036
+ },
+ {
+  "scenario": "rover-end-stops-driving",
+  "save": "SuspensionBounceEndStopsFlat",
+  "windowInFront": [
+   true,
+   true,
+   true
+  ],
+  "cost": [
+   {
+    "steps": 500.0,
+    "suspensions": 4.0,
+    "total": 31.0,
+    "wheels": 29.8,
+    "mod": 1.2,
+    "dampers": 0.2,
+    "endStops": 1.0,
+    "records": 0.5,
+    "solver": 0.0,
+    "solverRuns": 0.0
+   },
+   {
+    "steps": 501.0,
+    "suspensions": 4.0,
+    "total": 30.5,
+    "wheels": 29.3,
+    "mod": 1.2,
+    "dampers": 0.2,
+    "endStops": 1.0,
+    "records": 0.5,
+    "solver": 0.0,
+    "solverRuns": 0.0
+   },
+   {
+    "steps": 501.0,
+    "suspensions": 4.0,
+    "total": 30.4,
+    "wheels": 29.2,
+    "mod": 1.2,
+    "dampers": 0.2,
+    "endStops": 1.0,
+    "records": 0.5,
+    "solver": 0.0,
+    "solverRuns": 0.0
+   }
+  ],
+  "speed": 27.27894088197343
+ },
+ {
+  "scenario": "light-rover-eve",
+  "save": "SuspensionBounceLightRoverEve",
+  "windowInFront": [
+   true,
+   true,
+   true
+  ],
+  "cost": [
+   {
+    "steps": 501.0,
+    "suspensions": 4.0,
+    "total": 92.1,
+    "wheels": 91.2,
+    "mod": 0.9,
+    "dampers": 0.1,
+    "endStops": 0.8,
+    "records": 0.2,
+    "solver": 0.0,
+    "solverRuns": 0.0
+   },
+   {
+    "steps": 500.0,
+    "suspensions": 4.0,
+    "total": 85.4,
+    "wheels": 84.4,
+    "mod": 0.9,
+    "dampers": 0.1,
+    "endStops": 0.8,
+    "records": 0.3,
+    "solver": 0.0,
+    "solverRuns": 0.0
+   },
+   {
+    "steps": 501.0,
+    "suspensions": 4.0,
+    "total": 34.8,
+    "wheels": 34.0,
+    "mod": 0.9,
+    "dampers": 0.1,
+    "endStops": 0.7,
+    "records": 0.2,
+    "solver": 0.0,
+    "solverRuns": 0.0
+   }
+  ],
+  "speed": 0.0030972711709693628
+ }
+]

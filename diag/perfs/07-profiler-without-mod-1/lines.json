@@ -1,0 +1,40 @@
+[
+ {
+  "scenario": "crane-end-stops",
+  "save": "SuspensionBounceCraneMunAuto",
+  "windowInFront": [
+   true,
+   true,
+   true
+  ],
+  "cost": [],
+  "profiler": {
+   "open": true,
+   "autoCapture": false,
+   "capturing": false,
+   "capturedFrames": 5431,
+   "framesToCapture": 10000
+  },
+  "csv": "crane-end-stops.csv",
+  "speed": 0.09964738757453812
+ },
+ {
+  "scenario": "rover-driving",
+  "save": "SuspensionBounceRoverFlat",
+  "windowInFront": [
+   true,
+   true,
+   true
+  ],
+  "cost": [],
+  "profiler": {
+   "open": true,
+   "autoCapture": false,
+   "capturing": false,
+   "capturedFrames": 8516,
+   "framesToCapture": 10000
+  },
+  "csv": "rover-driving.csv",
+  "speed": 26.46383840356152
+ }
+]

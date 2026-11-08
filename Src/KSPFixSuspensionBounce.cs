@@ -30,15 +30,18 @@ namespace com.github.lhervier.ksp.fix.suspensionbounce
                     Log.Error($"Could not install the spring gravity curve fix, the springs are the game's: {e}");
                 }
             }
-            try
+            if (SuspensionDamper.Enabled)
             {
-                SuspensionDamper.Install(new Harmony(HarmonyId));
-                Log.Info("Suspension damper fix installed");
-            }
-            catch (Exception e)
-            {
-                Log.Error("Could not install the suspension damper fix, the dampers are the ones KSP sets, as " +
-                    $"without it: {e}");
+                try
+                {
+                    SuspensionDamper.Install(new Harmony(HarmonyId));
+                    Log.Info("Suspension damper fix installed");
+                }
+                catch (Exception e)
+                {
+                    Log.Error("Could not install the suspension damper fix, the dampers are the ones KSP sets, as " +
+                        $"without it: {e}");
+                }
             }
             if (BumpStopLoad.Enabled)
             {
@@ -51,6 +54,10 @@ namespace com.github.lhervier.ksp.fix.suspensionbounce
                 {
                     Log.Error($"Could not install the bump-stop load fix, the tyres read the spring alone: {e}");
                 }
+            }
+            if (CostMeasure.Enabled)
+            {
+                CostMeasure.Install(new Harmony(HarmonyId + ".costmeasure"));
             }
         }
     }

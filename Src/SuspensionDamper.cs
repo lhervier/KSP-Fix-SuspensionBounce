@@ -18,6 +18,9 @@ namespace com.github.lhervier.ksp.fix.suspensionbounce
     /// </summary>
     internal static class SuspensionDamper
     {
+        /// <summary>Whether the fix is installed. Read from settings.cfg.</summary>
+        public static bool Enabled = true;
+
         private static readonly MethodInfo SuspensionSpringUpdate =
             AccessTools.DeclaredMethod(typeof(ModuleWheelSuspension), "SuspensionSpringUpdate");
 
