@@ -26,8 +26,6 @@ namespace com.github.lhervier.ksp.fix.suspensionbounce
         internal struct Body
         {
             public Rigidbody body;
-            /// <summary>Whether this is the second body of a robotic part (Part.servoRb) rather than a part's own.</summary>
-            public bool servo;
             public Transform transform;
 
             // Kept from step to step: read at readTime.
@@ -88,8 +86,8 @@ namespace com.github.lhervier.ksp.fix.suspensionbounce
         }
 
         /// <summary>
-        /// Returns the vessel's inertia as one rigid body for the current step, from the parts' own bodies; null when it
-        /// has none. Call on what <see cref="Of"/> returned in the same step.
+        /// Returns the vessel's inertia as one rigid body for the current step, from all its bodies; null when it has
+        /// none. Call on what <see cref="Of"/> returned in the same step.
         /// </summary>
         internal VesselInertia Inertia()
         {
@@ -171,7 +169,6 @@ namespace com.github.lhervier.ksp.fix.suspensionbounce
                     if (changed || b.again || now - b.readTime >= keepFor || now < b.readTime)
                     {
                         b.body = body;
-                        b.servo = k == 1;
                         b.transform = body.transform;
                         b.mass = body.mass;
                         b.inertia = body.inertiaTensor;

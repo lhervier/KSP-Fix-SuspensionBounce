@@ -113,7 +113,8 @@ Apply(__instance, wheel, share, StockDamper(__instance), false);
 In `Apply`, the share is capped by the mass the vessel sets in motion at the point of contact, worked out by
 `VesselInertia.EffectiveMass` in [Src/VesselInertia.cs](../../Src/VesselInertia.cs). `VesselInertia` adds up, once per
 vessel and per step, the mass, the centre of mass and the inertia tensor of the parts' rigidbodies (each part's own
-inertia, turned to world axes, plus its mass about the centre of mass).
+inertia, turned to world axes, plus its mass about the centre of mass). A robotic part has two rigidbodies, its own and
+its moving half's (`Part.servoRb`), and KSP gives each half of the part's mass: both count.
 
 The rigidbodies themselves are read in [Src/VesselBodies.cs](../../Src/VesselBodies.cs) (`VesselBodies.Of`): once per
 vessel and per step, for this fix and for the [end-stops](a-bottomed-wheel-hides-its-weight-from-the-tyres.md#in-the-mods-code)
