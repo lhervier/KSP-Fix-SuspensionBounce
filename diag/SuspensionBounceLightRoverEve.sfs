@@ -887,6 +887,22 @@ GAME
 					{
 					}
 				}
+				MODULE
+				{
+					name = ParkingBrakeModule
+					isEnabled = True
+					brakeActive = True
+					stagingEnabled = True
+					EVENTS
+					{
+					}
+					ACTIONS
+					{
+					}
+					UPGRADESAPPLIED
+					{
+					}
+				}
 				RESOURCE
 				{
 					name = ElectricCharge

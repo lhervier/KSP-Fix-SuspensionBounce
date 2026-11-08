@@ -7,8 +7,9 @@ fork of KSPProfiler that KSP-Util-MCPServer can drive (or both), wait for the ma
 
     python run-cost.py --folder <your sandbox game> --ksp <your KSP folder> --out out
 
-For each scenario it does what docs/performance.md asks a player to do: load the save, set the camera, hold the
-wheel throttle for a scenario that drives, then let the game run --settle seconds. It then measures for --seconds
+For each scenario it does what docs/performance.md asks a player to do: load the save, let the parking brake go
+(the saves were made with Parking Brake on: installed, it holds the vessel still as it loads), set the camera, hold
+the wheel throttle for a scenario that drives, then let the game run --settle seconds. It then measures for --seconds
 seconds without asking anything of the game: the script sleeps. With the profiler, the measure is a capture of its
 window (Start capture, Stop capture, Export to CSV); with this mod's measure, the lines it writes to KSP.log every
 10 s, of which those whose 10 s lie entirely inside the measure are kept.
@@ -155,6 +156,35 @@ def log(*parts):
     print(time.strftime("%H:%M:%S"), *parts, flush=True)
 
 
+def parking_brake_on():
+    """Whether Parking Brake is installed and holds a vessel of the scene."""
+    try:
+        answer = call("get_member", type="ParkingBrake.ParkingBrakeModule", member="BrakeActive")
+    except RuntimeError:
+        return False
+    return bool(answer.get("value") if isinstance(answer, dict) else answer)
+
+
+def release_parking_brake():
+    """Waits until Parking Brake has nothing left to cancel, the vessel still, then lets it go, as its button in the
+    window of a command part does; the brakes stay as they are. A vessel that never looks still is let go after
+    15 s. Returns whether it was still."""
+    still = 0
+    for attempt in range(30):
+        state = call("get_member", type="FlightGlobals",
+                     members=["ActiveVessel.srfSpeed", "ActiveVessel.angularVelocity"])["values"]
+        spin = state["ActiveVessel.angularVelocity"]
+        turning = (spin["x"] ** 2 + spin["y"] ** 2 + spin["z"] ** 2) ** 0.5
+        still = still + 1 if state["ActiveVessel.srfSpeed"] < 0.01 and turning < 0.01 else 0
+        if still >= 4 and attempt >= 6:
+            break
+        call("wait", seconds=0.5)
+    # A vessel whose suspensions push it within each physics step never looks still, whatever Parking Brake cancels:
+    # it is let go after 15 s all the same.
+    call("call_method", type="ParkingBrake.ParkingBrakeModule", method="ToggleParkingBrake")
+    return still >= 4
+
+
 def set_springs(strength):
     """Sets the springs of the active vessel's wheels by hand, in each wheel's window: Spring/Damper on Override,
     then Spring Strength."""
@@ -179,6 +209,7 @@ def scenario(name, options, profiler, out):
     """Plays one scenario and returns what it measured."""
     case = SCENARIOS[name]
     call("load_save", folder=options.folder, save=case["save"])
+    parked_still = release_parking_brake() if parking_brake_on() else None
     call("set_camera", distance=options.camera[0], heading=options.camera[1], pitch=options.camera[2])
     if "springs" in case:
         # Lowered once the vessel has settled on its wheels, and in two steps: dropped at once from a fresh load, the
@@ -208,7 +239,8 @@ def scenario(name, options, profiler, out):
     front_at_stop = in_front(options.window_title)
     # The game writes its log a moment late.
     time.sleep(1)
-    row = dict(scenario=name, save=case["save"], windowInFront=[front, front_at_start, front_at_stop])
+    row = dict(scenario=name, save=case["save"], windowInFront=[front, front_at_start, front_at_stop],
+               parkedStill=parked_still)
     row["cost"] = cost_lines(options.ksp, start, log_size(options.ksp))
     if profiler:
         row["profiler"] = call("profiler_state")

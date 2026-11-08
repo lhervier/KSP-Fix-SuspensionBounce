@@ -215,6 +215,14 @@ on; with it, it stays clear of its end-stops on the Mun, and holds.
 
 **→ Full chapter: [A heavy rover on Kerbin, the Mun and Minmus](docs/checked/a-heavy-rover-on-kerbin-the-mun-and-minmus.md)**
 
+### A rover driving in a straight line
+
+A rover set off from standstill on flat ground, throttle held, its steering let go: not a culprit, a check that this
+mod does not make a rover turn on its own. Set off from the same place, it keeps its line within a degree in 30 s,
+with or without this mod.
+
+**→ Full chapter: [A rover driving in a straight line](docs/checked/a-rover-driving-in-a-straight-line.md)**
+
 ## Performance
 
 The mod works at every physics step, on every wheel of every vessel in flight. Timed by its own measure

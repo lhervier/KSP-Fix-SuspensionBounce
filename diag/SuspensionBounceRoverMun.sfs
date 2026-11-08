@@ -4657,6 +4657,22 @@ GAME
 					{
 					}
 				}
+				MODULE
+				{
+					name = ParkingBrakeModule
+					isEnabled = True
+					brakeActive = True
+					stagingEnabled = True
+					EVENTS
+					{
+					}
+					ACTIONS
+					{
+					}
+					UPGRADESAPPLIED
+					{
+					}
+				}
 				RESOURCE
 				{
 					name = ElectricCharge
@@ -5202,6 +5218,22 @@ GAME
 						0 = Land,Kerbin
 						0 = Suborbit,Mun
 						0 = Land,Mun
+					}
+					UPGRADESAPPLIED
+					{
+					}
+				}
+				MODULE
+				{
+					name = ParkingBrakeModule
+					isEnabled = True
+					brakeActive = True
+					stagingEnabled = True
+					EVENTS
+					{
+					}
+					ACTIONS
+					{
 					}
 					UPGRADESAPPLIED
 					{

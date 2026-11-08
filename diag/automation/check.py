@@ -22,16 +22,22 @@ Cases, and the save or craft each one loads (in the folder diag of the repositor
     rover-minmus     SuspensionBounceRoverMinmus: the same rover on Minmus
     hinge-rover-eve  SuspensionBounceHingeRoverEve: a rover on Eve lowered on its wheels by its hinges
     hinge-rover-eve-manual  SuspensionBounceHingeRoverEveManual: the same, its springs set by hand
-    crane-mun        SuspensionBounceCraneMun: a crane of 33 t on the Mun, brakes on, its springs set by hand,
-                     held by Parking Brake (which must be installed) until it is still, then let go
+    crane-mun        SuspensionBounceCraneMun: a crane of 33 t on the Mun, brakes on, its springs set by hand
     crane-mun-auto   SuspensionBounceCraneMunAuto: the same, its springs left to the game
     end-stops-flat   SuspensionBounceEndStopsFlat: a rover whose springs are at their lowest, driven at 24 m/s
     end-stops-slope  SuspensionBounceEndStopsSlope: a rover with soft springs, braked across a slope of about 20 deg
+    straight-line    SuspensionBounceRoverFlat: a rover driven from standstill on flat ground, wheel throttle held,
+                     steering, brakes and SAS let go
 
-For each trial it loads the save, does what the case asks a player to do, records KSP Diag - Suspension (its button
-Record CSV) for --seconds seconds or for the whole drive, and takes a screenshot at the end. It then prints one line
-per trial from the recording: the speed over the ground, how many wheels touch the ground and are bottomed out, the
-share of the weight the suspensions carry, and, with --ksp, the lines KSP.log gained ("damaged wheel", "Exploded").
+The saves (but the probe's craft) were made with Parking Brake on: with Parking Brake installed, the vessel is held
+still as it loads, wherever the game puts it, and let go once it has nothing left to cancel, brakes kept as saved.
+Without Parking Brake, the vessel settles on its own as it loads.
+
+For each trial it loads the save, lets the parking brake go, does what the case asks a player to do, records KSP
+Diag - Suspension (its button Record CSV) for --seconds seconds or for the whole drive, and takes a screenshot at the
+end. It then prints one line per trial from the recording: the speed over the ground, how many wheels touch the ground
+and are bottomed out, the share of the weight the suspensions carry, how far the vessel turned, and, with --ksp, the
+lines KSP.log gained ("damaged wheel", "Exploded").
 The lone leg is not the active vessel, which KSP Diag - Suspension reads: for it, only the log lines and a
 screenshot every 4 s. Everything goes to --out: lines.json, the CSV files, the screenshots. It never saves the game, and quits
 KSP at the end (unless --keep-running is given).
@@ -60,10 +66,11 @@ CASES = {
     "rover-minmus": dict(save="SuspensionBounceRoverMinmus", seconds=60),
     "hinge-rover-eve": dict(save="SuspensionBounceHingeRoverEve", seconds=45, hinges=True),
     "hinge-rover-eve-manual": dict(save="SuspensionBounceHingeRoverEveManual", seconds=45, hinges=True),
-    "crane-mun": dict(save="SuspensionBounceCraneMun", seconds=60, parking=True),
-    "crane-mun-auto": dict(save="SuspensionBounceCraneMunAuto", seconds=60, parking=True),
+    "crane-mun": dict(save="SuspensionBounceCraneMun", seconds=60),
+    "crane-mun-auto": dict(save="SuspensionBounceCraneMunAuto", seconds=60),
     "end-stops-flat": dict(save="SuspensionBounceEndStopsFlat", drive=dict(heading=201, speed=24, distance=800)),
     "end-stops-slope": dict(save="SuspensionBounceEndStopsSlope", seconds=30),
+    "straight-line": dict(save="SuspensionBounceRoverFlat", seconds=30, coast=0.3),
 }
 
 # The landing leg the engineer picks up on the lander, by its persistent id in the save.
@@ -132,22 +139,34 @@ def set_brakes(percent):
                 pass  # a suspension without brakes: a landing leg
 
 
+def parking_brake_on():
+    """Whether Parking Brake is installed and holds a vessel of the scene."""
+    try:
+        answer = call("get_member", type="ParkingBrake.ParkingBrakeModule", member="BrakeActive")
+    except RuntimeError:
+        return False
+    return bool(answer.get("value") if isinstance(answer, dict) else answer)
+
+
 def release_parking_brake():
     """Waits until Parking Brake has nothing left to cancel, then lets the vessel go, as its button in the window of a
-    command part does. The save was made with the parking brake on, the vessel at rest: loaded, the vessel is pushed
-    out of the ground and set in motion, which the parking brake stops at every physics step."""
+    command part does; the brakes stay as they are. The save was made with the parking brake on, the vessel at rest:
+    loaded, the vessel is pushed out of the ground and set in motion, which the parking brake stops at every physics
+    step. A vessel that never looks still is let go after 15 s. Returns whether it was still."""
     still = 0
-    for attempt in range(120):
+    for attempt in range(30):
         state = call("get_member", type="FlightGlobals",
                      members=["ActiveVessel.srfSpeed", "ActiveVessel.angularVelocity"])["values"]
         spin = state["ActiveVessel.angularVelocity"]
         turning = (spin["x"] ** 2 + spin["y"] ** 2 + spin["z"] ** 2) ** 0.5
         still = still + 1 if state["ActiveVessel.srfSpeed"] < 0.01 and turning < 0.01 else 0
         if still >= 4 and attempt >= 6:
-            call("call_method", type="ParkingBrake.ParkingBrakeModule", method="ToggleParkingBrake")
-            return
+            break
         call("wait", seconds=0.5)
-    raise RuntimeError("the vessel never came to rest under the parking brake")
+    # A vessel whose suspensions push it within each physics step never looks still, whatever Parking Brake cancels:
+    # it is let go after 15 s all the same.
+    call("call_method", type="ParkingBrake.ParkingBrakeModule", method="ToggleParkingBrake")
+    return still >= 4
 
 
 def place_leg(case):
@@ -217,6 +236,10 @@ def summary(path, moving_from=None):
         share_none_grounded=round(sum(1 for v in vessel if int(v["grounded"]) == 0) / len(vessel), 3),
         share_bottomed=round(sum(1 for v in vessel if int(v["bottomed"]) > 0) / len(vessel), 3),
         supported_pct_median=round(percentile([number(v["supported_pct"]) for v in vessel], 0.5) or 0, 1))
+    # How far the vessel turned about the vertical, its yaw rate summed over the recording, and its fastest turn.
+    yaw = [(float(v["time_s"]), number(v["yaw_rate_deg_s"]) or 0) for v in vessel]
+    result["turned_deg"] = round(sum(rate * (t1 - t0) for (t0, rate), (t1, _) in zip(yaw, yaw[1:])), 2)
+    result["max_yaw_rate_deg_s"] = round(max(abs(rate) for _, rate in yaw), 3)
     # The wheels on the ground over the last third: how far they sink, and their spring.
     late_wheels = [w for r in rows[len(rows) * 2 // 3:] for w in r if w["is_grounded"] in ("1", "True", "true")]
     if late_wheels:
@@ -265,12 +288,16 @@ def trial(n, name, case, options, out):
     row = dict(trial=n)
     if "vessel" in case:
         switch(case["vessel"])
+    if parking_brake_on():
+        row["parked_still"] = release_parking_brake()
     if case.get("hinges"):
         lower_hinges()
     if options.brakes is not None:
         set_brakes(options.brakes)
-    if case.get("parking"):
-        release_parking_brake()
+    if "coast" in case:
+        # Steering let go, and SAS off: nothing steers the rover but its own wheels.
+        call("set_flight", sas=False)
+        call("set_controls", wheel_throttle=case["coast"], brakes=False)
     if "ground" in case:
         # KSP Diag - Suspension reads nothing of the leg: its window would only hide the scene.
         call("suspension_show_window", visible=False)
@@ -290,6 +317,8 @@ def trial(n, name, case, options, out):
         shutil.copyfile(path, kept)
         row.update(summary(kept, moving_from=20 if case.get("drive") else None))
         row["parts"] = [parts, len(call("list_parts"))]
+        if "coast" in case:
+            call("set_controls")
     call("screenshot", path=os.path.join(out, "%s-%s-%02d.png" % (name, options.label, n)), return_image=False)
     if options.ksp:
         row["log"] = log_lines(options.ksp, start)

@@ -1169,6 +1169,22 @@ GAME
 									{
 									}
 								}
+								MODULE
+								{
+									name = ParkingBrakeModule
+									isEnabled = True
+									brakeActive = True
+									stagingEnabled = True
+									EVENTS
+									{
+									}
+									ACTIONS
+									{
+									}
+									UPGRADESAPPLIED
+									{
+									}
+								}
 							}
 						}
 					}
@@ -11790,6 +11806,22 @@ GAME
 						0 = Orbit,Gilly
 						0 = Flight,Eve
 						0 = Land,Eve
+					}
+					UPGRADESAPPLIED
+					{
+					}
+				}
+				MODULE
+				{
+					name = ParkingBrakeModule
+					isEnabled = True
+					brakeActive = True
+					stagingEnabled = True
+					EVENTS
+					{
+					}
+					ACTIONS
+					{
 					}
 					UPGRADESAPPLIED
 					{

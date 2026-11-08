@@ -4655,6 +4655,22 @@ GAME
 					{
 					}
 				}
+				MODULE
+				{
+					name = ParkingBrakeModule
+					isEnabled = True
+					brakeActive = True
+					stagingEnabled = True
+					EVENTS
+					{
+					}
+					ACTIONS
+					{
+					}
+					UPGRADESAPPLIED
+					{
+					}
+				}
 				RESOURCE
 				{
 					name = ElectricCharge
@@ -5198,6 +5214,22 @@ GAME
 						0 = Flight,Eve
 						0 = Flight,Kerbin
 						0 = Land,Kerbin
+					}
+					UPGRADESAPPLIED
+					{
+					}
+				}
+				MODULE
+				{
+					name = ParkingBrakeModule
+					isEnabled = True
+					brakeActive = True
+					stagingEnabled = True
+					EVENTS
+					{
+					}
+					ACTIONS
+					{
 					}
 					UPGRADESAPPLIED
 					{
