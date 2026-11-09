@@ -4323,7 +4323,7 @@ GAME
 				Gear = False, 0
 				Light = False, 0
 				RCS = False, 0
-				SAS = True, 1032.99999999935
+				SAS = False, 1032.99999999935
 				Brakes = True, 1179.73999999922
 				Abort = False, 0
 				Custom01 = False, 0

@@ -156,32 +156,71 @@ def log(*parts):
     print(time.strftime("%H:%M:%S"), *parts, flush=True)
 
 
-def parking_brake_on():
-    """Whether Parking Brake is installed and holds a vessel of the scene."""
-    try:
-        answer = call("get_member", type="ParkingBrake.ParkingBrakeModule", member="BrakeActive")
-    except RuntimeError:
-        return False
-    return bool(answer.get("value") if isinstance(answer, dict) else answer)
+def open_menu(part):
+    """Opens the window of a part, as a right click does, and returns what it shows, once the game has filled it: just
+    after a save is loaded, a window can open empty for a moment."""
+    for attempt in range(20):
+        menus = call("part_menu", action="open", part=part) if attempt == 0 else call("read_part_menus")
+        items = next((m["items"] for m in menus if m["part"] == part), [])
+        if any(item["kind"] == "button" for item in items):
+            return items
+        call("wait", seconds=0.25)
+    return items
 
 
-def release_parking_brake():
-    """Waits until Parking Brake has nothing left to cancel, the vessel still, then lets it go, as its button in the
-    window of a command part does; the brakes stay as they are. A vessel that never looks still is let go after
-    15 s. Returns whether it was still."""
+def item_named(items, name):
+    """The item of a window whose field or event has this name, None when the window does not show it."""
+    return next((i for i in items if name in (i.get("name"), i.get("event"))), None)
+
+
+# Parking Brake's button in the window of a command part: the name of its event, and its label while the brake holds,
+# in each language the mod is translated to (in English for the others).
+PARKING_BRAKE = "ToggleParkingBrake"
+PARKING_BRAKE_HELD = ("Disengage parking brake", "Desacionando o freio de mão", "Выключить стояночный тормоз")
+
+
+def parking_brake():
+    """The part of the active vessel whose window shows Parking Brake's button, and whether the brake holds, as the
+    button's label tells; (None, False) when no window of the vessel shows it."""
+    for part in call("list_parts"):
+        button = item_named(open_menu(part["id"]), PARKING_BRAKE)
+        if button:
+            return part["id"], button["label"] in PARKING_BRAKE_HELD
+    call("part_menu", action="close")
+    return None, False
+
+
+def release_parking_brake(part):
+    """Waits until Parking Brake has nothing left to cancel, the vessel still, then lets it go by its button in the
+    window of the command part, as the player does; the brakes stay as they are. A vessel that never looks still is
+    let go after 15 s. Returns whether it was still."""
     still = 0
+    last = None
     for attempt in range(30):
-        state = call("get_member", type="FlightGlobals",
-                     members=["ActiveVessel.srfSpeed", "ActiveVessel.angularVelocity"])["values"]
-        spin = state["ActiveVessel.angularVelocity"]
-        turning = (spin["x"] ** 2 + spin["y"] ** 2 + spin["z"] ** 2) ** 0.5
-        still = still + 1 if state["ActiveVessel.srfSpeed"] < 0.01 and turning < 0.01 else 0
+        vessel = call("get_state")["vessel"]
+        # How far it turned since the last look, half a second ago, in degrees: heading and pitch.
+        turned = 360.0 if last is None else max(abs((vessel["heading"] - last["heading"] + 180) % 360 - 180),
+                                                abs(vessel["pitch"] - last["pitch"]))
+        last = vessel
+        still = still + 1 if vessel["surfaceSpeed"] < 0.01 and turned < 0.25 else 0
         if still >= 4 and attempt >= 6:
             break
         call("wait", seconds=0.5)
     # A vessel whose suspensions push it within each physics step never looks still, whatever Parking Brake cancels:
     # it is let go after 15 s all the same.
-    call("call_method", type="ParkingBrake.ParkingBrakeModule", method="ToggleParkingBrake")
+    open_menu(part)
+    menus = call("press_part_button", part=part, button=PARKING_BRAKE)
+    # The mod renames its button at once, but the window shows the new label only from its next update.
+    for attempt in range(8):
+        items = next((m["items"] for m in menus if m["part"] == part), [])
+        button = item_named(items, PARKING_BRAKE)
+        if button and button["label"] not in PARKING_BRAKE_HELD:
+            break
+        call("wait", seconds=0.25)
+        menus = call("read_part_menus")
+    else:
+        raise RuntimeError("Parking Brake still holds the vessel after its button was pressed")
+    call("part_menu", action="close")
     return still >= 4
 
 
@@ -209,7 +248,8 @@ def scenario(name, options, profiler, out):
     """Plays one scenario and returns what it measured."""
     case = SCENARIOS[name]
     call("load_save", folder=options.folder, save=case["save"])
-    parked_still = release_parking_brake() if parking_brake_on() else None
+    brake_part, held = parking_brake()
+    parked_still = release_parking_brake(brake_part) if held else None
     call("set_camera", distance=options.camera[0], heading=options.camera[1], pitch=options.camera[2])
     if "springs" in case:
         # Lowered once the vessel has settled on its wheels, and in two steps: dropped at once from a fresh load, the

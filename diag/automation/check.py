@@ -122,50 +122,102 @@ def switch(name):
     raise SystemExit("the game never let %s be switched to" % name)
 
 
+def open_menu(part):
+    """Opens the window of a part, as a right click does, and returns what it shows, once the game has filled it: just
+    after a save is loaded, a window can open empty for a moment."""
+    for attempt in range(20):
+        menus = call("part_menu", action="open", part=part) if attempt == 0 else call("read_part_menus")
+        items = next((m["items"] for m in menus if m["part"] == part), [])
+        if any(item["kind"] == "button" for item in items):
+            return items
+        call("wait", seconds=0.25)
+    return items
+
+
+def item_named(items, name):
+    """The item of a window whose field or event has this name, None when the window does not show it."""
+    return next((i for i in items if name in (i.get("name"), i.get("event"))), None)
+
+
+def click_until(part, field, value):
+    """Clicks a switch or a cycle of the part's open window until its value is the one given."""
+    for attempt in range(8):
+        items = call("read_part_menus")
+        items = next((m["items"] for m in items if m["part"] == part), [])
+        if item_named(items, field)["value"] == value:
+            return
+        call("click_part_menu_field", part=part, field=field)
+    raise RuntimeError("%s never got to %s" % (field, value))
+
+
 def lower_hinges():
-    """Plays the rover's KAL-1000 sequence backwards at full speed: its hinges lower the rover onto its wheels."""
-    for method, args in (("SetPlaySpeed", [100]), ("ToggleDirection", []), ("SequencePlay", [])):
-        call("call_method", type="ModuleRoboticController", method=method, arguments=args)
+    """Plays the rover's KAL-1000 sequence backwards at full speed, from the controller's window: play speed 100 %,
+    direction reversed, play. Its hinges lower the rover onto its wheels."""
+    kal = next(p["id"] for p in call("list_parts") if p["name"] == "controller1000")
+    open_menu(kal)
+    call("set_part_menu_value", part=kal, field="sequencePlaySpeed", value=100)
+    click_until(kal, "sequenceDirectionIndex", 1)  # the second state: backwards
+    click_until(kal, "sequencePlayingIndex", 0)  # the first state: playing
 
 
 def set_brakes(percent):
     """Sets the brake force of every wheel of the active vessel, as its slider in the wheel's window does."""
     for part in call("list_parts"):
-        if "wheel" in part:
-            try:
-                call("set_member", type="ModuleWheelBrakes", match="part.persistentId=%d" % part["id"],
-                     member="brakeTweakable", value=percent)
-            except RuntimeError:
-                pass  # a suspension without brakes: a landing leg
+        if "wheel" in part and item_named(open_menu(part["id"]), "brakeTweakable"):
+            call("set_part_menu_value", part=part["id"], field="brakeTweakable", value=percent)
+    call("part_menu", action="close")
 
 
-def parking_brake_on():
-    """Whether Parking Brake is installed and holds a vessel of the scene."""
-    try:
-        answer = call("get_member", type="ParkingBrake.ParkingBrakeModule", member="BrakeActive")
-    except RuntimeError:
-        return False
-    return bool(answer.get("value") if isinstance(answer, dict) else answer)
+# Parking Brake's button in the window of a command part: the name of its event, and its label while the brake holds,
+# in each language the mod is translated to (in English for the others).
+PARKING_BRAKE = "ToggleParkingBrake"
+PARKING_BRAKE_HELD = ("Disengage parking brake", "Desacionando o freio de mão", "Выключить стояночный тормоз")
 
 
-def release_parking_brake():
-    """Waits until Parking Brake has nothing left to cancel, then lets the vessel go, as its button in the window of a
-    command part does; the brakes stay as they are. The save was made with the parking brake on, the vessel at rest:
-    loaded, the vessel is pushed out of the ground and set in motion, which the parking brake stops at every physics
-    step. A vessel that never looks still is let go after 15 s. Returns whether it was still."""
+def parking_brake():
+    """The part of the active vessel whose window shows Parking Brake's button, and whether the brake holds, as the
+    button's label tells; (None, False) when no window of the vessel shows it: Parking Brake is not installed, or the
+    vessel cannot be controlled (a pod without its crew), and the player could not let it go either."""
+    for part in call("list_parts"):
+        button = item_named(open_menu(part["id"]), PARKING_BRAKE)
+        if button:
+            return part["id"], button["label"] in PARKING_BRAKE_HELD
+    call("part_menu", action="close")
+    return None, False
+
+
+def release_parking_brake(part):
+    """Waits until Parking Brake has nothing left to cancel, then lets the vessel go by its button in the window of
+    the command part, as the player does; the brakes stay as they are. The save was made with the parking brake on,
+    the vessel at rest: loaded, the vessel is pushed out of the ground and set in motion, which the parking brake stops
+    at every physics step. A vessel that never looks still is let go after 15 s. Returns whether it was still."""
     still = 0
+    last = None
     for attempt in range(30):
-        state = call("get_member", type="FlightGlobals",
-                     members=["ActiveVessel.srfSpeed", "ActiveVessel.angularVelocity"])["values"]
-        spin = state["ActiveVessel.angularVelocity"]
-        turning = (spin["x"] ** 2 + spin["y"] ** 2 + spin["z"] ** 2) ** 0.5
-        still = still + 1 if state["ActiveVessel.srfSpeed"] < 0.01 and turning < 0.01 else 0
+        vessel = call("get_state")["vessel"]
+        # How far it turned since the last look, half a second ago, in degrees: heading and pitch.
+        turned = 360.0 if last is None else max(abs((vessel["heading"] - last["heading"] + 180) % 360 - 180),
+                                                abs(vessel["pitch"] - last["pitch"]))
+        last = vessel
+        still = still + 1 if vessel["surfaceSpeed"] < 0.01 and turned < 0.25 else 0
         if still >= 4 and attempt >= 6:
             break
         call("wait", seconds=0.5)
     # A vessel whose suspensions push it within each physics step never looks still, whatever Parking Brake cancels:
     # it is let go after 15 s all the same.
-    call("call_method", type="ParkingBrake.ParkingBrakeModule", method="ToggleParkingBrake")
+    open_menu(part)
+    menus = call("press_part_button", part=part, button=PARKING_BRAKE)
+    # The mod renames its button at once, but the window shows the new label only from its next update.
+    for attempt in range(8):
+        items = next((m["items"] for m in menus if m["part"] == part), [])
+        button = item_named(items, PARKING_BRAKE)
+        if button and button["label"] not in PARKING_BRAKE_HELD:
+            break
+        call("wait", seconds=0.25)
+        menus = call("read_part_menus")
+    else:
+        raise RuntimeError("Parking Brake still holds the vessel after its button was pressed")
+    call("part_menu", action="close")
     return still >= 4
 
 
@@ -288,8 +340,9 @@ def trial(n, name, case, options, out):
     row = dict(trial=n)
     if "vessel" in case:
         switch(case["vessel"])
-    if parking_brake_on():
-        row["parked_still"] = release_parking_brake()
+    brake_part, held = parking_brake()
+    if held:
+        row["parked_still"] = release_parking_brake(brake_part)
     if case.get("hinges"):
         lower_hinges()
     if options.brakes is not None:

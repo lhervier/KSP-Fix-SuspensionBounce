@@ -246,10 +246,22 @@ step, or about 0.05 ms per frame.
   0.8 g) for 3 s, and the suspension sizes its spring for that. This fix does not change it: Terrain Precision Fix's
   `fixLonePartMass` does.
 
+- **Springs and dampers set by hand stay as the player set them.** Players often set them by hand to work around the
+  bounce, springs at their stiffest for instance. The mod sizes the damper and the spring from those settings, not
+  instead of them: with stiff springs set by hand, a rover settles about as it does without this mod; with springs
+  set very soft, its wheels rest on their end-stops and it can hop again. For the best result, switch springs and
+  dampers back to automatic in the wheel's window.
+
 ## Work in progress
 
 - **Other parts with a suspension.** The fix applies to every part with `ModuleWheelSuspension`: landing legs, wheels
   and landing gear. It has been played with LT-05 and LT-1 legs, and RoveMax S2 and TR-2L wheels only.
+- **A rover resting on a broken wheel.** The game turns a broken wheel off: no spring, no damper, no tyre, and its hub
+  rests on the ground as any other part does. The mod leaves it out when it shares the vessel's weight among the
+  wheels. Brakes on and Parking Brake released, the rover of
+  [A light rover on Eve](docs/checked/a-light-rover-on-eve.md) holds on its four wheels; with one of them broken
+  ([diag/SuspensionBounceLightRoverEveBrokenWheel.sfs](diag/SuspensionBounceLightRoverEveBrokenWheel.sfs)), it still
+  slides a few millimetres per second and turns about 3° a minute. Why is not known yet.
 
 ## Installing
 

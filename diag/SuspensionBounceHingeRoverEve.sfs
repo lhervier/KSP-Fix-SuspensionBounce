@@ -89,7 +89,7 @@ GAME
 			IndestructibleFacilities = False
 			ResourceAbundance = 1
 			ReentryHeatScale = 1
-			EnableCommNet = True
+			EnableCommNet = False
 			AllowOtherLaunchSites = True
 			persistKerbalInventories = False
 		}
@@ -1169,22 +1169,6 @@ GAME
 									{
 									}
 								}
-								MODULE
-								{
-									name = ParkingBrakeModule
-									isEnabled = True
-									brakeActive = True
-									stagingEnabled = True
-									EVENTS
-									{
-									}
-									ACTIONS
-									{
-									}
-									UPGRADESAPPLIED
-									{
-									}
-								}
 							}
 						}
 					}
@@ -1224,6 +1208,22 @@ GAME
 						0 = Orbit,Gilly
 						0 = Flight,Eve
 						0 = Land,Eve
+					}
+					UPGRADESAPPLIED
+					{
+					}
+				}
+				MODULE
+				{
+					name = ParkingBrakeModule
+					isEnabled = True
+					brakeActive = True
+					stagingEnabled = True
+					EVENTS
+					{
+					}
+					ACTIONS
+					{
 					}
 					UPGRADESAPPLIED
 					{
@@ -5586,7 +5586,7 @@ GAME
 					isEnabled = True
 					wheelType = MOTORIZED
 					isGrounded = False
-					autoFriction = False
+					autoFriction = True
 					frictionMultiplier = 10
 					stagingEnabled = True
 					EVENTS
@@ -6750,7 +6750,7 @@ GAME
 					isEnabled = True
 					wheelType = MOTORIZED
 					isGrounded = False
-					autoFriction = False
+					autoFriction = True
 					frictionMultiplier = 10
 					stagingEnabled = True
 					EVENTS
@@ -7889,7 +7889,7 @@ GAME
 					isEnabled = True
 					wheelType = MOTORIZED
 					isGrounded = False
-					autoFriction = False
+					autoFriction = True
 					frictionMultiplier = 10
 					stagingEnabled = True
 					EVENTS
@@ -9036,7 +9036,7 @@ GAME
 					isEnabled = True
 					wheelType = MOTORIZED
 					isGrounded = False
-					autoFriction = False
+					autoFriction = True
 					frictionMultiplier = 10
 					stagingEnabled = True
 					EVENTS
@@ -10174,7 +10174,7 @@ GAME
 					isEnabled = True
 					wheelType = MOTORIZED
 					isGrounded = False
-					autoFriction = False
+					autoFriction = True
 					frictionMultiplier = 10
 					stagingEnabled = True
 					EVENTS
@@ -10589,7 +10589,7 @@ GAME
 					isEnabled = True
 					wheelType = MOTORIZED
 					isGrounded = False
-					autoFriction = False
+					autoFriction = True
 					frictionMultiplier = 10
 					stagingEnabled = True
 					EVENTS

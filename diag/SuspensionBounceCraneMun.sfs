@@ -14569,7 +14569,7 @@ GAME
 					isEnabled = True
 					wheelType = MOTORIZED
 					isGrounded = True
-					autoFriction = False
+					autoFriction = True
 					frictionMultiplier = 10
 					stagingEnabled = True
 					EVENTS
@@ -14865,7 +14865,7 @@ GAME
 					isEnabled = True
 					wheelType = MOTORIZED
 					isGrounded = True
-					autoFriction = False
+					autoFriction = True
 					frictionMultiplier = 10
 					stagingEnabled = True
 					EVENTS
@@ -15946,7 +15946,7 @@ GAME
 					isEnabled = True
 					wheelType = MOTORIZED
 					isGrounded = True
-					autoFriction = False
+					autoFriction = True
 					frictionMultiplier = 10
 					stagingEnabled = True
 					EVENTS
@@ -20017,7 +20017,7 @@ GAME
 					isEnabled = True
 					wheelType = MOTORIZED
 					isGrounded = True
-					autoFriction = False
+					autoFriction = True
 					frictionMultiplier = 10
 					stagingEnabled = True
 					EVENTS
@@ -20313,7 +20313,7 @@ GAME
 					isEnabled = True
 					wheelType = MOTORIZED
 					isGrounded = True
-					autoFriction = False
+					autoFriction = True
 					frictionMultiplier = 10
 					stagingEnabled = True
 					EVENTS
@@ -21394,7 +21394,7 @@ GAME
 					isEnabled = True
 					wheelType = MOTORIZED
 					isGrounded = True
-					autoFriction = False
+					autoFriction = True
 					frictionMultiplier = 10
 					stagingEnabled = True
 					EVENTS

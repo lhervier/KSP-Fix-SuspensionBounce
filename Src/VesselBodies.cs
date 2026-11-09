@@ -47,6 +47,10 @@ namespace com.github.lhervier.ksp.fix.suspensionbounce
             public Vector3 velocity;
             /// <summary>The angular momentum about the body's centre of mass, in world axes.</summary>
             public Vector3 spin;
+
+            // EXPERIMENT: read by ReadPoseMotion only (PoseMotion.AnchorReadsPositions).
+            public Vector3 poseVelocity;
+            public Vector3 poseSpin;
         }
 
         private static readonly Dictionary<Vessel, VesselBodies> vessels = new Dictionary<Vessel, VesselBodies>();
@@ -61,6 +65,23 @@ namespace com.github.lhervier.ksp.fix.suspensionbounce
         private int reads;
         private int inertiaRead = -1;
         private VesselInertia inertia;
+        private int motionRead = -1;
+        private int poseMotionRead = -1;
+
+        // The vessel as one rigid body, computed at the read rigidRead.
+        private int rigidRead = -1;
+        private bool rigidValid;
+        private Vector3 rigidCentre, rigidVelocity, rigidAngularVelocity;
+
+        // The bodies of the wheels on the ground: those marked at the step groundedTime, and those of the step before.
+        private HashSet<Rigidbody> groundedNow = new HashSet<Rigidbody>();
+        private HashSet<Rigidbody> groundedLast = new HashSet<Rigidbody>();
+        private float groundedTime = -1f;
+
+        // The bodies of groundedLast as one rigid body, computed at the read groundRead.
+        private int groundRead = -1;
+        private bool groundValid;
+        private Vector3 groundCentre, groundVelocity, groundAngularVelocity;
 
         /// <summary>Forgets the vessels of a scene that is gone, and those destroyed.</summary>
         internal static void Install()
@@ -105,12 +126,185 @@ namespace com.github.lhervier.ksp.fix.suspensionbounce
         /// </summary>
         internal void ReadMotion()
         {
+            if (motionRead == reads)
+            {
+                return;
+            }
+            motionRead = reads;
             for (int i = 0; i < count; i++)
             {
                 ref Body b = ref bodies[i];
                 b.velocity = b.body.velocity;
                 b.spin = Spin(b.frame, b.inertia, b.body.angularVelocity);
             }
+        }
+
+        /// <summary>
+        /// EXPERIMENT: reads the velocity and the angular momentum of every body from its poses (PoseMotion), its
+        /// Rigidbody velocities where it has no pose of the step before. Call on what <see cref="Of"/> returned in the
+        /// same step.
+        /// </summary>
+        internal void ReadPoseMotion()
+        {
+            if (poseMotionRead == reads)
+            {
+                return;
+            }
+            poseMotionRead = reads;
+            for (int i = 0; i < count; i++)
+            {
+                ref Body b = ref bodies[i];
+                Vector3 c, v, w;
+                if (!PoseMotion.Velocity(b.body, out c, out v, out w))
+                {
+                    v = b.body.velocity;
+                    w = b.body.angularVelocity;
+                }
+                else
+                {
+                    PoseMotion.Uses++;
+                }
+                b.poseVelocity = v;
+                b.poseSpin = Spin(b.frame, b.inertia, w);
+            }
+        }
+
+        /// <summary>
+        /// Gives the motion of the vessel taken as one rigid body at the current step, from the velocities of all its
+        /// bodies: its centre of mass, the velocity of that centre, and the angular velocity that carries its angular
+        /// momentum about it, in world axes. Returns false, the outputs zero, when the vessel has no mass or its inertia
+        /// cannot be inverted. Call on what <see cref="Of"/> returned in the same step.
+        /// </summary>
+        internal bool RigidMotion(out Vector3 centre, out Vector3 velocity, out Vector3 angularVelocity)
+        {
+            if (rigidRead != reads)
+            {
+                rigidRead = reads;
+                ComputeRigidMotion();
+            }
+            centre = rigidCentre;
+            velocity = rigidVelocity;
+            angularVelocity = rigidAngularVelocity;
+            return rigidValid;
+        }
+
+        private void ComputeRigidMotion()
+        {
+            rigidValid = Rigid(null, out rigidCentre, out rigidVelocity, out rigidAngularVelocity);
+        }
+
+        /// <summary>
+        /// Notes that the body of a wheel touches the ground at the current physics step, for
+        /// <see cref="GroundedRigidMotion"/>. Call on what <see cref="Of"/> returned in the same step.
+        /// </summary>
+        internal void MarkGrounded(Rigidbody body)
+        {
+            TurnGroundedStep();
+            groundedNow.Add(body);
+        }
+
+        /// <summary>
+        /// Gives the motion, taken as one rigid body, of the bodies of the vessel's wheels that touched the ground at the
+        /// step before (<see cref="MarkGrounded"/>), as <see cref="RigidMotion"/> gives the vessel's: the parts that
+        /// rest on the ground, without what they carry above and that may swing, such as a load hanging from a crane.
+        /// Returns false, the outputs zero, when no wheel was marked at the step before, or their inertia cannot be
+        /// inverted. Call on what <see cref="Of"/> returned in the same step.
+        /// </summary>
+        internal bool GroundedRigidMotion(out Vector3 centre, out Vector3 velocity, out Vector3 angularVelocity)
+        {
+            TurnGroundedStep();
+            if (groundRead != reads)
+            {
+                groundRead = reads;
+                groundValid = groundedLast.Count > 0 &&
+                    Rigid(groundedLast, out groundCentre, out groundVelocity, out groundAngularVelocity);
+            }
+            centre = groundCentre;
+            velocity = groundVelocity;
+            angularVelocity = groundAngularVelocity;
+            return groundValid;
+        }
+
+        // The marks of a step become those of the step before at the first mark or request of the next step.
+        private void TurnGroundedStep()
+        {
+            float now = Time.fixedTime;
+            if (groundedTime == now)
+            {
+                return;
+            }
+            HashSet<Rigidbody> last = groundedLast;
+            groundedLast = groundedNow;
+            groundedNow = last;
+            groundedNow.Clear();
+            // A step skipped (the vessel on rails, or not loaded) leaves no wheel on the ground from the step before.
+            if (now - groundedTime > Time.fixedDeltaTime * 1.5f)
+            {
+                groundedLast.Clear();
+            }
+            groundedTime = now;
+            groundRead = -1;
+        }
+
+        /// <summary>
+        /// Gives the motion of the bodies of the vessel taken as one rigid body, or of those in <paramref name="only"/>
+        /// when it is not null: their centre of mass, its velocity, and the angular velocity that carries their angular
+        /// momentum about it. Returns false, the outputs zero, when they have no mass or their inertia cannot be
+        /// inverted.
+        /// </summary>
+        private bool Rigid(HashSet<Rigidbody> only, out Vector3 centre, out Vector3 velocity, out Vector3 angularVelocity)
+        {
+            centre = velocity = angularVelocity = Vector3.zero;
+            bool fromPoses = PoseMotion.AnchorReadsPositions;
+            if (fromPoses)
+            {
+                ReadPoseMotion();
+            }
+            else
+            {
+                ReadMotion();
+            }
+            float mass = 0f;
+            Vector3 sum = Vector3.zero;
+            for (int i = 0; i < count; i++)
+            {
+                if (only == null || only.Contains(bodies[i].body))
+                {
+                    mass += bodies[i].mass;
+                    sum += bodies[i].mass * bodies[i].centre;
+                }
+            }
+            if (!(mass > 0f))
+            {
+                return false;
+            }
+            sum /= mass;
+            Vector3 momentum = Vector3.zero;
+            Vector3 angularMomentum = Vector3.zero;
+            Sym3 inertiaTensor = default(Sym3);
+            for (int i = 0; i < count; i++)
+            {
+                ref Body b = ref bodies[i];
+                if (only != null && !only.Contains(b.body))
+                {
+                    continue;
+                }
+                Vector3 offset = b.centre - sum;
+                Vector3 p = b.mass * (fromPoses ? b.poseVelocity : b.velocity);
+                momentum += p;
+                angularMomentum += (fromPoses ? b.poseSpin : b.spin) + Vector3.Cross(offset, p);
+                inertiaTensor.AddPrincipal(b.frame, b.inertia);
+                inertiaTensor.AddPoint(b.mass, offset);
+            }
+            Sym3 inverse;
+            if (!inertiaTensor.TryInverse(out inverse))
+            {
+                return false;
+            }
+            centre = sum;
+            velocity = momentum / mass;
+            angularVelocity = inverse.Times(angularMomentum);
+            return true;
         }
 
         private void Read(Vessel vessel)

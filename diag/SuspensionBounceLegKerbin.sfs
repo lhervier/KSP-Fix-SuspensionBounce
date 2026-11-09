@@ -1108,22 +1108,6 @@ GAME
 					{
 					}
 				}
-				MODULE
-				{
-					name = ParkingBrakeModule
-					isEnabled = True
-					brakeActive = True
-					stagingEnabled = True
-					EVENTS
-					{
-					}
-					ACTIONS
-					{
-					}
-					UPGRADESAPPLIED
-					{
-					}
-				}
 				RESOURCE
 				{
 					name = ElectricCharge
@@ -3499,7 +3483,7 @@ GAME
 				Light = False, 0
 				RCS = False, 0
 				SAS = False, 0
-				Brakes = True, 0
+				Brakes = False, 0
 				Abort = False, 0
 				Custom01 = False, 0
 				Custom02 = False, 0
@@ -4407,7 +4391,7 @@ GAME
 				Light = False, 0
 				RCS = True, 810.219999999553
 				SAS = False, 0
-				Brakes = True, 0
+				Brakes = False, 0
 				Abort = False, 0
 				Custom01 = False, 0
 				Custom02 = False, 0
