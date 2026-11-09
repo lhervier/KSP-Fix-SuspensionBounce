@@ -25,8 +25,8 @@ rigide, vitesses fantômes », et son « Reprendre ici ») :
 
 **Préparer le portable** :
 1. `python outils\sync.py` (il ne crée pas les branches de travail), puis `git checkout wheel-creep` dans
-   `KSP-Fix-SuspensionBounce` **et** dans `KSP-Util-MCPServer` (son outil `click_part_menu_field` sert à
-   `diag\automation\check.py`).
+   `KSP-Fix-SuspensionBounce`. KSP-Util-MCPServer reste sur `main`, qui a `click_part_menu_field` (sert à
+   `diag\automation\check.py`). Scripts, sauvegardes et logs de la journée : `claude-notes\archives\wheelcreep-2026-11-09\`.
 2. Construire les deux, puis les déployer dans `KSPDIR` par `outils\gamedata.py` (KSP arrêté, `echo $KSPDIR` avant).
 3. Dans le `settings.cfg` **déployé** (`GameData\KSPFixSuspensionBounce\PluginData\` de `KSPDIR`, pas celui du dépôt),
    mettre `staticGrip = false` et `tyreReadsPoses = true`.
