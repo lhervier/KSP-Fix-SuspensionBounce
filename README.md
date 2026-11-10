@@ -251,6 +251,10 @@ step, or about 0.05 ms per frame.
   instead of them: with stiff springs set by hand, a rover settles about as it does without this mod; with springs
   set very soft, its wheels rest on their end-stops and it can hop again. For the best result, switch springs and
   dampers back to automatic in the wheel's window.
+- **A heavy rover can still shift a little as it settles after loading.** The rover of 10 t of
+  [A heavy rover on Eve](docs/checked/a-heavy-rover-on-eve.md), brakes on, moved about 20 cm and turned about 1° in
+  the seconds after Parking Brake let it go, then held still (a few thousandths of a millimetre per second). That
+  first settling comes from another bug, still to fix.
 
 ## Work in progress
 

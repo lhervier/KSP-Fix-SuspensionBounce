@@ -1,46 +1,31 @@
-# Reprise : essai de la lecture des vitesses par les positions
+# Reprise : rejouer les cas *Checked* avec la lecture des vitesses par les poses
 
 Fichier temporaire de la branche `wheel-creep`, à supprimer avant de la fusionner. Pour reprendre, coller le prompt
 ci-dessous dans une nouvelle conversation, lancée dans `kspmod\`.
 
 ---
 
-On reprend le travail sur le correctif « WheelCreep » de KSP-Fix-SuspensionBounce, branche `wheel-creep`. Je suis sur
-le PC portable, et je veux essayer en jeu la variante `TyreReadsPositions` seule, le patch `TyreStaticGrip` coupé.
+On reprend le travail sur le correctif « WheelCreep » de KSP-Fix-SuspensionBounce, branche `wheel-creep`, sur le PC
+portable. J'ai poussé KSP-Diag-Suspension depuis le fixe à midi.
 
-**Contexte** (le détail est dans `claude-notes\correctifs-proposes\rover-qui-tourne-seul.md`, chapitre « La grue : ancre
-rigide, vitesses fantômes », et son « Reprendre ici ») :
-- Sur un vaisseau de plusieurs pièces dont les joints portent une charge, le `rb.velocity` d'une pièce contient une
-  vitesse fantôme stable, qui ne déplace rien : PhysX corrige les joints par la position, puis retire cette correction
-  de la vitesse qu'il rend. Sur la grue de la Mune, on mesure +1,3 et −2,9 mm/s sur deux roues qui avancent pourtant
-  ensemble.
-- VPP lit le glissement du pneu par `GetPointVelocity` : chaque pneu combat donc un glissement qui n'existe pas. Sur la
-  grue, les pneus sont à 99 % de l'adhérence, et elle dérive.
-- La variante 1, `PoseMotion.TyreReadsPositions` (`Src/PoseMotion.cs`), donne au pneu la vitesse tirée de la pose de
-  la roue, entre ce pas et le précédent. Seule, patch coupé, elle fait mieux que le patch partout où elle a été
-  mesurée : grue 0,02 mm/s, rover lourd de la Mune et rover d'Eve freins serrés tenus. Elle ne change rien à la
-  descente freins lâchés, à la conduite ni à la rotation par la roue de réaction. Deux trajets lents (+6 s) ont été
-  vus une fois et ne se sont pas reproduits.
-- Si elle tient, elle remplace l'ancre de `TyreStaticGrip`, qui est bien plus compliquée.
+**Où on en est** (détail : `claude-notes\correctifs-proposes\rover-qui-tourne-seul.md`, « Reprendre ici ») :
+- Le 2026-11-10 au matin, j'ai essayé en jeu la variante seule (`tyreReadsPoses = true`, ancre coupée) : conduite du
+  rover à plat, du Bulldozer et du rover à charnières d'Eve très agréable ; rovers garés freins serrés tenus (rover
+  lourd Mune 0,001 mm/s, Eve 0,006 mm/s, grue 0,01 mm/s après une première minute de mise en place).
+- Concluant : l'ancre (`TyreStaticGrip`, `GroundedAnchor`, `AnchorReadsPositions`) et la trace `TEMPORARY` sont
+  retirées ; `PoseMotion` est un correctif comme les autres, réglage `tyreReadsPoses` (vrai par défaut). Build déployé
+  dans `ksp-dev\`, partie `claude-checked` recréée sur le portable, Parking Brake 0.4.4 dans la réserve.
+- Limite ajoutée au README : le rover lourd d'Eve bouge d'environ 20 cm et 1° quand Parking Brake le lâche, puis tient ;
+  un autre bug, à corriger plus tard.
 
-**Préparer le portable** :
-1. `python outils\sync.py` (il ne crée pas les branches de travail), puis `git checkout wheel-creep` dans
-   `KSP-Fix-SuspensionBounce`. KSP-Util-MCPServer reste sur `main`, qui a `click_part_menu_field` (sert à
-   `diag\automation\check.py`). Scripts, sauvegardes et logs de la journée : `claude-notes\archives\wheelcreep-2026-11-09\`.
-2. Construire les deux, puis les déployer dans `KSPDIR` par `outils\gamedata.py` (KSP arrêté, `echo $KSPDIR` avant).
-3. Dans le `settings.cfg` **déployé** (`GameData\KSPFixSuspensionBounce\PluginData\` de `KSPDIR`, pas celui du dépôt),
-   mettre `staticGrip = false` et `tyreReadsPoses = true`.
-
-**Mes essais en jeu**, que tu me prépares un par un (sauvegardes de `diag\`, partie `claude-checked`) :
-- conduite lente et manœuvres : `SuspensionBounceRoverFlat`, le Bulldozer, le rover à charnières d'Eve ;
-- rovers garés, freins serrés, en pente : rovers de la Mune et d'Eve, la grue (`SuspensionBounceCraneMun`) ;
-- surveiller un trajet anormalement lent, et comparer au besoin avec `tyreReadsPoses = false`.
-
-**Ensuite, si c'est concluant** :
-1. Rejouer les cas *Checked* avec la variante seule (script
+**À faire** :
+1. Récupérer KSP-Diag-Suspension (`python outils\sync.py`, ou le cloner s'il n'y est pas), le construire, l'importer
+   dans la réserve de `ksp-dev\` (`outils\gamedata.py refresh`).
+2. Rejouer les cas *Checked* avec le build actuel (script
    `claude-notes\archives\suspension-bounce-2026-11-08-reference\checked.py`, qui s'appuie sur
-   `diag\automation\check.py`).
-2. Retirer l'ancre (`TyreStaticGrip`, `GroundedAnchor`, `AnchorReadsPositions`) et la trace marquée `TEMPORARY`.
-3. Réécrire le README (Limits, WIP, pages *Checked*), puis supprimer ce fichier `REPRISE.md`.
+   `diag\automation\check.py`). Attention : son entrée `KSPFixSuspensionBounce-7b77570` (avant) et la DLL de
+   KSP-Mod-Bulldozer (il faut Parallax dans `KSPDIR` pour le compiler) manquent dans la réserve du portable.
+3. Réécrire le README (un coupable de plus : le pneu qui lit son glissement dans la vitesse du Rigidbody ; Limits, WIP,
+   pages *Checked*), puis supprimer ce fichier `REPRISE.md`.
 
 Comme d'habitude, je commite moi-même dans les dépôts de mods.

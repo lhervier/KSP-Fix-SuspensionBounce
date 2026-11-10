@@ -57,26 +57,17 @@ namespace com.github.lhervier.ksp.fix.suspensionbounce
                     Log.Error($"Could not install the bump-stop load fix, the tyres read the spring alone: {e}");
                 }
             }
-            if (TyreStaticGrip.Enabled)
+            if (PoseMotion.Enabled)
             {
                 try
                 {
-                    TyreStaticGrip.Install(new Harmony(HarmonyId + ".staticgrip"));
-                    Log.Info("Tyre static grip fix installed");
+                    PoseMotion.Install(new Harmony(HarmonyId + ".posemotion"));
+                    Log.Info("Tyre slide from poses fix installed");
                 }
                 catch (Exception e)
                 {
-                    Log.Error($"Could not install the tyre static grip fix, slow tyres hold as in the game: {e}");
+                    Log.Error($"Could not install the tyre slide from poses fix, tyres read their slide as in the game: {e}");
                 }
-            }
-            // EXPERIMENT (wheel-creep): pose velocities, every knob off by default.
-            try
-            {
-                PoseMotion.Install(new Harmony(HarmonyId + ".posemotion"));
-            }
-            catch (Exception e)
-            {
-                Log.Error($"Could not install the pose motion experiment: {e}");
             }
             if (CostMeasure.Enabled)
             {

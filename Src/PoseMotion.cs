@@ -8,23 +8,25 @@ using VehiclePhysics;
 namespace com.github.lhervier.ksp.fix.suspensionbounce
 {
     /// <summary>
-    /// EXPERIMENT (wheel-creep): the motion of a rigidbody as the physics really moved it over the last step, read from
-    /// its pose at this step and at the step before, instead of Rigidbody.velocity.
+    /// Makes a tyre read how fast its contact really slides, so that a parked rover no longer creeps down a slope or
+    /// turns on its own, its tyres fighting a slide that does not exist.
     /// <para>
-    /// PhysX moves the bodies with the velocity of its position iterations, joint and contact corrections included, then
-    /// gives back the velocity of its velocity iterations, run without those corrections: on a vessel of many parts
-    /// whose joints carry a lasting load, a part's Rigidbody.velocity holds a steady velocity that moves nothing, of
-    /// opposite signs on parts pushing against each other. The knobs below make the tyres or the anchor use the pose
-    /// velocity instead; both off by default. Nothing is written back to PhysX.
+    /// Vehicle Physics Pro reads the slide of a tyre from the wheel's Rigidbody velocity
+    /// (VPWheelCollider.GetTangentVelocity). PhysX moves the bodies with the velocity of its position iterations, joint
+    /// and contact corrections included, then gives back the velocity of its velocity iterations, run without those
+    /// corrections: on a vessel of many parts whose joints carry a lasting load, a part's Rigidbody.velocity holds a
+    /// steady velocity that moves nothing, of opposite signs on parts pushing against each other. Each tyre then pushes
+    /// against a slide that is not there, and the vessel creeps.
+    /// </para>
+    /// <para>
+    /// The fix gives the tyre the velocity of its contact as the physics really moved the wheel over the last step, read
+    /// from the wheel's pose at this step and at the step before. Nothing is written back to PhysX.
     /// </para>
     /// </summary>
     public static class PoseMotion
     {
-        /// <summary>Whether VPP reads the velocity of a tyre's contact from the poses (VPWheelCollider.GetTangentVelocity).</summary>
-        public static bool TyreReadsPositions = false;
-
-        /// <summary>Whether the static grip's anchor follows the wheels' rigid motion read from the poses.</summary>
-        public static bool AnchorReadsPositions = false;
+        /// <summary>Whether the fix runs at all (settings.cfg, tyreReadsPoses).</summary>
+        public static bool Enabled = true;
 
         /// <summary>
         /// Gap (m/s) between the velocity read from the poses and Rigidbody.velocity beyond which the body is taken as
@@ -174,7 +176,7 @@ namespace com.github.lhervier.ksp.fix.suspensionbounce
         // touches down.
         private static void CalculateLocalFramePrefix(VehicleBase.WheelState wheel)
         {
-            if (TyreReadsPositions && wheel != null && wheel.wheelCol != null)
+            if (wheel != null && wheel.wheelCol != null)
             {
                 Vector3 c, v, w;
                 Velocity(WheelBody(wheel.wheelCol), out c, out v, out w);
@@ -185,10 +187,6 @@ namespace com.github.lhervier.ksp.fix.suspensionbounce
         private static bool GetTangentVelocityPrefix(VPWheelCollider __instance, Vector3 contactPoint, Vector3 surfaceNormal,
             Rigidbody surfaceRigidbody, ref Vector3 __result)
         {
-            if (!TyreReadsPositions)
-            {
-                return true;
-            }
             Vector3 pointVelocity;
             if (!PointVelocity(WheelBody(__instance), contactPoint, out pointVelocity))
             {

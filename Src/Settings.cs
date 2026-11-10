@@ -32,8 +32,7 @@ namespace com.github.lhervier.ksp.fix.suspensionbounce
             BumpStopLoad.Enabled = ReadBool(node, "bumpStopLoad", BumpStopLoad.Enabled, path);
             SpringGravityCurve.Enabled = ReadBool(node, "kerbinCurve", SpringGravityCurve.Enabled, path);
             SuspensionDamper.Enabled = ReadBool(node, "damperLimit", SuspensionDamper.Enabled, path);
-            TyreStaticGrip.Enabled = ReadBool(node, "staticGrip", TyreStaticGrip.Enabled, path);
-            PoseMotion.TyreReadsPositions = ReadBool(node, "tyreReadsPoses", PoseMotion.TyreReadsPositions, path);
+            PoseMotion.Enabled = ReadBool(node, "tyreReadsPoses", PoseMotion.Enabled, path);
             CostMeasure.Enabled = ReadBool(node, "measureCost", CostMeasure.Enabled, path);
         }
 
