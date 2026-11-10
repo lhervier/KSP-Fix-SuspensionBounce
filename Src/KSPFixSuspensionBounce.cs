@@ -57,6 +57,23 @@ namespace com.github.lhervier.ksp.fix.suspensionbounce
                     Log.Error($"Could not install the bump-stop load fix, the tyres read the spring alone: {e}");
                 }
             }
+            if (TyreStaticGrip.Enabled && !PoseMotion.Enabled)
+            {
+                // The anchors would sum the steady velocities the joints leave in the wheels' Rigidbody velocity.
+                Log.Warning("Tyre static grip fix not installed: it needs tyreReadsPoses = true");
+            }
+            else if (TyreStaticGrip.Enabled)
+            {
+                try
+                {
+                    TyreStaticGrip.Install(new Harmony(HarmonyId + ".staticgrip"));
+                    Log.Info("Tyre static grip fix installed");
+                }
+                catch (Exception e)
+                {
+                    Log.Error($"Could not install the tyre static grip fix, slow tyres hold as in the game: {e}");
+                }
+            }
             if (PoseMotion.Enabled)
             {
                 try
