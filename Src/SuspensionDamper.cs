@@ -16,8 +16,33 @@ namespace com.github.lhervier.ksp.fix.suspensionbounce
     /// whose damper pushes the wheel's own part first. And the game only sizes a suspension while its wheel touches the
     /// ground, and keeps the last spring and damper while it does not, whatever happens to the vessel's mass meanwhile.
     /// </summary>
-    internal static class SuspensionDamper
+    public static class SuspensionDamper
     {
+        // PROTOTYPE (branch claude/stability-budget): knobs public so that they can be changed in game.
+
+        /// <summary>
+        /// How the damper is kept stable on the mass the wheel moves within a step: 0, made implicit on that mass
+        /// whatever the spring (the rule of main); 1, lowered only as far as the stability budget asks.
+        /// </summary>
+        public static int LocalMode = 1;
+
+        /// <summary>
+        /// Mode 1: the most 2 c dt / m + k dt² / m may be, m the mass the wheel moves within a step, c the damper and
+        /// k the spring on the wheel. Measured on the Bulldozer on Eve: wheels broken 2 loads out of 6 at 3, none out
+        /// of 8 at 2.
+        /// </summary>
+        public static float Budget = 2f;
+
+        /// <summary>The least c dt / m the budget leaves a damper, however stiff the spring.</summary>
+        public static float BudgetFloor = 0.25f;
+
+        /// <summary>
+        /// Mode 1: the most k dt² / m may be, the spring lowered on the wheel to keep it; 0 leaves the spring alone.
+        /// </summary>
+        public static float SpringCap = 1.5f;
+
+        /// <summary>How many times a spring was lowered on a wheel, for checking.</summary>
+        public static long SpringCaps;
         /// <summary>Whether the damper of a wheel on the ground is kept under the limit. Read from settings.cfg.
         /// </summary>
         public static bool OnGround = true;
@@ -171,9 +196,26 @@ namespace com.github.lhervier.ksp.fix.suspensionbounce
             // would with the speed they end the step with. It can stop them, never send them back, whatever c; far
             // below m / dt, it is the game's damper.
             float movedMass = MovedMass(suspension.part);
-            if (movedMass > 0f)
+            if (movedMass > 0f && LocalMode == 0)
             {
                 limit = Mathf.Min(limit, stockDamper / (1f + stockDamper * Time.fixedDeltaTime / movedMass));
+            }
+            else if (movedMass > 0f)
+            {
+                // PROTOTYPE. The spring and the damper share one stability budget on the mass the wheel moves: stepped
+                // as the game steps them, they diverge once 2 c dt / m + k dt² / m reaches 4. The spring is first
+                // kept under its own cap: a wheel left alone on the ground gets the spring of the whole vessel.
+                float dt = Time.fixedDeltaTime;
+                float spring = wheel.wheelCollider.springRate;
+                float springCap = SpringCap * movedMass / (dt * dt);
+                if (SpringCap > 0f && spring > springCap)
+                {
+                    spring = springCap;
+                    wheel.wheelCollider.springRate = spring;
+                    SpringCaps++;
+                }
+                float left = Mathf.Max(BudgetFloor, (Budget - spring * dt * dt / movedMass) / 2f);
+                limit = Mathf.Min(limit, left * movedMass / dt);
             }
             bool isLimited = damper > limit;
             bool wasLimited;
