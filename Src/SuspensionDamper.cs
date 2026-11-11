@@ -22,9 +22,16 @@ namespace com.github.lhervier.ksp.fix.suspensionbounce
 
         /// <summary>
         /// How the damper is kept stable on the mass the wheel moves within a step: 0, made implicit on that mass
-        /// whatever the spring (the rule of main); 1, lowered only as far as the stability budget asks.
+        /// whatever the spring (the rule of main); 1, lowered only as far as the stability budget asks; 2, as 0 on
+        /// the collider, the rest of the damper applied on the vessel taken as rigid (BumpStopLoad.DampWheels).
         /// </summary>
         public static int LocalMode = 1;
+
+        /// <summary>
+        /// Mode 2: whether the damper made up on the rigid vessel stops at the bound on the share carried (true), or
+        /// reaches the game's (false).
+        /// </summary>
+        public static bool RigidCap = false;
 
         /// <summary>
         /// Mode 1: the most 2 c dt / m + k dt² / m may be, m the mass the wheel moves within a step, c the damper and
@@ -199,6 +206,22 @@ namespace com.github.lhervier.ksp.fix.suspensionbounce
             if (movedMass > 0f && LocalMode == 0)
             {
                 limit = Mathf.Min(limit, stockDamper / (1f + stockDamper * Time.fixedDeltaTime / movedMass));
+            }
+            else if (movedMass > 0f && LocalMode == 2)
+            {
+                // PROTOTYPE. The collider keeps the damper of mode 0, stable on the mass its own part moves; what that
+                // takes off the damper of the vessel taken as rigid is applied by BumpStopLoad as a force read on the
+                // rigid vessel, which no wheel's own motion feeds back into.
+                // The damper the collider and the rigid vessel make up together: the game's, or, with RigidCap, the
+                // game's under the bound on the share carried. The rigid force being implicit, it needs no bound.
+                float target = RigidCap ? Mathf.Min(stockDamper, limit) : stockDamper;
+                limit = Mathf.Min(limit, stockDamper / (1f + stockDamper * Time.fixedDeltaTime / movedMass));
+                if (!offGround && BumpStopLoad.Enabled)
+                {
+                    VehicleBase.WheelState state = wheel.wheelState != null && wheel.wheelState.Length > 0
+                        ? wheel.wheelState[0] : null;
+                    BumpStopLoad.SetMissingDamper(state, Mathf.Max(0f, target - limit));
+                }
             }
             else if (movedMass > 0f)
             {

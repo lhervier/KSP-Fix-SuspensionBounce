@@ -90,6 +90,17 @@ namespace com.github.lhervier.ksp.fix.suspensionbounce
             internal bool grounded;
             /// <summary>The axis of the suspension, upwards, read with the contact.</summary>
             internal Vector3 axis;
+
+            /// <summary>
+            /// PROTOTYPE (SuspensionDamper.LocalMode 2). The damper the wheel's own collider was not given, for the
+            /// vessel taken as rigid to make up (kN s/m), and when it was set.
+            /// </summary>
+            public float missingDamper;
+            internal float missingTime = -1f;
+            /// <summary>PROTOTYPE. Damping force the fix applies to the wheel for the coming step, along its axis (kN).</summary>
+            public float damped;
+            internal float dampTime = -1f;
+            internal Vector3 dampForce;
         }
 
         /// <summary>What the fix found for one vessel at the last physics step, kept for reading in game.</summary>
@@ -227,6 +238,22 @@ namespace com.github.lhervier.ksp.fix.suspensionbounce
             GameEvents.onGameSceneLoadRequested.Add(scene => Clear());
         }
 
+        /// <summary>
+        /// PROTOTYPE (SuspensionDamper.LocalMode 2). Records the damper <paramref name="damper"/> (kN s/m) that the
+        /// collider of <paramref name="wheel"/> was not given for the current physics step, for the fix to apply as a
+        /// force on the vessel taken as rigid. Ignored for a wheel VPP has not stepped yet.
+        /// </summary>
+        public static void SetMissingDamper(VehicleBase.WheelState wheel, float damper)
+        {
+            Probe probe;
+            if (wheel == null || !probes.TryGetValue(wheel, out probe))
+            {
+                return;
+            }
+            probe.missingDamper = damper;
+            probe.missingTime = Time.fixedTime;
+        }
+
         private static void Clear()
         {
             Probes.Clear();
@@ -343,6 +370,12 @@ namespace com.github.lhervier.ksp.fix.suspensionbounce
             {
                 probe.injected = probe.held;
                 wheel.hit.force += probe.injected;
+            }
+            // PROTOTYPE. The damping the collider was not given belongs to the force VPP reads, as the collider's own
+            // damping does; the wheel damage sees it too, as it sees the stock damper.
+            if (Inject && wheel.grounded && Mathf.Abs(probe.dampTime - now) < Time.fixedDeltaTime * 0.25f)
+            {
+                wheel.hit.force += probe.damped;
             }
             probe.lastTime = now;
         }
@@ -510,6 +543,8 @@ namespace com.github.lhervier.ksp.fix.suspensionbounce
             // the travel it has left is no more than what its speed towards the end-stop, plus a step of free fall,
             // would cover.
             bool near = false;
+            // PROTOTYPE. The vessel is also followed while a wheel on the ground has damping to make up.
+            bool damping = false;
             float fall = (float)vessel.graviticAcceleration.magnitude * dt;
             for (int i = 0; i < balance.wheels.Count; i++)
             {
@@ -526,10 +561,14 @@ namespace com.github.lhervier.ksp.fix.suspensionbounce
                     float closing = -Vector3.Dot(p.body.GetPointVelocity(p.hit.point), p.axis);
                     near = (1f - p.compression) * travel <= Mathf.Max(0f, closing + fall) * dt;
                 }
+                if (p.grounded && p.missingDamper > 0f && Mathf.Abs(now - p.missingTime) <= dt * 1.25f)
+                {
+                    damping = true;
+                }
             }
             balance.heldNormal = 0f;
             balance.holding = 0;
-            if (!near || vessel.packed)
+            if ((!near && !damping) || vessel.packed)
             {
                 // No wheel can reach its end-stop: nothing held, and nothing to keep for the next step.
                 balance.watching = false;
@@ -537,7 +576,7 @@ namespace com.github.lhervier.ksp.fix.suspensionbounce
                 balance.statesTime = -1f;
                 return;
             }
-            balance.watching = true;
+            balance.watching = near;
 
             // The bodies of the vessel as they end the last step, read once per step for all the fixes (VesselBodies):
             // their mass and inertia kept from the steps before, their velocities read now.
@@ -635,11 +674,21 @@ namespace com.github.lhervier.ksp.fix.suspensionbounce
                     {
                         unexplained -= p.heldForce;
                     }
+                    if (Mathf.Abs(now - p.dampTime - dt) < dt * 0.25f)
+                    {
+                        unexplained -= p.dampForce;
+                    }
                 }
                 balance.endStopNormal = Vector3.Dot(unexplained, normal.normalized);
             }
 
-            if (Hold && accelerationKnown && mass > 0f && groundedProbes.Count > 0)
+            // PROTOTYPE. The damping forces act during the coming step: the end-stops are held with them known.
+            if (damping && mass > 0f && groundedProbes.Count > 0)
+            {
+                DampWheels(bodiesNow, count, centre, mass, now, dt, ref known, ref knownTorque);
+            }
+
+            if (near && Hold && accelerationKnown && mass > 0f && groundedProbes.Count > 0)
             {
                 HoldEndStops(balance, bodiesNow, count, centre, known, knownTorque, now, dt);
             }
@@ -661,6 +710,170 @@ namespace com.github.lhervier.ksp.fix.suspensionbounce
                 balance.velocities[i] = bodiesNow[i].velocity;
             }
             balance.statesTime = now;
+        }
+
+        /// <summary>
+        /// Gives the velocity of the centre of mass, the angular velocity and the inverse of the inertia about
+        /// <paramref name="centre"/> of the first <paramref name="count"/> of <paramref name="bodies"/> taken as one
+        /// rigid body of <paramref name="mass"/>; false when the inertia cannot be inverted.
+        /// </summary>
+        private static bool RigidMotion(VesselBodies.Body[] bodies, int count, Vector3 centre, float mass,
+            out Vector3 velocity, out Vector3 spin, out Sym3 inverse)
+        {
+            Vector3 momentum = Vector3.zero;
+            Vector3 angularMomentum = Vector3.zero;
+            Sym3 inertia = default(Sym3);
+            for (int i = 0; i < count; i++)
+            {
+                ref VesselBodies.Body b = ref bodies[i];
+                Vector3 offset = b.centre - centre;
+                Vector3 p = b.mass * b.velocity;
+                momentum += p;
+                angularMomentum += b.spin + Vector3.Cross(offset, p);
+                inertia.AddPrincipal(b.frame, b.inertia);
+                inertia.AddPoint(b.mass, offset);
+            }
+            velocity = momentum / mass;
+            if (!inertia.TryInverse(out inverse))
+            {
+                spin = Vector3.zero;
+                return false;
+            }
+            spin = inverse.Times(angularMomentum);
+            return true;
+        }
+
+        private static readonly List<Probe> dampedProbes = new List<Probe>();
+        private static float[] dampA = new float[8 * 8];
+        private static float[] dampV = new float[8];
+        private static float[] dampC = new float[8];
+        private static float[] dampF = new float[8];
+        private static Vector3[] dampArm = new Vector3[8];
+        private static Vector3[] dampTurn = new Vector3[8];
+
+        /// <summary>
+        /// PROTOTYPE (SuspensionDamper.LocalMode 2). Applies to each wheel of <see cref="groundedProbes"/> the damping
+        /// its collider was not given (<see cref="Probe.missingDamper"/>), as a force along its axis at its contact,
+        /// read on the vessel taken as one rigid body rather than on the wheel's own part: the speed it slows is the
+        /// rigid vessel's at the contact, less the ground's, and the forces of all the wheels are found at once,
+        /// implicit on the rigid vessel (each slows the speed the wheel ends the step with), so that they can stop the
+        /// vessel's motion in a step, never reverse it, whatever the dampers. The ground touched, when it is a body of
+        /// another vessel, gets the reaction. Adds the forces to <paramref name="known"/> and
+        /// <paramref name="knownTorque"/>, for the end-stops held in the same step.
+        /// </summary>
+        private static void DampWheels(VesselBodies.Body[] bodies, int count, Vector3 centre, float mass, float now,
+            float dt, ref Vector3 known, ref Vector3 knownTorque)
+        {
+            dampedProbes.Clear();
+            for (int i = 0; i < groundedProbes.Count; i++)
+            {
+                Probe p = groundedProbes[i];
+                // A wheel on a part of its own vessel pushes the rigid vessel against itself: left to its collider.
+                Rigidbody ground = p.hit.collider != null ? p.hit.collider.attachedRigidbody : null;
+                Part groundPart = ground != null ? ground.GetComponent<Part>() : null;
+                if (groundPart != null && groundPart.vessel == p.part.vessel)
+                {
+                    continue;
+                }
+                if (p.missingDamper > 0f && Mathf.Abs(now - p.missingTime) <= dt * 1.25f)
+                {
+                    dampedProbes.Add(p);
+                }
+            }
+            int n = dampedProbes.Count;
+            if (n == 0)
+            {
+                return;
+            }
+            Vector3 velocity, spin;
+            Sym3 inverse;
+            if (!RigidMotion(bodies, count, centre, mass, out velocity, out spin, out inverse))
+            {
+                return;
+            }
+            if (dampV.Length < n)
+            {
+                dampA = new float[n * n];
+                dampV = new float[n];
+                dampC = new float[n];
+                dampF = new float[n];
+                dampArm = new Vector3[n];
+                dampTurn = new Vector3[n];
+            }
+            for (int k = 0; k < n; k++)
+            {
+                Probe p = dampedProbes[k];
+                Vector3 arm = p.hit.point - centre;
+                dampArm[k] = Vector3.Cross(arm, p.axis);
+                dampTurn[k] = inverse.Times(dampArm[k]);
+                // The speed the suspension extends at, as the rigid vessel moves it, relative to what the wheel stands
+                // on when that moves too, as PhysX takes it.
+                Vector3 point = velocity + Vector3.Cross(spin, arm);
+                Rigidbody ground = p.hit.collider != null ? p.hit.collider.attachedRigidbody : null;
+                if (ground != null)
+                {
+                    point -= ground.GetPointVelocity(p.hit.point);
+                }
+                dampV[k] = Vector3.Dot(p.axis, point);
+                dampC[k] = p.missingDamper;
+                dampF[k] = Mathf.Abs(now - p.dampTime - dt) < dt * 0.25f ? p.damped : 0f;
+            }
+            for (int k = 0; k < n; k++)
+            {
+                for (int j = 0; j < n; j++)
+                {
+                    dampA[k * n + j] = Vector3.Dot(dampedProbes[k].axis, dampedProbes[j].axis) / mass +
+                        Vector3.Dot(dampArm[k], dampTurn[j]);
+                }
+            }
+
+            // F = -C (v + dt A F), solved as (C^-1 + dt A) F = -v, symmetric and positive definite: Gauss-Seidel
+            // converges, from the forces of the step before.
+            for (int iteration = 0; iteration < Iterations; iteration++)
+            {
+                float change = 0f;
+                for (int k = 0; k < n; k++)
+                {
+                    float s = -dampV[k];
+                    for (int j = 0; j < n; j++)
+                    {
+                        if (j != k)
+                        {
+                            s -= dt * dampA[k * n + j] * dampF[j];
+                        }
+                    }
+                    float value = s / (1f / dampC[k] + dt * dampA[k * n + k]);
+                    if (float.IsNaN(value))
+                    {
+                        value = 0f;
+                    }
+                    change = Mathf.Max(change, Mathf.Abs(value - dampF[k]));
+                    dampF[k] = value;
+                }
+                if (change <= Tolerance)
+                {
+                    break;
+                }
+            }
+
+            for (int k = 0; k < n; k++)
+            {
+                Probe p = dampedProbes[k];
+                p.damped = dampF[k];
+                p.dampTime = now;
+                p.dampForce = p.axis * dampF[k];
+                if (p.body != null && dampF[k] != 0f)
+                {
+                    p.body.AddForceAtPosition(p.dampForce, p.hit.point, ForceMode.Force);
+                    Rigidbody ground = p.hit.collider != null ? p.hit.collider.attachedRigidbody : null;
+                    if (ground != null && !ReferenceEquals(ground, p.body))
+                    {
+                        ground.AddForceAtPosition(-p.dampForce, p.hit.point, ForceMode.Force);
+                    }
+                }
+                known += p.dampForce;
+                knownTorque += Vector3.Cross(p.hit.point - centre, p.dampForce);
+            }
         }
 
         private static float[] holdA = new float[8 * 8];
@@ -695,28 +908,13 @@ namespace com.github.lhervier.ksp.fix.suspensionbounce
                 holdTurn = new Vector3[n];
             }
 
-            // The vessel as one rigid body: mass, velocity, inertia about the centre of mass, angular velocity.
             float mass = balance.totalMass;
-            Vector3 momentum = Vector3.zero;
-            Vector3 angularMomentum = Vector3.zero;
-            Sym3 inertia = default(Sym3);
-            for (int i = 0; i < count; i++)
-            {
-                ref VesselBodies.Body b = ref bodies[i];
-                Vector3 offset = b.centre - centre;
-                Vector3 p = b.mass * b.velocity;
-                momentum += p;
-                angularMomentum += b.spin + Vector3.Cross(offset, p);
-                inertia.AddPrincipal(b.frame, b.inertia);
-                inertia.AddPoint(b.mass, offset);
-            }
+            Vector3 velocity, spin;
             Sym3 inverse;
-            if (!inertia.TryInverse(out inverse))
+            if (!RigidMotion(bodies, count, centre, mass, out velocity, out spin, out inverse))
             {
                 return;
             }
-            Vector3 velocity = momentum / mass;
-            Vector3 spin = inverse.Times(angularMomentum);
             Vector3 acceleration = known / mass;
             Vector3 angularAcceleration = inverse.Times(knownTorque);
 
