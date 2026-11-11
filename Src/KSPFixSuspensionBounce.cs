@@ -32,12 +32,14 @@ namespace com.github.lhervier.ksp.fix.suspensionbounce
                     Log.Error($"Could not install the spring gravity curve fix, the springs are the game's: {e}");
                 }
             }
-            if (SuspensionDamper.Enabled)
+            if (SuspensionDamper.OnGround || SuspensionDamper.InAir)
             {
                 try
                 {
                     SuspensionDamper.Install(new Harmony(HarmonyId));
-                    Log.Info("Suspension damper fix installed");
+                    string where = !SuspensionDamper.InAir ? ", on the ground only"
+                        : !SuspensionDamper.OnGround ? ", in the air only" : "";
+                    Log.Info("Suspension damper fix installed" + where);
                 }
                 catch (Exception e)
                 {

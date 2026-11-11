@@ -3,11 +3,13 @@
 **⚠️ Not finished yet.** This is a new fix, not a finished mod. The code and the conclusions on this page can still
 change.
 
-A fix for stock KSP 1.12: a few Harmony patches, in four source files, and a fifth that measures their cost. Here is what it fixes:
+Un correctif pour KSP 1.12 stock : quelques patchs Harmony, dans huit fichiers source, et un neuvième qui mesure leur
+coût. Voici ce qu'il corrige :
 
 > **In KSP, landing legs and wheels often go haywire.** A light probe leaves the runway on its own legs, a landing leg
 > set down alone in EVA construction flies off, a light rover that stands still on Kerbin never comes to rest on Eve,
 > a heavy rover on the Mun slides down a slope with its brakes on.
+> *(FR, à traduire)* Un vaisseau lourd garé freins serrés dérive lentement.
 
 <table>
 <tr>
@@ -53,6 +55,13 @@ spring of a heavy rover on a light world as it would be on Kerbin, and holds a w
 telling its tyre the weight it really carries: every other vessel behaves as without it, give or take a few percent of
 damping.
 
+*(FR, à traduire)* Les pneus, eux, ont deux défauts qui ne tiennent pas à la suspension. Sur un vaisseau de plusieurs
+pièces, la vitesse que lit chaque pneu contient une vitesse fantôme laissée par les joints : les pneus combattent un
+glissement qui n'existe pas, et le vaisseau garé dérive. Et sous 1 m/s, un pneu de VPP ne tient qu'en glissant : il n'a
+pas d'adhérence statique, et un rover pivote sur lui-même en s'arrêtant. Le mod donne au pneu la vitesse de sa roue
+telle qu'elle a vraiment bougé ; il peut aussi lui donner une adhérence statique, mais ce réglage est désactivé
+par défaut (voir les limites).
+
 **How this was made.** The investigation and the code were written with Claude, Anthropic's AI assistant.
 Everything here was reviewed and validated by a human — me. I am saying so up front, because contributions made with
 an AI deserve a closer look than others, and because some people would rather stop reading here. That look should be
@@ -64,6 +73,8 @@ in the page of its culprit.
 How KSP 1.12.5 sets the spring and the damper of a suspension: a simple base model, the patches it got for the cases
 where it was not enough, then what those patches leave unanswered: what throws a light vessel, or a part placed
 alone, into the air, and what makes a rover slide when its wheels reach the end of their travel.
+*(FR, à traduire)* Puis deux défauts du pneu lui-même : ce qui fait dériver un vaisseau garé, et ce qui fait pivoter un
+rover qui s'arrête, que ce mod ne corrige que si on le lui demande.
 
 ### The base model
 
@@ -149,10 +160,37 @@ Mun. The mod works out the spring with Kerbin's curve on every lighter body.
 
 **→ Full chapter: [Fourth culprit: below 1 g, the automatic spring is too soft](docs/the-culprits/the-automatic-spring-too-soft-below-1-g.md)**
 
+### Cinquième coupable : le pneu combat un glissement qui n'existe pas
+
+Un vaisseau est fait de pièces reliées par des joints. Quand ces joints portent une charge qui dure, comme le poids
+d'un vaisseau garé, la physique les recolle à chaque pas en déplaçant un peu les pièces, puis retire cette correction de
+la vitesse qu'elle rend. La vitesse de chaque pièce garde alors un petit écart constant, qui ne déplace rien, de sens
+opposés sur des pièces qui se poussent : sur une grue de 33 t posée sur la Mune, +1,3 et −2,9 mm/s sur deux roues qui
+avancent pourtant ensemble. VPP lit le glissement du pneu dans cette vitesse : chaque pneu pousse contre un glissement
+qui n'existe pas, jusqu'à 99 % de son adhérence, et le vaisseau dérive, freins serrés. Le mod donne au pneu la vitesse
+de son contact telle que la roue a vraiment bougé, d'après sa position à ce pas et au pas d'avant.
+
+**→ Chapitre complet : [Cinquième coupable : le pneu combat un glissement qui n'existe pas](docs/the-culprits/a-tyre-fights-a-slide-that-does-not-exist.md)**
+
+### Sixième coupable : le pneu n'a pas d'adhérence statique
+
+Un vrai pneu à l'arrêt tient sans glisser, jusqu'à sa limite d'adhérence. Sous 1 m/s, VPP retient le sien par une force
+proportionnelle à sa vitesse de glissement, sans mémoire du chemin parcouru : une force qui dure n'est tenue qu'en
+glissant. Freins lâchés, un rover qui s'arrête dans un creux pivote sur lui-même, d'environ un degré par seconde : 8,6°
+en 25 s sur Eve. Le mod peut poser sous chaque roue presque au repos un point d'ancrage, et un ressort qui l'y
+ramène : le pivot tombe à 0,5°. **Mais ce réglage, `staticGrip`, est désactivé par défaut** : VPP lisse la force du
+pneu avant de l'appliquer, plus ou moins lentement selon la pièce, et le ressort agit en retard. Sur la jambe LT-05,
+dont le lissage est dix fois plus lent, une sonde légère oscillait sur elle-même sans fin ; le mod lui donne le
+lissage des autres roues quand le réglage est activé, mais une roue de mod réglée de même pourrait encore le faire
+(voir [Limits](#limits)).
+
+**→ Chapitre complet : [Sixième coupable : le pneu n'a pas d'adhérence statique](docs/the-culprits/a-tyre-has-no-static-grip.md)**
+
 ## Checked
 
 Each case has its page: the save it starts from, how to play it by hand, the script that plays it, and what it shows
-without and with this mod. The scripts drive KSP through
+without and with this mod, with its default settings: the [sixth culprit](docs/the-culprits/a-tyre-has-no-static-grip.md)'s
+fix is off. *(FR, à traduire : la phrase précédente est nouvelle.)* The scripts drive KSP through
 [KSP-Util-MCPServer](https://github.com/lhervier/KSP-Util-MCPServer), and need nothing but Python 3; their figures
 come from [KSP Diag - Suspension](https://github.com/lhervier/KSP-Diag-Suspension) and from `KSP.log`.
 
@@ -252,9 +290,24 @@ step, or about 0.05 ms per frame.
   set very soft, its wheels rest on their end-stops and it can hop again. For the best result, switch springs and
   dampers back to automatic in the wheel's window.
 - **A heavy rover can still shift a little as it settles after loading.** The rover of 10 t of
-  [A heavy rover on Eve](docs/checked/a-heavy-rover-on-eve.md), brakes on, moved about 20 cm and turned about 1° in
+  [A heavy rover on Eve](docs/checked/a-heavy-rover-on-eve.md), brakes on, moved about 7 cm and turned about 1° in
   the seconds after Parking Brake let it go, then held still (a few thousandths of a millimetre per second). That
   first settling comes from another bug, still to fix.
+  *(FR) Remesuré le 2026-11-10 après-midi, Parking Brake desserré : 1 à 2 cm et 0,05 à 0,2° dans les secondes qui
+  suivent, puis immobile (0,001 mm/s). Une fois sur deux, la sauvegarde s'est
+  chargée Parking Brake serré, et le rover a glissé de 12 cm pendant qu'il le tenait. Chiffres anglais à corriger à la
+  traduction.*
+- *(FR, à traduire)* **Un rover freins lâchés pivote encore sur lui-même quand il s'arrête de lui-même**, sur une
+  pente ou dans un creux : environ un degré par seconde pendant l'arrêt, 8,6° en 25 s pour le rover lourd d'Eve. Garé,
+  un vaisseau lourd peut aussi tourner très lentement : 0,12° par minute pour le même rover, freins serrés. C'est le
+  [sixième coupable](docs/the-culprits/a-tyre-has-no-static-grip.md) : le pneu de VPP, la bibliothèque de roues de KSP,
+  n'a pas d'adhérence statique. **Le mod sait le corriger, mais ne le fait pas par défaut** : avec
+  `staticGrip = true` dans `settings.cfg`, un ressort retient chaque roue là où elle s'est arrêtée, et le pivot tombe
+  à 0,5°. Mais VPP lisse la force du pneu avant de l'appliquer, différemment pour chaque roue : ce ressort en retard
+  faisait osciller sans fin une sonde légère sur trois jambes LT-05, dont le lissage est dix fois plus lent. Le mod
+  donne à la LT-05 celui des autres roues quand le réglage est activé ; une roue de mod au lissage aussi lent pourrait
+  encore osciller. Aucune raideur n'est sûre pour toutes les roues. À activer en connaissance de cause ; sinon, serrer les freins, ou Parking Brake, reste
+  le moyen de garer un rover.
 
 ## Work in progress
 

@@ -31,6 +31,9 @@ In the air too, it brings the damper down under
 the one it will have when all the vessel's wheels touch. At the next contact, the damper already suits the leg. The
 spring keeps its last setting.
 
+The `airDamper` setting of the `settings.cfg` file turns this part of the mod off, independently of the
+[first culprit](a-damper-too-strong-for-a-light-vessel.md)'s `damperLimit`.
+
 ![The same leg set down alone on Minmus, with the mod, with its mass overlaid](../../imgs/landing-leg-modded-minmus-mass.gif)
 
 *KSP 1.12.5, KSP Community Fixes and this mod, without Terrain Precision Fix: the same leg, set down the same way on

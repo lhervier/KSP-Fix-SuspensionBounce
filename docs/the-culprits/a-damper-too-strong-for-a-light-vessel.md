@@ -98,6 +98,8 @@ save.</em></td>
 </tr>
 </table>
 
+The `damperLimit` setting of the `settings.cfg` file turns this part of the mod off.
+
 ## In the mod's code
 
 A postfix of `ModuleWheelSuspension.SuspensionSpringUpdate`, which KSP calls at every step where the wheel touches

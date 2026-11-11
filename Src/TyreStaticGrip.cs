@@ -32,8 +32,13 @@ namespace com.github.lhervier.ksp.fix.suspensionbounce
     {
         // Knobs, public so that they can be changed in game (KSP-Util-MCPServer set_member).
 
-        /// <summary>Whether the fix runs at all (settings.cfg, staticGrip).</summary>
-        public static bool Enabled = true;
+        /// <summary>
+        /// Whether the fix runs at all (settings.cfg, staticGrip). Off by default: VPP smooths the tyre force before
+        /// applying it (VehicleBase.ApplyTireForce, tireForceSharpness), so the anchor's spring acts late, and a late
+        /// spring feeds energy into a light vessel instead of taking it out: a probe of 100 kg on three LT-05 legs, whose
+        /// smoothing is ten times slower than other wheels', turns to and fro on itself, ever wider.
+        /// </summary>
+        public static bool Enabled = false;
 
         /// <summary>Whether the anchor also holds along the wheel while it brakes.</summary>
         public static bool HoldWhenBraking = true;
@@ -67,6 +72,18 @@ namespace com.github.lhervier.ksp.fix.suspensionbounce
             AccessTools.DeclaredMethod(typeof(VehicleBase), "CalculateLocalFrame");
         private static readonly MethodInfo ApplyTireForce =
             AccessTools.DeclaredMethod(typeof(VehicleBase), "ApplyTireForce");
+        private static readonly MethodInfo WheelSetup =
+            AccessTools.DeclaredMethod(typeof(ModuleWheelBase), "wheelSetup");
+
+        /// <summary>
+        /// The stock LT-05 leg, whose config sets tireForceSharpness to 1 where every other stock wheel has the default
+        /// of 10: VPP then applies its tyre force about a second late, and the anchor's spring with it, which makes a
+        /// light probe on three of them swing on itself without end.
+        /// </summary>
+        private const string MiniLeg = "miniLandingLeg";
+
+        /// <summary>The tyre force smoothing the fix gives the LT-05 leg: the default of every other stock wheel.</summary>
+        private const float MiniLegSharpness = 10f;
 
         private static readonly ConditionalWeakTable<VehicleBase.WheelState, Anchor> anchors =
             new ConditionalWeakTable<VehicleBase.WheelState, Anchor>();
@@ -86,6 +103,12 @@ namespace com.github.lhervier.ksp.fix.suspensionbounce
             /// <summary>Time.fixedTime of the step the anchor last held at.</summary>
             public float lastTime = float.NegativeInfinity;
 
+            /// <summary>How much of the anchor holds at this step, 0 to 1 (the slide speed and VPP's fade).</summary>
+            public float fade;
+
+            /// <summary>Whether the anchor was moved at this step because the tyre did not pass its force on.</summary>
+            public bool reseated;
+
         }
 
         /// <summary>Patches VPP's tyre step: the force asked of each tyre, and what the tyre passed on of it.</summary>
@@ -104,6 +127,28 @@ namespace com.github.lhervier.ksp.fix.suspensionbounce
                 postfix: new HarmonyMethod(typeof(TyreStaticGrip), nameof(CalculateLocalFramePostfix)));
             harmony.Patch(ApplyTireForce,
                 prefix: new HarmonyMethod(typeof(TyreStaticGrip), nameof(ApplyTireForcePrefix)));
+            if (WheelSetup == null)
+            {
+                Log.Warning("ModuleWheelBase.wheelSetup not found: the LT-05 leg keeps its slow tyre force smoothing");
+            }
+            else
+            {
+                harmony.Patch(WheelSetup,
+                    prefix: new HarmonyMethod(typeof(TyreStaticGrip), nameof(WheelSetupPrefix)));
+            }
+        }
+
+        /// <summary>
+        /// Gives the stock LT-05 leg the tyre force smoothing of every other stock wheel, before KSP hands it to VPP.
+        /// tireForceSharpness is read from the part's config and never saved, so the change lasts as long as the part.
+        /// </summary>
+        private static void WheelSetupPrefix(ModuleWheelBase __instance)
+        {
+            AvailablePart info = __instance.part != null ? __instance.part.partInfo : null;
+            if (info != null && info.name == MiniLeg && __instance.tireForceSharpness < MiniLegSharpness)
+            {
+                __instance.tireForceSharpness = MiniLegSharpness;
+            }
         }
 
         /// <summary>
@@ -120,6 +165,8 @@ namespace com.github.lhervier.ksp.fix.suspensionbounce
             Anchor anchor = anchors.GetOrCreateValue(wheel);
             anchor.gain = 0f;
             anchor.force = Vector2.zero;
+            anchor.fade = 0f;
+            anchor.reseated = false;
             float now = Time.fixedTime;
             bool continued = now - anchor.lastTime < Time.fixedDeltaTime * 1.5f;
             anchor.lastTime = now;
@@ -141,6 +188,7 @@ namespace com.github.lhervier.ksp.fix.suspensionbounce
             float sliding = braking ? slide.magnitude : Mathf.Abs(slide.x);
             float fade = Mathf.InverseLerp(ReleaseSpeed, HoldSpeed, sliding) *
                 Mathf.InverseLerp(1f, 0.25f, wheel.wheelVelocity.sqrMagnitude);
+            anchor.fade = fade;
             float gravity = __instance.gravity.Magnitude;
             if (fade <= 0f || gravity <= 0f || wheel.hit.force <= 0f)
             {
@@ -161,6 +209,35 @@ namespace com.github.lhervier.ksp.fix.suspensionbounce
             anchor.gain = stiffness * fade;
             anchor.force = -anchor.gain * anchor.offset;
             wheel.externalTireForce += anchor.force;
+        }
+
+        /// <summary>
+        /// Reads the anchor of <paramref name="wheel"/> at the current physics step, for KSP Diag - Suspension, which
+        /// calls it by reflection: the way the contact travelled from it (m, x sideways, y along the wheel), the force it
+        /// added to the tyre (kN), its stiffness at this step (kN/m), how much of it holds (0 to 1), and whether it was
+        /// moved at this step. Returns false, every value at zero, when the fix is off, or the wheel has no anchor
+        /// worked out at this step.
+        /// </summary>
+        public static bool TryGetAnchor(VehicleBase.WheelState wheel, out Vector2 offset, out Vector2 force,
+            out float gain, out float fade, out bool reseated)
+        {
+            offset = Vector2.zero;
+            force = Vector2.zero;
+            gain = 0f;
+            fade = 0f;
+            reseated = false;
+            Anchor anchor;
+            if (!Enabled || wheel == null || !anchors.TryGetValue(wheel, out anchor) ||
+                Time.fixedTime - anchor.lastTime >= Time.fixedDeltaTime * 1.5f)
+            {
+                return false;
+            }
+            offset = anchor.offset;
+            force = anchor.force;
+            gain = anchor.gain;
+            fade = anchor.fade;
+            reseated = anchor.reseated;
+            return true;
         }
 
         /// <summary>
@@ -186,6 +263,7 @@ namespace com.github.lhervier.ksp.fix.suspensionbounce
                 anchor.offset.y = Reseat(anchor.offset.y, anchor.force.y, wheel.externalTireForce.y, wheel.tireForce.y,
                     anchor.gain, ref moved);
             }
+            anchor.reseated = moved;
             if (moved)
             {
                 Reseats++;

@@ -18,8 +18,12 @@ namespace com.github.lhervier.ksp.fix.suspensionbounce
     /// </summary>
     internal static class SuspensionDamper
     {
-        /// <summary>Whether the fix is installed. Read from settings.cfg.</summary>
-        public static bool Enabled = true;
+        /// <summary>Whether the damper of a wheel on the ground is kept under the limit. Read from settings.cfg.
+        /// </summary>
+        public static bool OnGround = true;
+
+        /// <summary>Whether the damper of a wheel off the ground is sized too. Read from settings.cfg.</summary>
+        public static bool InAir = true;
 
         private static readonly MethodInfo SuspensionSpringUpdate =
             AccessTools.DeclaredMethod(typeof(ModuleWheelSuspension), "SuspensionSpringUpdate");
@@ -53,22 +57,32 @@ namespace com.github.lhervier.ksp.fix.suspensionbounce
         /// <summary>The suspensions whose damper is lowered to the limit.</summary>
         private static readonly HashSet<ModuleWheelSuspension> limited = new HashSet<ModuleWheelSuspension>();
 
-        /// <summary>Patches the spring and damper update of the suspensions, on the ground and off it.</summary>
+        /// <summary>
+        /// Patches the spring and damper update of the suspensions on the ground when <see cref="OnGround"/> is set,
+        /// and off it when <see cref="InAir"/> is: the two are independent, KSP setting its own damper back at the next
+        /// contact when only the second is.
+        /// </summary>
         /// <exception cref="MissingMemberException">A member the fix reads is missing from the game.</exception>
         public static void Install(Harmony harmony)
         {
-            if (SuspensionSpringUpdate == null)
+            if (OnGround && SuspensionSpringUpdate == null)
             {
                 throw new MissingMemberException("ModuleWheelSuspension.SuspensionSpringUpdate");
             }
-            if (FixedUpdate == null)
+            if (InAir && FixedUpdate == null)
             {
                 throw new MissingMemberException("ModuleWheelSuspension.FixedUpdate");
             }
-            harmony.Patch(SuspensionSpringUpdate,
-                postfix: new HarmonyMethod(typeof(SuspensionDamper), nameof(SuspensionSpringUpdatePostfix)));
-            harmony.Patch(FixedUpdate,
-                postfix: new HarmonyMethod(typeof(SuspensionDamper), nameof(FixedUpdatePostfix)));
+            if (OnGround)
+            {
+                harmony.Patch(SuspensionSpringUpdate,
+                    postfix: new HarmonyMethod(typeof(SuspensionDamper), nameof(SuspensionSpringUpdatePostfix)));
+            }
+            if (InAir)
+            {
+                harmony.Patch(FixedUpdate,
+                    postfix: new HarmonyMethod(typeof(SuspensionDamper), nameof(FixedUpdatePostfix)));
+            }
             // The set holds no suspension of a scene that is gone.
             GameEvents.onGameSceneLoadRequested.Add(scene => limited.Clear());
         }
