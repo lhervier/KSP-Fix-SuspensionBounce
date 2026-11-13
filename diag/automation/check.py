@@ -13,6 +13,8 @@ Cases, and the save or craft each one loads (in the folder diag of the repositor
     leg-minmus       SuspensionBounceLegMinmus: an engineer places a landing leg alone, foot down, on Minmus
     leg-kerbin       SuspensionBounceLegKerbin: the same on Kerbin
     lander           SuspensionBounceLegKerbin: the lander next to the engineer, made the active vessel
+    lander-drop      SuspensionBounceLegKerbinSuspended.craft: a lander on four LT-1 legs, launched on the runway
+                     hanging from three launch clamps, let go from 4.6 m (copy it into Ships/SPH of the game)
     light-rover-eve  SuspensionBounceLightRoverEve: a rover of a quarter of a ton, loaded on Eve
     heavy-rover-eve  SuspensionBounceHeavyRoverEve: a rover of 10 t on six TR-2L wheels, loaded on Eve
     bulldozer-eve    SuspensionBounceBulldozerEve: the same with a blade of 3.5 t, 14 t in all (the blade needs
@@ -39,7 +41,8 @@ end. It then prints one line per trial from the recording: the speed over the gr
 and are bottomed out, the share of the weight the suspensions carry, how far the vessel turned, and, with --ksp, the
 lines KSP.log gained ("damaged wheel", "Exploded").
 The lone leg is not the active vessel, which KSP Diag - Suspension reads: for it, only the log lines and a
-screenshot every 4 s. Everything goes to --out: lines.json, the CSV files, the screenshots. It never saves the game, and quits
+screenshot every 4 s. The dropped lander is followed at every physics step from the moment it is let go, its legs read
+from the game itself (KSP Diag - Suspension reads an LT-1 short of its end-stop): see drop(). Everything goes to --out: lines.json, the CSV files, the screenshots. It never saves the game, and quits
 KSP at the end (unless --keep-running is given).
 """
 import argparse
@@ -58,6 +61,7 @@ CASES = {
     "leg-minmus": dict(save="SuspensionBounceLegMinmus", seconds=20, heading=242.19, ground=(430, 560)),
     "leg-kerbin": dict(save="SuspensionBounceLegKerbin", seconds=20, heading=17.19, ground=(530, 450)),
     "lander": dict(save="SuspensionBounceLegKerbin", seconds=30, vessel="SuspensionBounce Lander"),
+    "lander-drop": dict(craft="SPH/SuspensionBounceLegKerbinSuspended.craft", seconds=8, drop=True),
     "light-rover-eve": dict(save="SuspensionBounceLightRoverEve", seconds=30),
     "heavy-rover-eve": dict(save="SuspensionBounceHeavyRoverEve", seconds=30),
     "bulldozer-eve": dict(save="SuspensionBounceBulldozerEve", seconds=30),
@@ -328,6 +332,41 @@ def record(seconds=None, drive=None):
     return path
 
 
+def drop(path, seconds=3):
+    """Lets the active vessel go off its launch clamps (its next stage) and follows it at every physics step for the
+    given seconds, from before it touches the ground; writes what it read to path (JSON) and returns how fast it
+    touched, the deepest its legs went, the share of steps from the touch on with a leg on its end-stop, how fast it
+    bounced back up, and how many steps it spent in the air after the touch."""
+    module = "ModuleWheels.ModuleWheelSuspension"
+    legs = [p["id"] for p in call("list_parts") if "wheel" in p]
+    # The game leaves the centre of a wheel's collider out of its compression: an LT-1 (centre 0.119 m below its
+    # transform) would seem 0.127 of its travel short of its end-stop. Read once per leg, added back below.
+    offsets = []
+    for leg in legs:
+        got = call("get_member", type=module, match="part.persistentId=%d" % leg,
+                   members=["wheel.wheelCollider.center", "wheel.wheelCollider.lastRuntimeSuspensionTravel"])["values"]
+        offsets.append(-got["wheel.wheelCollider.center"]["y"] / got["wheel.wheelCollider.lastRuntimeSuspensionTravel"])
+    reads = [dict(type=module, match="part.persistentId=%d" % leg, member="wheel.currentState.suspensionCompression",
+                  label="c%d" % i) for i, leg in enumerate(legs)]
+    reads.append(dict(type="FlightGlobals", member="ActiveVessel.verticalSpeed", label="vz"))
+    call("stage")
+    table = call("sample_members", reads=reads, every="physics", frames=int(seconds * 50), seconds=seconds + 10)
+    with open(path, "w") as f:
+        json.dump(dict(table, offsets=offsets), f)
+    rows = [dict(zip(table["columns"], r)) for r in table["rows"]]
+    depth = [[(r["c%d" % i] + offsets[i]) if r["c%d" % i] > 0 else 0.0 for i in range(len(legs))] for r in rows]
+    touch = next((k for k, d in enumerate(depth) if max(d) > 0), None)
+    if touch is None:
+        return dict(touched=False)
+    after = depth[touch:]
+    return dict(
+        touch_speed_m_s=round(-rows[max(touch - 1, 0)]["vz"], 2),
+        peak_compression=round(max(max(d) for d in after), 3),
+        share_on_end_stop=round(sum(1 for d in after if max(d) >= 0.99) / len(after), 3),
+        rebound_m_s=round(max(r["vz"] for r in rows[touch:]), 2),
+        steps_in_air=sum(1 for d in after if max(d) == 0))
+
+
 def trial(n, name, case, options, out):
     """Plays the case once and returns what it read."""
     start = log_size(options.ksp) if options.ksp else 0
@@ -365,6 +404,13 @@ def trial(n, name, case, options, out):
         if case.get("drive"):
             call("wait", seconds=3)
         parts = len(call("list_parts"))
+        if case.get("drop"):
+            # Hanging still from its clamps first; then the fall and the touch, read at every physics step; then the
+            # recording below, the vessel at rest.
+            call("wait", seconds=2)
+            row.update(drop(os.path.join(out, "%s-%s-%02d-drop.json" % (name, options.label, n))))
+            # Its clamps are vessels of their own from then on.
+            parts = len(call("list_parts"))
         path = record(seconds=case.get("seconds"), drive=case.get("drive"))
         kept = os.path.join(out, "%s-%s-%02d.csv" % (name, options.label, n))
         shutil.copyfile(path, kept)

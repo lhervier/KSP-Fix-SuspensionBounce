@@ -245,6 +245,14 @@ the whole weight, and it holds.
 
 **→ Full chapter: [A rover on its end-stops](docs/checked/a-rover-on-its-end-stops.md)**
 
+### A lander dropped onto its end-stops
+
+A lander on four LT-1 legs, its springs set soft, dropped from its launch clamps onto the runway: it comes to rest on
+its end-stops. Without this mod, its feet read none of its weight, and it slowly turns and slides; with it, it stays
+still. With this mod, it bounces back up faster from the fall.
+
+**→ Full chapter: [A lander dropped onto its end-stops](docs/checked/a-lander-dropped-onto-its-end-stops.md)**
+
 ### A heavy rover on Kerbin, the Mun and Minmus
 
 The same rover of 10 t, its springs left to the game, on three worlds: without this mod, it sinks to three quarters

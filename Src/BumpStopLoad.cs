@@ -65,6 +65,10 @@ namespace com.github.lhervier.ksp.fix.suspensionbounce
         {
             public string partName;
             public uint persistentId;
+            /// <summary>
+            /// Contact depth over the travel, where PhysX's suspension really is: 0 fully extended, 1 on its end-stop
+            /// (<see cref="ContactDepth"/>).
+            /// </summary>
             public float compression;
             /// <summary>Force PhysX reports for the spring and damper (kN).</summary>
             public float springForce;
@@ -477,6 +481,20 @@ namespace com.github.lhervier.ksp.fix.suspensionbounce
         private static readonly List<Probe> groundedProbes = new List<Probe>();
 
         /// <summary>
+        /// How deep (m) <paramref name="contactPoint"/> is into the travel of the wheel of <paramref name="col"/>, its
+        /// suspension at <paramref name="travel"/>, where PhysX's <c>WheelCollider</c> really is: 0 at full extension,
+        /// <paramref name="travel"/> on its end-stop.
+        /// </summary>
+        private static float ContactDepth(VPWheelCollider col, Vector3 contactPoint, float travel)
+        {
+            // VPP's own depth leaves out the wheel's centre: VPP places Unity's collider at that centre, shifted along
+            // the travel by the anchor, but GetContactDepth counts the anchor's shift only. A wheel whose part sets a
+            // centre, such as the LT-1 leg (-0.119 m), would seem that much less compressed: short of its end-stop
+            // while PhysX's end-stop already carries it.
+            return col.GetContactDepth(contactPoint, travel) - col.center.y;
+        }
+
+        /// <summary>
         /// Once per physics step and vessel, at its first wheel: reads the contact of every wheel of the vessel. While
         /// one of them could reach its end-stop during the coming step, follows all the bodies of the vessel, sums the
         /// forces known to act
@@ -519,7 +537,7 @@ namespace com.github.lhervier.ksp.fix.suspensionbounce
                 float travel = col.lastRuntimeSuspensionTravel;
                 // The end-stop works along the axis of the suspension, as PhysX's does.
                 p.axis = col.cachedTransform.up;
-                p.compression = p.grounded && travel > 0f ? col.GetContactDepth(p.hit.point, travel) / travel : 0f;
+                p.compression = p.grounded && travel > 0f ? ContactDepth(col, p.hit.point, travel) / travel : 0f;
                 p.springForce = p.grounded ? p.hit.force : 0f;
                 if (p.grounded && !near)
                 {
