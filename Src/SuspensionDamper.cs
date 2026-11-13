@@ -210,7 +210,7 @@ namespace com.github.lhervier.ksp.fix.suspensionbounce
         /// Returns the mass a force on <paramref name="part"/> sets in motion within one physics step: its own, and that
         /// of the body its joint attaches it to; its own alone when it has no joint, and 0 when it has no rigidbody.
         /// </summary>
-        private static float MovedMass(Part part)
+        internal static float MovedMass(Part part)
         {
             Rigidbody body = part != null ? part.rb : null;
             if (body == null)

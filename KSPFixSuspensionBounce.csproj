@@ -33,6 +33,10 @@
       <HintPath>$(KSPDIR)\KSP_x64_Data\Managed\UnityEngine.PhysicsModule.dll</HintPath>
       <Private>false</Private>
     </Reference>
+    <Reference Include="UnityEngine.AnimationModule">
+      <HintPath>$(KSPDIR)\KSP_x64_Data\Managed\UnityEngine.AnimationModule.dll</HintPath>
+      <Private>false</Private>
+    </Reference>
     <Reference Include="UnityEngine.VehiclesModule">
       <HintPath>$(KSPDIR)\KSP_x64_Data\Managed\UnityEngine.VehiclesModule.dll</HintPath>
       <Private>false</Private>

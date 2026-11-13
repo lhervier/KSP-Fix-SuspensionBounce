@@ -36,6 +36,12 @@ namespace com.github.lhervier.ksp.fix.suspensionbounce
             TyreStaticGrip.Enabled = ReadBool(node, "staticGrip", TyreStaticGrip.Enabled, path);
             PoseMotion.Enabled = ReadBool(node, "tyreReadsPoses", PoseMotion.Enabled, path);
             CostMeasure.Enabled = ReadBool(node, "measureCost", CostMeasure.Enabled, path);
+            LegGeometryProbe.Enabled = ReadBool(node, "probeLegGeometry", LegGeometryProbe.Enabled, path);
+            FixedTuning.Enabled = ReadBool(node, "fixedTuning", FixedTuning.Enabled, path);
+            FixedTuning.Compression = ReadFloat(node, "fixedTuningCompression", FixedTuning.Compression, path);
+            FixedTuning.Damping = ReadFloat(node, "fixedTuningDamping", FixedTuning.Damping, path);
+            FixedTuning.TipMargin = ReadFloat(node, "fixedTuningTipMargin", FixedTuning.TipMargin, path);
+            FixedTuning.Wheels = node.GetValue("fixedTuningWheels") ?? FixedTuning.Wheels;
         }
 
         /// <summary>
@@ -51,6 +57,27 @@ namespace com.github.lhervier.ksp.fix.suspensionbounce
             }
             bool parsed;
             if (bool.TryParse(value, out parsed))
+            {
+                return parsed;
+            }
+            Log.Warning($"Unknown {name} '{value}' in {path}, using {fallback}");
+            return fallback;
+        }
+
+        /// <summary>
+        /// Returns the value <paramref name="name"/> of <paramref name="node"/> as a number, or
+        /// <paramref name="fallback"/> when it is missing or not a number (the latter with a warning).
+        /// </summary>
+        private static float ReadFloat(ConfigNode node, string name, float fallback, string path)
+        {
+            string value = node.GetValue(name);
+            if (value == null)
+            {
+                return fallback;
+            }
+            float parsed;
+            if (float.TryParse(value, System.Globalization.NumberStyles.Float,
+                System.Globalization.CultureInfo.InvariantCulture, out parsed))
             {
                 return parsed;
             }

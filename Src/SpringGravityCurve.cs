@@ -71,7 +71,7 @@ namespace com.github.lhervier.ksp.fix.suspensionbounce
         private static void SuspensionSpringUpdatePostfix(ModuleWheelSuspension __instance)
         {
             ModuleWheelSuspension s = __instance;
-            if (!Enabled)
+            if (!Enabled || FixedTuning.IsActive)
             {
                 return;
             }
