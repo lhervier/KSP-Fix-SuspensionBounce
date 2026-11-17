@@ -1,4 +1,5 @@
 using System;
+using System.Reflection;
 using HarmonyLib;
 using UnityEngine;
 
@@ -16,7 +17,9 @@ namespace com.github.lhervier.ksp.fix.suspensionbounce
         private void Start()
         {
             Settings.Load();
-            Log.Info($"Version {typeof(KSPFixSuspensionBounce).Assembly.GetName().Version}, log level {Log.Level}");
+            string version = typeof(KSPFixSuspensionBounce).Assembly
+                .GetCustomAttribute<AssemblyInformationalVersionAttribute>()?.InformationalVersion;
+            Log.Info($"Version {version}, log level {Log.Level}");
             // The read of the vessels' bodies that the damper and end-stop fixes share.
             VesselBodies.Install();
             if (SpringGravityCurve.Enabled)
