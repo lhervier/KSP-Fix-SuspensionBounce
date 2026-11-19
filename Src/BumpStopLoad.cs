@@ -485,7 +485,7 @@ namespace com.github.lhervier.ksp.fix.suspensionbounce
         /// suspension at <paramref name="travel"/>, where PhysX's <c>WheelCollider</c> really is: 0 at full extension,
         /// <paramref name="travel"/> on its end-stop.
         /// </summary>
-        private static float ContactDepth(VPWheelCollider col, Vector3 contactPoint, float travel)
+        internal static float ContactDepth(VPWheelCollider col, Vector3 contactPoint, float travel)
         {
             // VPP's own depth leaves out the wheel's centre: VPP places Unity's collider at that centre, shifted along
             // the travel by the anchor, but GetContactDepth counts the anchor's shift only. A wheel whose part sets a

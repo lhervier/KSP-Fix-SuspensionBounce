@@ -86,6 +86,9 @@ DEPLOYABLE = ("landingLeg1", "landingLeg1-2", "miniLandingLeg", "GearSmall", "Ge
 # How long each phase of the legs lasts: folded, then deployed again.
 LEG_SECONDS = 12
 FIXED_TUNING = "com.github.lhervier.ksp.fix.suspensionbounce.FixedTuning"
+TUNING_API = "com.github.lhervier.ksp.fix.suspensionbounce.SuspensionTuningApi"
+# The longest a levelling may take, in seconds: five passes of a second's measure and two seconds' settling.
+LEVEL_SECONDS = 40
 
 # The landing leg the engineer picks up on the lander, by its persistent id in the save.
 LEG = 1627742187
@@ -438,6 +441,24 @@ def drop(path, seconds=3):
         steps_in_air=sum(1 for d in after if max(d) == 0))
 
 
+def tune(options):
+    """Sets the vessel's suspensions as the suspension window would: Auto predicts them for a body, Level measures
+    them on the ground, until levelled. Returns what the mod answered."""
+    if options.tune == "auto":
+        return call("call_method", type=TUNING_API, method="Auto",
+                    arguments=[options.tune_body, 0, True, options.compression, options.damping])["returned"]
+    started = call("call_method", type=TUNING_API, method="Level",
+                   arguments=[options.compression, options.damping])["returned"]
+    if started != "started":
+        return started
+    deadline = time.time() + LEVEL_SECONDS
+    while True:
+        call("wait", seconds=2)
+        status = call("call_method", type=TUNING_API, method="LevelStatus")["returned"]
+        if not status.startswith("running:") or time.time() > deadline:
+            return status
+
+
 def trial(n, name, case, options, out):
     """Plays the case once and returns what it read."""
     start = log_size(options.ksp) if options.ksp else 0
@@ -465,6 +486,8 @@ def trial(n, name, case, options, out):
     brake_part, held = parking_brake()
     if held:
         row["parked_still"] = release_parking_brake(brake_part)
+    if options.tune != "none":
+        row["tune"] = tune(options)
     if case.get("hinges"):
         lower_hinges()
     if "coast" in case:
@@ -543,7 +566,17 @@ def main():
     parser.add_argument("--fold-seconds", type=float, default=LEG_SECONDS,
                         help="how long the legs stay folded before they are deployed again (default %d)" % LEG_SECONDS)
     parser.add_argument("--fixed", choices=("on", "off"),
-                        help="prototype: switch the fixed tuning of the suspensions on or off before the trials")
+                        help="switch the player's setting of the suspensions on (the mod sets them) or off (the game "
+                             "does, as in stock) before the trials")
+    parser.add_argument("--tune", choices=("none", "auto", "level"), default="none",
+                        help="once the vessel is let go, set its suspensions as the suspension window would: auto "
+                             "predicts them for --tune-body, level measures them on the ground (default: none, the "
+                             "setting predicted a few seconds after loading)")
+    parser.add_argument("--tune-body", default="",
+                        help="the body auto predicts for (default: the one the vessel stands on)")
+    parser.add_argument("--compression", type=float, default=0.33,
+                        help="the compression --tune aims at, as a fraction of the travel")
+    parser.add_argument("--damping", type=float, default=0.7, help="the damping ratio --tune gives")
     options = parser.parse_args()
     sys.stdout.reconfigure(encoding="utf-8")
     URL = "http://127.0.0.1:%d/mcp/" % options.port

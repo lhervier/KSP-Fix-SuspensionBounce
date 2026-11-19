@@ -41,7 +41,7 @@ namespace com.github.lhervier.ksp.fix.suspensionbounce
             FixedTuning.Compression = ReadFloat(node, "fixedTuningCompression", FixedTuning.Compression, path);
             FixedTuning.Damping = ReadFloat(node, "fixedTuningDamping", FixedTuning.Damping, path);
             FixedTuning.TipMargin = ReadFloat(node, "fixedTuningTipMargin", FixedTuning.TipMargin, path);
-            FixedTuning.Wheels = node.GetValue("fixedTuningWheels") ?? FixedTuning.Wheels;
+            FixedTuning.PredictDelay = ReadFloat(node, "fixedTuningPredictDelay", FixedTuning.PredictDelay, path);
         }
 
         /// <summary>

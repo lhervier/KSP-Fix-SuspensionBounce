@@ -88,7 +88,7 @@ namespace com.github.lhervier.ksp.fix.suspensionbounce
                     : $"radius {collider.radius:F3} travel {collider.suspensionDistance:F3} center {collider.center}";
                 if (deployment == null)
                 {
-                    Log.Info($"Probe: {name}: fixed, prefab active {prefabActive}, host {PoseOf(root, host)}, {colliderText}");
+                    Log.Debug($"Probe: {name}: fixed, prefab active {prefabActive}, host {PoseOf(root, host)}, {colliderText}");
                     return;
                 }
                 Transform target = Find(root, deployment.deployTargetTransformName);
@@ -120,7 +120,7 @@ namespace com.github.lhervier.ksp.fix.suspensionbounce
                 Pose deployedTarget = PoseOf(root, target);
                 Pose deployedHost = PoseOf(root, host);
                 Measured[name] = new[] { deployedTarget, retractedTarget };
-                Log.Info($"Probe: {name}: clip {clip.name} {clip.length:F2} s deployedPosition {deployment.deployedPosition}, " +
+                Log.Debug($"Probe: {name}: clip {clip.name} {clip.length:F2} s deployedPosition {deployment.deployedPosition}, " +
                     $"prefab active {prefabActive}, {colliderText}\n" +
                     $"  target deployed  {deployedTarget}\n  target retracted {retractedTarget}\n" +
                     $"  host deployed    {deployedHost}\n  host retracted   {retractedHost}");
