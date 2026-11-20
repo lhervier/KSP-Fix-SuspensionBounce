@@ -33,12 +33,13 @@ namespace com.github.lhervier.ksp.fix.suspensionbounce
         // Knobs, public so that they can be changed in game (KSP-Util-MCPServer set_member).
 
         /// <summary>
-        /// Whether the fix runs at all (settings.cfg, staticGrip). Off by default: VPP smooths the tyre force before
-        /// applying it (VehicleBase.ApplyTireForce, tireForceSharpness), so the anchor's spring acts late, and a late
-        /// spring feeds energy into a light vessel instead of taking it out: a probe of 100 kg on three LT-05 legs, whose
-        /// smoothing is ten times slower than other wheels', turns to and fro on itself, ever wider.
+        /// Whether the fix runs at all (settings.cfg, staticGrip). VPP smooths the tyre force before applying it
+        /// (VehicleBase.ApplyTireForce, tireForceSharpness), so the anchor's spring acts late, and a late spring feeds
+        /// energy into a light vessel instead of taking it out: a probe of 100 kg on three LT-05 legs, whose smoothing is
+        /// ten times slower than other wheels', turns to and fro on itself, ever wider. The fix therefore gives every
+        /// wheel at least the smoothing of the stock wheels (<see cref="LeastSharpness"/>).
         /// </summary>
-        public static bool Enabled = false;
+        public static bool Enabled = true;
 
         /// <summary>Whether the anchor also holds along the wheel while it brakes.</summary>
         public static bool HoldWhenBraking = true;
@@ -76,14 +77,12 @@ namespace com.github.lhervier.ksp.fix.suspensionbounce
             AccessTools.DeclaredMethod(typeof(ModuleWheelBase), "wheelSetup");
 
         /// <summary>
-        /// The stock LT-05 leg, whose config sets tireForceSharpness to 1 where every other stock wheel has the default
-        /// of 10: VPP then applies its tyre force about a second late, and the anchor's spring with it, which makes a
-        /// light probe on three of them swing on itself without end.
+        /// The least tyre force smoothing the fix leaves a wheel: the default of every stock wheel but the LT-05 leg,
+        /// whose config sets 1. Below it, VPP applies its tyre force about a second late, and the anchor's spring with
+        /// it, which makes a light probe on three LT-05 swing on itself without end; a wheel of another mod set as
+        /// slowly would do the same.
         /// </summary>
-        private const string MiniLeg = "miniLandingLeg";
-
-        /// <summary>The tyre force smoothing the fix gives the LT-05 leg: the default of every other stock wheel.</summary>
-        private const float MiniLegSharpness = 10f;
+        private const float LeastSharpness = 10f;
 
         private static readonly ConditionalWeakTable<VehicleBase.WheelState, Anchor> anchors =
             new ConditionalWeakTable<VehicleBase.WheelState, Anchor>();
@@ -129,7 +128,8 @@ namespace com.github.lhervier.ksp.fix.suspensionbounce
                 prefix: new HarmonyMethod(typeof(TyreStaticGrip), nameof(ApplyTireForcePrefix)));
             if (WheelSetup == null)
             {
-                Log.Warning("ModuleWheelBase.wheelSetup not found: the LT-05 leg keeps its slow tyre force smoothing");
+                Log.Warning("ModuleWheelBase.wheelSetup not found: slow tyre force smoothings are kept, a light " +
+                    "vessel on LT-05 legs may swing on itself");
             }
             else
             {
@@ -139,15 +139,15 @@ namespace com.github.lhervier.ksp.fix.suspensionbounce
         }
 
         /// <summary>
-        /// Gives the stock LT-05 leg the tyre force smoothing of every other stock wheel, before KSP hands it to VPP.
-        /// tireForceSharpness is read from the part's config and never saved, so the change lasts as long as the part.
+        /// Gives a wheel whose tyre force smoothing is slower than every stock wheel's but the LT-05 leg's at least the
+        /// stock one, before KSP hands it to VPP. tireForceSharpness is read from the part's config and never saved, so
+        /// the change lasts as long as the part.
         /// </summary>
         private static void WheelSetupPrefix(ModuleWheelBase __instance)
         {
-            AvailablePart info = __instance.part != null ? __instance.part.partInfo : null;
-            if (info != null && info.name == MiniLeg && __instance.tireForceSharpness < MiniLegSharpness)
+            if (__instance.tireForceSharpness < LeastSharpness)
             {
-                __instance.tireForceSharpness = MiniLegSharpness;
+                __instance.tireForceSharpness = LeastSharpness;
             }
         }
 
