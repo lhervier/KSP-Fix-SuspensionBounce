@@ -35,6 +35,18 @@ namespace com.github.lhervier.ksp.fix.suspensionbounce
                     Log.Error($"Could not install the fixed tuning: {e}");
                 }
             }
+            if (DockingWheelReset.Enabled)
+            {
+                try
+                {
+                    DockingWheelReset.Install(new Harmony(HarmonyId + ".dockingwheels"));
+                    Log.Info("Docking wheel reset installed");
+                }
+                catch (Exception e)
+                {
+                    Log.Error($"Could not install the docking wheel reset, a docking makes landed vessels jump: {e}");
+                }
+            }
             if (SpringGravityCurve.Enabled)
             {
                 // Ahead of the damper fix, which starts from the damper the spring fix sets.

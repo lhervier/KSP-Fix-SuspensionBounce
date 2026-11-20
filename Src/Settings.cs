@@ -38,6 +38,7 @@ namespace com.github.lhervier.ksp.fix.suspensionbounce
             CostMeasure.Enabled = ReadBool(node, "measureCost", CostMeasure.Enabled, path);
             LegGeometryProbe.Enabled = ReadBool(node, "probeLegGeometry", LegGeometryProbe.Enabled, path);
             FixedTuning.Enabled = ReadBool(node, "fixedTuning", FixedTuning.Enabled, path);
+            DockingWheelReset.Enabled = ReadBool(node, "dockingWheelReset", DockingWheelReset.Enabled, path);
             FixedTuning.Compression = ReadFloat(node, "fixedTuningCompression", FixedTuning.Compression, path);
             FixedTuning.Damping = ReadFloat(node, "fixedTuningDamping", FixedTuning.Damping, path);
             FixedTuning.TipMargin = ReadFloat(node, "fixedTuningTipMargin", FixedTuning.TipMargin, path);
