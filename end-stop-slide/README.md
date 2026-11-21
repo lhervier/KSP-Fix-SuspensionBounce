@@ -105,10 +105,7 @@ ground instead, a normal tilted for a single step, by a bump or a seam between t
 of the forward speed into a speed towards the end-stop, and call for a force many times the weight.
 
 Among the endless ways four wheels can carry the same vessel, the solver takes the evenest
-([Sharing between the contacts](../vessel-bodies/README.md#sharing-between-the-contacts)); while the vessel is slow,
-each force moves only part of the way from the one of the step before, which keeps a vessel at rest on its end-stops
-from rocking from one long side to the other
-([Correcting the rigid model](../vessel-bodies/README.md#correcting-the-rigid-model)).
+([Sharing between the contacts](../vessel-bodies/README.md#sharing-between-the-contacts)).
 
 ### Where the wheel is now
 
@@ -213,9 +210,3 @@ prefix and a postfix of `ModuleWheelDamage.FixedUpdate` show it to the damage mo
 - **A wheel landing hard enough to cross its whole travel in a single physics step still meets the game's end-stop.**
   The mod holds an end-stop one step ahead; a wheel that goes from the top of its travel to past the end of it within
   one step is caught by PhysX's end-stop, as without this mod, and held by the mod from the next step on.
-
-## Work in progress
-
-- **A rover on its end-stops driving slowly.** Below 2 m/s, each force moves only a part of the way at each step
-  ([A part of the way at a time, when slow](../vessel-bodies/README.md#a-part-of-the-way-at-a-time-when-slow)): how
-  much of the weight the tyres read over bumps at that speed is not checked yet.

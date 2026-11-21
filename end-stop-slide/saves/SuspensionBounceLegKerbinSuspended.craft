@@ -205,22 +205,6 @@ PART
 	}
 	MODULE
 	{
-		name = ParkingBrakeModule
-		isEnabled = True
-		brakeActive = False
-		stagingEnabled = True
-		EVENTS
-		{
-		}
-		ACTIONS
-		{
-		}
-		UPGRADESAPPLIED
-		{
-		}
-	}
-	MODULE
-	{
 		name = ModuleTripLogger
 		isEnabled = True
 		stagingEnabled = True
@@ -1066,22 +1050,6 @@ PART
 		{
 		}
 		STOREDPARTS
-		{
-		}
-		UPGRADESAPPLIED
-		{
-		}
-	}
-	MODULE
-	{
-		name = ParkingBrakeModule
-		isEnabled = True
-		brakeActive = False
-		stagingEnabled = True
-		EVENTS
-		{
-		}
-		ACTIONS
 		{
 		}
 		UPGRADESAPPLIED

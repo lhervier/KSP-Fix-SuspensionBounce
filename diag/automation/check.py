@@ -33,10 +33,10 @@ Cases, and the save or craft each one loads, in the saves folder of the fix whos
     crane-mun-auto   vessel-bodies: SuspensionBounceCraneMunAuto: the same, its springs left to the game
     end-stops-flat   end-stop-slide: SuspensionBounceEndStopsFlat: a rover on soft springs, resting on its end-stops,
                      driven at 24 m/s
-    end-stops-slope  end-stop-slide: SuspensionBounceEndStopsSlope: the same rover, braked across a slope of about
-                     20 deg
-    end-stops-warp   end-stop-slide: SuspensionBounceEndStopsSlope: the same rover on its slope, the time warped on rails
-                     for a minute, as a player does near a rover at rest, before it is recorded
+    end-stops-slope  end-stop-slide: SuspensionBounceEndStopsSlope (SuspensionBounceEndStopsSlopeStock with Parking
+                     Brake installed): the same rover, braked across a slope of about 20 deg
+    end-stops-warp   end-stop-slide: the same saves: the same rover on its slope, the time warped on rails for a minute,
+                     as a player does near a rover at rest, before it is recorded
     straight-line    end-stop-slide: SuspensionBounceRoverFlat: a rover driven from standstill on flat ground, wheel
                      throttle held, steering, brakes and SAS let go
 
@@ -53,10 +53,14 @@ folder from GameData.
 
 The saves (but the crafts) were made with Parking Brake on, for the trials without this mod: installed, it may hold the
 vessel still as it loads, wherever the game puts it, and let it go once it has nothing left to cancel, brakes kept as
-saved; but it lets go of a vessel that leaves the ground as it loads, which then settles on its own. Install Parking
-Brake only to play without this mod, or with fixedTuning = false: it sets the vessel's speed back to zero at every
-physics step, and under Fixed Tuning's springs that makes the vessel rock a little harder at each step, as it loads,
-until it leaves the ground. The script refuses to start when Parking Brake is installed with Fixed Tuning on.
+saved; but it lets go of a vessel that leaves the ground as it loads, which then settles on its own. The rover on its
+slope has two saves: SuspensionBounceEndStopsSlopeStock, made with Parking Brake on, which the script loads when
+Parking Brake is installed, and SuspensionBounceEndStopsSlope, made without it, for the trials with this mod: the rover
+saved under Parking Brake sinks past its end-stops, and is thrown off them as it loads when nothing holds it.
+Install Parking Brake only to play without this mod, or with fixedTuning = false: it sets the vessel's speed back to
+zero at every physics step, and under Fixed Tuning's springs that makes the vessel rock a little harder at each step,
+as it loads, until it leaves the ground. The script refuses to start when Parking Brake is installed with Fixed Tuning
+on.
 
 For each trial it loads the save (or launches the craft), lets the parking brake go if it holds the vessel, does what
 the case asks a player to do, records KSP Diag - Suspension (its button Record CSV) for --seconds seconds or for the
@@ -105,8 +109,10 @@ CASES = {
     "crane-mun": dict(save="SuspensionBounceCraneMun", seconds=60, legs=True),
     "crane-mun-auto": dict(save="SuspensionBounceCraneMunAuto", seconds=60, legs=True),
     "end-stops-flat": dict(save="SuspensionBounceEndStopsFlat", drive=dict(heading=201, speed=24, distance=800)),
-    "end-stops-slope": dict(save="SuspensionBounceEndStopsSlope", seconds=30),
-    "end-stops-warp": dict(save="SuspensionBounceEndStopsSlope", seconds=30, warp=60),
+    "end-stops-slope": dict(save="SuspensionBounceEndStopsSlope", stock_save="SuspensionBounceEndStopsSlopeStock",
+                            seconds=30),
+    "end-stops-warp": dict(save="SuspensionBounceEndStopsSlope", stock_save="SuspensionBounceEndStopsSlopeStock",
+                           seconds=30, warp=60),
     "straight-line": dict(save="SuspensionBounceRoverFlat", seconds=30, coast=0.3),
 }
 
@@ -575,7 +581,9 @@ def trial(n, name, case, options, out):
             call("go_to_scene", scene="SPACECENTER")
         call("launch_vessel", craft=case["craft"])
     else:
-        call("load_save", folder=options.folder, save=case["save"])
+        # A case with a save of its own for Parking Brake, which only the trials without this mod use.
+        stock = "stock_save" in case and parking_brake_installed()
+        call("load_save", folder=options.folder, save=case["stock_save"] if stock else case["save"])
     row = dict(trial=n)
     if "vessel" in case:
         switch(case["vessel"])
@@ -584,7 +592,7 @@ def trial(n, name, case, options, out):
         set_brakes(options.brakes)
     if options.friction is not None:
         set_friction(options.friction)
-    brake_part, held = parking_brake()
+    brake_part, held = parking_brake() if parking_brake_installed() else (None, False)
     if held:
         row["parked_still"] = release_parking_brake(brake_part)
     if case.get("hinges"):

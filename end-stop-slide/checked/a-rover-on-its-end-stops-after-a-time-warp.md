@@ -11,9 +11,10 @@ holds to it.
 ## The save
 
 [saves/SuspensionBounceEndStopsSlope.sfs](../saves/SuspensionBounceEndStopsSlope.sfs), the one of
-[A rover on its end-stops](a-rover-on-its-end-stops.md): `SuspensionBounce Rover`, 2.4 t on four TR-2L wheels, brakes
-on, on a slope of about 20° west of the space centre, on soft springs, resting on its end-stops. Copy it into the
-folder of a sandbox game, under `saves`, and load it from the quickload menu (Alt+F9 by default).
+[A rover on its end-stops](a-rover-on-its-end-stops.md) for the trials with this mod: `SuspensionBounce Rover`, 2.4 t
+on four TR-2L wheels, brakes on, on a slope of about 20° west of the space centre, on soft springs, resting on its
+end-stops. Copy it into the folder of a sandbox game, under `saves`, and load it from the quickload menu (Alt+F9 by
+default).
 
 ## By hand
 

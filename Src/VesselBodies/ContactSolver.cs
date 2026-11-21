@@ -17,10 +17,6 @@ namespace com.github.lhervier.ksp.fix.suspensions.vesselbodies
     /// the coming step, all at once. It applies them to the bodies, and checks by the vessel's change of momentum over
     /// the step what other forces pushed it (<see cref="Balance.unexplainedNormal"/>).
     /// </para>
-    /// <para>
-    /// The vessel answers a force more than the rigid body taken for it: slow, each force moves only
-    /// <see cref="Relaxation"/> of the way from the one of the step before to the one found.
-    /// </para>
     /// </summary>
     public static class ContactSolver
     {
@@ -43,23 +39,6 @@ namespace com.github.lhervier.ksp.fix.suspensions.vesselbodies
         /// regularisation.
         /// </summary>
         public static int Passes = 4;
-
-        /// <summary>
-        /// Share of the way from the force of the step before to the one found that each force moves in a step.
-        /// </summary>
-        public static float Relaxation = 0.3f;
-
-        /// <summary>
-        /// The vessel's speed over the ground (m/s) under which <see cref="Relaxation"/> applies; faster, the forces
-        /// move in full at every step, so that the tyres keep reading the weight over the bumps. Negative: always.
-        /// </summary>
-        public static float RelaxBelowSpeed = 2f;
-
-        /// <summary>
-        /// <see cref="Relaxation"/> applies only while the forces of the step before add up to no more than this many
-        /// times the vessel's weight: the forces that stop a hard landing are let go at once.
-        /// </summary>
-        public static float RelaxBelowWeights = 2f;
 
         /// <summary>
         /// One contact of a vessel. The caller sets, for each step, where and along what its force pushes, how its gap
@@ -430,8 +409,8 @@ namespace com.github.lhervier.ksp.fix.suspensions.vesselbodies
         /// taken as one rigid body (the first <paramref name="count"/> of <paramref name="bodies"/>, about
         /// <paramref name="centre"/>, their velocities read for this step), pushed by the <paramref name="known"/> forces
         /// and <paramref name="knownTorque"/> of the last step. Finds the least forces, none pulling, that keep every
-        /// contact from closing more than its gap by the end of the coming step, all at once; corrects them for the rigid
-        /// model (<see cref="Relax"/>); applies them to the contacts' bodies at their points, and records them in
+        /// contact from closing more than its gap by the end of the coming step, all at once; applies them to the
+        /// contacts' bodies at their points, and records them in
         /// <see cref="Contact.held"/>, <see cref="Balance.heldNormal"/> and <see cref="Balance.holding"/>. A contact
         /// resting at the end of its gap gets its share of the load; a contact opening, or far from closing, gets
         /// nothing; a contact closing fast is slowed to just close its gap.
@@ -527,8 +506,6 @@ namespace com.github.lhervier.ksp.fix.suspensions.vesselbodies
                 }
             }
 
-            Relax(balance, touching, mass, now, dt);
-
             for (int k = 0; k < n; k++)
             {
                 Contact c = touching[k];
@@ -541,39 +518,6 @@ namespace com.github.lhervier.ksp.fix.suspensions.vesselbodies
                     c.body.AddForceAtPosition(c.heldForce, c.heldPoint, ForceMode.Force);
                     balance.heldNormal += f[k];
                     balance.holding++;
-                }
-            }
-        }
-
-        /// <summary>
-        /// Corrects the forces just found in <see cref="holdF"/> for the <paramref name="touching"/> contacts for what
-        /// the rigid model misses: while the vessel is slower than <see cref="RelaxBelowSpeed"/> and the forces of the
-        /// step before add up to no more than <see cref="RelaxBelowWeights"/> times its weight, each moves only
-        /// <see cref="Relaxation"/> of the way there from the one of the step before.
-        /// </summary>
-        private static void Relax(Balance balance, List<Contact> touching, float mass, float now, float dt)
-        {
-            // The vessel answers a force at a contact more than the rigid body taken here does: a force found in full
-            // makes it overshoot, and the next step swings back, a rocking that keeps going on a vessel at rest on its
-            // end-stops. Slow, each force moves only part of the way from the one of the step before to the one found.
-            // The forces that stop a hard landing are many times the weight: kept at 70 % a step once the vessel is
-            // slow, they would throw it back up.
-            int n = touching.Count;
-            float[] f = holdF;
-            float before = 0f;
-            for (int k = 0; k < n; k++)
-            {
-                Contact c = touching[k];
-                before += Mathf.Abs(now - c.heldTime - dt) < dt * 0.25f ? c.held : 0f;
-            }
-            float weight = mass * (float)balance.vessel.graviticAcceleration.magnitude;
-            if ((RelaxBelowSpeed < 0f || balance.vessel.srfSpeed < RelaxBelowSpeed) && before <= RelaxBelowWeights * weight)
-            {
-                for (int k = 0; k < n; k++)
-                {
-                    Contact c = touching[k];
-                    float previous = Mathf.Abs(now - c.heldTime - dt) < dt * 0.25f ? c.held : 0f;
-                    f[k] = previous + Relaxation * (f[k] - previous);
                 }
             }
         }

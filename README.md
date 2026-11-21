@@ -82,7 +82,9 @@ Copy `GameData/KSPFixSuspensionBounce` into the `GameData` folder of KSP.
 before installing this mod. Parking Brake sets the speed of every part of a braked vessel back to zero at every
 physics step. With the player's setting of [Fixed Tuning](fixed-tuning/README.md), a vessel loaded off its resting
 height then rocks a little harder at each step, until it leaves the ground; Parking Brake lets go of a vessel that
-leaves the ground, unless it is a rover, and the vessel may land on its side. Parking Brake works around vessels that
+leaves the ground, unless it is a rover, and the vessel may land on its side. With
+[End-Stop Slide](end-stop-slide/README.md), a braked vessel resting on its end-stops rocks from one long side to the
+other at every step, and creeps down a slope. Parking Brake works around vessels that
 will not stay still; the fixes of this mod, with its two siblings above, are meant to make it unnecessary.
 
 ## Building

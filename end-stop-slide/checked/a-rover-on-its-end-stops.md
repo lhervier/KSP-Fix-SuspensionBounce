@@ -16,18 +16,23 @@ default).
   2.4 t on four TR-2L wheels, on flat ground near the space centre, on soft springs: all four wheels rest on their
   end-stops.
 - [saves/SuspensionBounceEndStopsSlope.sfs](../saves/SuspensionBounceEndStopsSlope.sfs): the same rover, brakes on,
-  on a slope of about 20° west of the space centre, on soft springs, resting on its end-stops.
+  on a slope of about 20° west of the space centre, on soft springs, resting on its end-stops; for the trials with
+  this mod.
+- [saves/SuspensionBounceEndStopsSlopeStock.sfs](../saves/SuspensionBounceEndStopsSlopeStock.sfs): the same, saved
+  with [Parking Brake](https://github.com/jarosm/KSP-ParkingBrake) on, for the trials without this mod. Parking Brake
+  holds the rover still as it loads; this mod is not compatible with it, and without it the rover of this save is
+  thrown off its end-stops as it loads.
 
 Each save holds the soft springs twice. Without this mod, the game uses its own sliders, set by hand at their lowest
 (0.05) on flat ground, at 0.3 on the slope. This mod hides those sliders and uses its own setting, saved with the rover:
 the one its suspension window makes (open it from the toolbar, tick all four wheels, keep Kerbin as the body, type a
 mass of 0.01 t, share the weight by the centre of mass, and press *Auto*: the springs are predicted for a rover of
-10 kg, and the wheels sink onto their end-stops). Both saves were made with this mod, the rover settled on its
+10 kg, and the wheels sink onto their end-stops). The saves were made with this mod, the rover settled on its
 end-stops and still.
 
 ## By hand
 
-Load the save: nothing to set, with this mod or without it.
+Load the save (on the slope, the one of the configuration played): nothing to set, with this mod or without it.
 
 - **On flat ground**: drive the rover at full speed, about 24 m/s, in a straight line. Without this mod, it slides
   sideways as it goes, as on ice: on the navball, the speed marker drifts away from the heading. With this mod, it
@@ -37,7 +42,8 @@ Load the save: nothing to set, with this mod or without it.
 
 ## By script
 
-[diag/automation/check.py](../../diag/automation/check.py) loads the save through
+[diag/automation/check.py](../../diag/automation/check.py) loads the save (on the slope, the one with Parking Brake
+when Parking Brake is installed) through
 [KSP-Util-MCPServer](https://github.com/lhervier/KSP-Util-MCPServer), the springs as saved, and records KSP Diag -
 Suspension: during a drive of 800 m at 24 m/s on flat ground, for 30 s on the slope. Its first lines say how to run it,
 and how to choose a configuration of this mod (its `settings.cfg`, KSP started again):

@@ -43,8 +43,8 @@ another support carries part of the vessel, it no longer follows from the masses
 Other supports, other wheels, the ground under another part, a base the vessel is docked to, can only make the vessel
 resist more at that point, never less: the value worked out from the vessel alone is at worst below the true one, and
 what is sized from it errs on the side of a lighter vessel. What it leaves out is joints that give, which let a push
-move less than the whole vessel within a step; the fixes cover them in their own ways
-([Correcting the rigid model](#correcting-the-rigid-model)).
+move less than the whole vessel within a step; Damper Bounce keeps a margin for them
+([Damper Bounce](../damper-bounce/README.md#the-fix)).
 
 Damper Bounce takes this mass at each wheel's contact, along the normal of the surface, to bound the wheel's damper.
 
@@ -99,30 +99,14 @@ even under a load of several tons, a Unity bug known for years ([Joint.currentFo
 zero](https://discussions.unity.com/t/joint-currentforce-and-joint-currenttorque-are-always-zero/675232)). While the
 solver holds the end-stops, what is left is close to zero.
 
-## Correcting the rigid model
+## What it cannot foresee
 
-The vessel answers a force at a contact more than the rigid body taken for it: within a step, a force moves the point
-it pushes further than the sums of masses and inertias say. Why is not known yet; joints that give, letting a push
-move less than the whole vessel, are a likely part of it. A force found in full then makes the vessel overshoot, and
-the next step swings back. On a vessel at rest on its end-stops, that rocking keeps going: one long side of a rover
-held at a step, the other at the next, the whole rover tilting back and forth, and creeping down its slope.
-
-### A part of the way at a time, when slow
-
-So, while the vessel is slower than 2 m/s, each force moves only 30 % of the way from the one of the step before to
-the one found: the rocking dies out. Faster, the forces move in full at every step, so that the tyres keep reading
-the weight over the bumps.
-
-The forces that stop a hard landing are many times the vessel's weight: kept at 70 % a step once the vessel is slow,
-they would throw it back up. They are let go at once: the forces move only part of the way while those of the step
-before add up to no more than twice the weight.
-
-### The same flaw in Damper Bounce
-
-[Damper Bounce](../damper-bounce/README.md#the-fix) meets the same flaw its own way, without the solver: it lets a
-damper take off at most half the speed of the mass the vessel answers with in a step, a margin that covers joints that
-give, and bounds it for the leg itself, from the speed at the end of the step, so that it can stop the leg and the
-part it is attached to, never send them back.
+The solver plans the coming step from the vessel's velocities as it reads them and from the forces it knows. A
+velocity changed after that read throws every force off by as much: Parking Brake, which sets the speed of every part
+back to zero at each step, makes the forces holding a vessel at rest on its end-stops overshoot, one long side held at
+a step, the other at the next ([Installing](../README.md#installing)). A wheel that crosses its whole travel within a
+step meets PhysX's own end-stop, which the solver does not foresee either
+([End-Stop Slide](../end-stop-slide/README.md#limits)).
 
 ## Performance
 
@@ -222,21 +206,6 @@ float value = s / (a[k * n + k] + lambda);
 value = float.IsNaN(value) || value < 0f ? 0f : value;
 ```
 
-Then `Relax` corrects them for the rigid model ([A part of the way at a time, when
-slow](#a-part-of-the-way-at-a-time-when-slow)):
-
-```csharp
-if ((RelaxBelowSpeed < 0f || balance.vessel.srfSpeed < RelaxBelowSpeed) && before <= RelaxBelowWeights * weight)
-{
-    for (int k = 0; k < n; k++)
-    {
-        Contact c = touching[k];
-        float previous = Mathf.Abs(now - c.heldTime - dt) < dt * 0.25f ? c.held : 0f;
-        f[k] = previous + Relaxation * (f[k] - previous);
-    }
-}
-```
-
 Each force is applied to its contact's rigidbody, at the contact point:
 
 ```csharp
@@ -254,6 +223,3 @@ if (f[k] > 0f && c.body != null)
 - **Seeing these values in game.** Screenshots of
   [KSP Diag - Suspension](https://github.com/lhervier/KSP-Diag-Suspension) will show them here, wheel by wheel: the mass
   the vessel answers with at the contact, the mass the wheel sets in motion within a step, and the damper it gets.
-- **Why the vessel answers a force more than the rigid body taken for it.** It is what makes the correction of the
-  rigid model necessary ([Correcting the rigid model](#correcting-the-rigid-model)); where the difference comes from
-  is not known yet.
