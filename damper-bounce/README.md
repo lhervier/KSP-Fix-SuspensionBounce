@@ -226,11 +226,5 @@ bounded: [A landing leg placed alone](checked/a-landing-leg-placed-alone.md) quo
 
 ## Work in progress
 
-- **A rover resting on a broken wheel.** The game turns a broken wheel off: no spring, no damper, no tyre, and its hub
-  rests on the ground as any other part does. The mod leaves it out when it shares the vessel's mass among the
-  wheels. Brakes on and Parking Brake released, the rover of [A light rover on Eve](../fixed-tuning/checked/a-light-rover-on-eve.md)
-  holds on its four wheels; with one of them broken
-  ([saves/SuspensionBounceLightRoverEveBrokenWheel.sfs](saves/SuspensionBounceLightRoverEveBrokenWheel.sfs)), it still
-  slides a few millimetres per second and turns about 3° a minute. Why is not known yet.
 - **Other parts with a suspension.** The fix applies to every part with `ModuleWheelSuspension`: landing legs, wheels
   and landing gear. It has been played with LT-05, LT-1 and LT-2 legs, and RoveMax S2 and TR-2L wheels only.
