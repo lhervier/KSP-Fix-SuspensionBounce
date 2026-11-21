@@ -1,4 +1,5 @@
-"""Plays one of the checked cases of the README, several times in a row, and sums up what KSP Diag - Suspension read.
+"""Plays one of the checked cases of the fixes (the checked folder of each fix's folder in the repository), several
+times in a row, and sums up what KSP Diag - Suspension read.
 
 It drives KSP through KSP-Util-MCPServer, a mod that answers HTTP requests on 127.0.0.1, and needs nothing but
 Python 3: no AI, no package to install. Copy the case's save (or craft) into a sandbox game, start KSP with
@@ -7,35 +8,40 @@ then run, for instance:
 
     python check.py light-rover-eve --folder <your sandbox game> --ksp <your KSP folder> --label stock
 
-Cases, and the save or craft each one loads (in the folder diag of the repository):
+Cases, and the save or craft each one loads, in the saves folder of the fix whose checked cases use it
+(fixed-tuning/saves, damper-bounce/saves, end-stop-slide/saves or vessel-bodies/saves of the repository):
 
-    probe            SuspensionBounce.craft, launched on the runway (copy it into Ships/SPH of the game)
-    leg-minmus       SuspensionBounceLegMinmus: an engineer places a landing leg alone, foot down, on Minmus
-    leg-kerbin       SuspensionBounceLegKerbin: the same on Kerbin
-    lander           SuspensionBounceLegKerbin: the lander next to the engineer, made the active vessel
-    lander-drop      SuspensionBounceLegKerbinSuspended.craft: a lander on four LT-1 legs, launched on the runway
-                     hanging from three launch clamps, let go from 4.6 m (copy it into Ships/SPH of the game)
-    lander4          SuspensionBounceLegKerbin.craft, launched on the runway: the lander on its four bottom legs only,
-                     with a probe core, so that the gear button folds and deploys them (copy it into Ships/SPH)
-    light-rover-eve  SuspensionBounceLightRoverEve: a rover of a quarter of a ton, loaded on Eve
-    heavy-rover-eve  SuspensionBounceHeavyRoverEve: a rover of 10 t on six TR-2L wheels, loaded on Eve
-    bulldozer-eve    SuspensionBounceBulldozerEve: the same with a blade of 3.5 t, 14 t in all (the blade needs
-                     KSP-Mod-Bulldozer)
-    rover-mun        SuspensionBounceRoverMun: the rover of 10 t, brakes on, on the Mun
-    rover-kerbin     SuspensionBounceRoverKerbin: the same rover on Kerbin
-    rover-minmus     SuspensionBounceRoverMinmus: the same rover on Minmus
-    hinge-rover-eve  SuspensionBounceHingeRoverEve: a rover on Eve lowered on its wheels by its hinges
-    hinge-rover-eve-manual  SuspensionBounceHingeRoverEveManual: the same, its springs set by hand
-    crane-mun        SuspensionBounceCraneMun: a crane of 33 t on the Mun, brakes on, its springs set by hand
-    crane-mun-auto   SuspensionBounceCraneMunAuto: the same, its springs left to the game
-    end-stops-flat   SuspensionBounceEndStopsFlat: a rover whose springs are at their lowest, driven at 24 m/s
-    end-stops-slope  SuspensionBounceEndStopsSlope: a rover with soft springs, braked across a slope of about 20 deg
-    straight-line    SuspensionBounceRoverFlat: a rover driven from standstill on flat ground, wheel throttle held,
-                     steering, brakes and SAS let go
+    probe            fixed-tuning: SuspensionBounce.craft, launched on the runway (copy it into Ships/SPH of the
+                     game)
+    leg-kerbin       damper-bounce: SuspensionBounceLegKerbin: an engineer places a landing leg alone, foot down, on
+                     Kerbin
+    lander           damper-bounce: SuspensionBounceLegKerbin: the lander next to the engineer, made the active vessel
+    lander-drop      end-stop-slide: SuspensionBounceLegKerbinSuspended.craft: a lander on four LT-1 legs, launched on
+                     the runway hanging from three launch clamps, let go from 4.6 m (copy it into Ships/SPH of the game)
+    lander4          SuspensionBounceLegKerbin.craft, not in the repository, launched on the runway: the lander on its
+                     four bottom legs only, with a probe core, so that the gear button folds and deploys them (copy it
+                     into Ships/SPH)
+    light-rover-eve  fixed-tuning: SuspensionBounceLightRoverEve: a rover of a quarter of a ton, loaded on Eve
+    heavy-rover-eve  damper-bounce: SuspensionBounceHeavyRoverEve: a rover of 14 t on six TR-2L wheels, three tanks of
+                     ore on board, loaded on Eve
+    bulldozer-eve    damper-bounce: SuspensionBounceBulldozerEve: the same with a blade of 3.5 t in place of one of the
+                     ore tanks, 14 t in all (the blade needs KSP-Mod-Bulldozer)
+    hinge-rover-eve  damper-bounce: SuspensionBounceHingeRoverEve: a rover on Eve lowered on its wheels by its hinges
+    hinge-rover-eve-manual  damper-bounce: SuspensionBounceHingeRoverEveManual: the same, its springs set by hand
+    crane-mun        vessel-bodies: SuspensionBounceCraneMun: a crane of 33 t on the Mun, brakes on, its springs set by
+                     hand
+    crane-mun-auto   vessel-bodies: SuspensionBounceCraneMunAuto: the same, its springs left to the game
+    end-stops-flat   end-stop-slide: SuspensionBounceEndStopsFlat: a rover whose springs are at their lowest, driven at
+                     24 m/s
+    end-stops-slope  end-stop-slide: SuspensionBounceEndStopsSlope: a rover with soft springs, braked across a slope of
+                     about 20 deg
+    straight-line    end-stop-slide: SuspensionBounceRoverFlat: a rover driven from standstill on flat ground, wheel
+                     throttle held, steering, brakes and SAS let go
 
-The saves (but the probe's craft) were made with Parking Brake on: with Parking Brake installed, the vessel is held
-still as it loads, wherever the game puts it, and let go once it has nothing left to cancel, brakes kept as saved.
-Without Parking Brake, the vessel settles on its own as it loads.
+The saves (but the probe's craft) were made with Parking Brake on: with Parking Brake installed, it may hold the
+vessel still as it loads, wherever the game puts it, and let it go once it has nothing left to cancel, brakes kept as
+saved; but it lets go of a vessel that leaves the ground as it loads, which then settles on its own, as it does without
+Parking Brake.
 
 For each trial it loads the save, lets the parking brake go, does what the case asks a player to do, records KSP
 Diag - Suspension (its button Record CSV) for --seconds seconds or for the whole drive, and takes a screenshot at the
@@ -60,7 +66,6 @@ URL = None
 
 CASES = {
     "probe": dict(craft="SPH/SuspensionBounce.craft", seconds=20, legs=True),
-    "leg-minmus": dict(save="SuspensionBounceLegMinmus", seconds=20, heading=242.19, ground=(430, 560)),
     "leg-kerbin": dict(save="SuspensionBounceLegKerbin", seconds=20, heading=17.19, ground=(530, 450)),
     "lander": dict(save="SuspensionBounceLegKerbin", seconds=30, vessel="SuspensionBounce Lander", legs=True),
     "lander-drop": dict(craft="SPH/SuspensionBounceLegKerbinSuspended.craft", seconds=8, drop=True),
@@ -68,9 +73,6 @@ CASES = {
     "light-rover-eve": dict(save="SuspensionBounceLightRoverEve", seconds=30),
     "heavy-rover-eve": dict(save="SuspensionBounceHeavyRoverEve", seconds=30),
     "bulldozer-eve": dict(save="SuspensionBounceBulldozerEve", seconds=30),
-    "rover-mun": dict(save="SuspensionBounceRoverMun", seconds=60),
-    "rover-kerbin": dict(save="SuspensionBounceRoverKerbin", seconds=60),
-    "rover-minmus": dict(save="SuspensionBounceRoverMinmus", seconds=60),
     "hinge-rover-eve": dict(save="SuspensionBounceHingeRoverEve", seconds=45, hinges=True),
     "hinge-rover-eve-manual": dict(save="SuspensionBounceHingeRoverEveManual", seconds=45, hinges=True),
     "crane-mun": dict(save="SuspensionBounceCraneMun", seconds=60, legs=True),
@@ -85,8 +87,8 @@ DEPLOYABLE = ("landingLeg1", "landingLeg1-2", "miniLandingLeg", "GearSmall", "Ge
               "roverWheelM1-F")
 # How long each phase of the legs lasts: folded, then deployed again.
 LEG_SECONDS = 12
-FIXED_TUNING = "com.github.lhervier.ksp.fix.suspensionbounce.FixedTuning"
-TUNING_API = "com.github.lhervier.ksp.fix.suspensionbounce.SuspensionTuningApi"
+FIXED_TUNING = "com.github.lhervier.ksp.fix.suspensions.fixedtuning.FixedTuning"
+TUNING_API = "com.github.lhervier.ksp.fix.suspensions.fixedtuning.SuspensionTuningApi"
 # The longest a levelling may take, in seconds: five passes of a second's measure and two seconds' settling.
 LEVEL_SECONDS = 40
 
@@ -446,7 +448,8 @@ def tune(options):
     them on the ground, until levelled. Returns what the mod answered."""
     if options.tune == "auto":
         return call("call_method", type=TUNING_API, method="Auto",
-                    arguments=[options.tune_body, 0, True, options.compression, options.damping])["returned"]
+                    arguments=[options.tune_body, options.tune_mass, True, options.compression,
+                               options.damping])["returned"]
     started = call("call_method", type=TUNING_API, method="Level",
                    arguments=[options.compression, options.damping])["returned"]
     if started != "started":
@@ -571,9 +574,12 @@ def main():
     parser.add_argument("--tune", choices=("none", "auto", "level"), default="none",
                         help="once the vessel is let go, set its suspensions as the suspension window would: auto "
                              "predicts them for --tune-body, level measures them on the ground (default: none, the "
-                             "setting predicted a few seconds after loading)")
+                             "setting predicted at the first physics step, the mass shared equally)")
     parser.add_argument("--tune-body", default="",
                         help="the body auto predicts for (default: the one the vessel stands on)")
+    parser.add_argument("--tune-mass", type=float, default=0,
+                        help="the mass auto predicts for, in t, as typed in the suspension window: a small mass gives "
+                             "soft springs (default: 0, the vessel's)")
     parser.add_argument("--compression", type=float, default=0.33,
                         help="the compression --tune aims at, as a fraction of the travel")
     parser.add_argument("--damping", type=float, default=0.7, help="the damping ratio --tune gives")
