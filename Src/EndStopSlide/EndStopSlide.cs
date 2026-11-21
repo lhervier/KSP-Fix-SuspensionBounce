@@ -72,6 +72,18 @@ namespace com.github.lhervier.ksp.fix.suspensions.endstopslide
         /// </summary>
         public static float RelaxBelowSpeed = 2f;
 
+        /// <summary>
+        /// <see cref="Relaxation"/> applies only while the end-stop forces of the step before add up to no more than this
+        /// many times the vessel's weight: the forces that stop a hard landing are let go at once.
+        /// </summary>
+        public static float RelaxBelowWeights = 2f;
+
+        /// <summary>
+        /// Whether the travel left is read where the wheel is at the start of the coming step, the contact PhysX reports
+        /// being a step old (true), or as PhysX reports it (false).
+        /// </summary>
+        public static bool PredictContact = true;
+
         /// <summary>What the fix found for one wheel at the last physics step, kept for reading in game.</summary>
         public class Probe
         {
@@ -106,6 +118,15 @@ namespace com.github.lhervier.ksp.fix.suspensions.endstopslide
             internal bool grounded;
             /// <summary>The axis of the suspension, upwards, read with the contact.</summary>
             internal Vector3 axis;
+            /// <summary>The travel the wheel on the ground has left before its end-stop, at the start of the coming step (m).</summary>
+            internal float gap;
+            /// <summary>
+            /// The axis over the square of its share along the ground normal: a velocity's component on it is how fast the
+            /// wheel opens (positive) or closes its travel, for a vessel coming straight down onto the ground. PhysX
+            /// measures the travel along the axis, down to the ground: a leg that leans out closes it faster than the
+            /// vessel comes down, and the vessel comes down faster than the leg moves along its axis.
+            /// </summary>
+            internal Vector3 rate;
         }
 
         /// <summary>What the fix found for one vessel at the last physics step, kept for reading in game.</summary>
@@ -564,10 +585,28 @@ namespace com.github.lhervier.ksp.fix.suspensions.endstopslide
                 p.axis = col.cachedTransform.up;
                 p.compression = p.grounded && travel > 0f ? ContactDepth(col, p.hit.point, travel) / travel : 0f;
                 p.springForce = p.grounded ? p.hit.force : 0f;
-                if (p.grounded && !near)
+                p.gap = 0f;
+                if (p.grounded)
                 {
-                    float closing = -Vector3.Dot(p.body.GetPointVelocity(p.hit.point), p.axis);
-                    near = (1f - p.compression) * travel <= Mathf.Max(0f, closing + fall) * dt;
+                    // Only the tilt of the axis to the ground is taken from the ground normal, not its direction: a normal
+                    // tilted for a single step, by a bump or a seam between two pieces of terrain, would turn part of the
+                    // forward speed into a speed towards the end-stop.
+                    float upright = Mathf.Max(0.5f, Vector3.Dot(p.hit.normal, p.axis));
+                    p.rate = p.axis / (upright * upright);
+                    float closing = -Vector3.Dot(p.body.GetPointVelocity(p.hit.point), p.rate);
+                    p.gap = (1f - p.compression) * travel;
+                    // The contact is the one PhysX found at the start of the last step, the wheel where it was a step
+                    // ago: the wheel has since moved by its speed over that step. Read as it is, a wheel coming fast is
+                    // a step short of its end-stop when it is already past it, and PhysX's limit then pushes the whole
+                    // overshoot out in one step: a lander bounces off its legs. Only a wheel coming towards its end-stop
+                    // is moved on: a wheel at rest on it, rocking by a few millimetres as a rover drives, is held as
+                    // before.
+                    if (PredictContact)
+                    {
+                        p.gap -= Mathf.Max(0f, closing) * dt;
+                    }
+                    near |= p.gap <= Mathf.Max(0f, closing + fall) * dt;
+                    p.gap = Mathf.Max(0f, p.gap);
                 }
             }
             balance.heldNormal = 0f;
@@ -712,6 +751,7 @@ namespace com.github.lhervier.ksp.fix.suspensions.endstopslide
         private static float[] holdBefore = new float[8];
         private static Vector3[] holdArm = new Vector3[8];
         private static Vector3[] holdTurn = new Vector3[8];
+        private static Vector3[] holdRow = new Vector3[8];
 
         /// <summary>
         /// Holds the wheels on the ground at their end-stops for the coming physics step, in place of PhysX's limit. The
@@ -720,7 +760,8 @@ namespace com.github.lhervier.ksp.fix.suspensions.endstopslide
         /// <paramref name="knownTorque"/> of the last step. Finds the least normal forces, none pulling, that keep every
         /// wheel of <see cref="groundedProbes"/> from going past the end of its travel by the end of the coming step,
         /// all wheels at once; moves a force only <see cref="Relaxation"/> of the way there from the one of the step
-        /// before while the vessel is slower than <see cref="RelaxBelowSpeed"/>; applies them to the wheels' bodies at
+        /// before while the vessel is slower than <see cref="RelaxBelowSpeed"/> and the forces of the step before add up
+        /// to no more than <see cref="RelaxBelowWeights"/> times its weight; applies them to the wheels' bodies at
         /// their contacts, and records them in
         /// <see cref="Probe.held"/>, <see cref="Balance.heldNormal"/> and <see cref="Balance.holding"/>. A wheel
         /// resting on its end-stop gets its share of the load beyond its spring; a wheel leaving it, or far from it, gets
@@ -738,6 +779,7 @@ namespace com.github.lhervier.ksp.fix.suspensions.endstopslide
                 holdBefore = new float[n];
                 holdArm = new Vector3[n];
                 holdTurn = new Vector3[n];
+                holdRow = new Vector3[n];
             }
 
             // The vessel as one rigid body: mass, velocity, inertia about the centre of mass, angular velocity.
@@ -772,25 +814,25 @@ namespace com.github.lhervier.ksp.fix.suspensions.endstopslide
             for (int k = 0; k < n; k++)
             {
                 Probe p = groundedProbes[k];
-                Vector3 normal = p.axis;
+                // The force pushes along the axis; the travel opens at the speed along Probe.rate.
                 Vector3 arm = p.hit.point - centre;
-                holdArm[k] = Vector3.Cross(arm, normal);
+                holdArm[k] = Vector3.Cross(arm, p.axis);
                 holdTurn[k] = inverse.Times(holdArm[k]);
-                float travel = p.state.wheelCol.lastRuntimeSuspensionTravel;
-                float gap = Mathf.Max(0f, (1f - p.compression) * travel);
-                float separating = Vector3.Dot(normal, velocity + Vector3.Cross(spin, arm));
-                rhs[k] = separating + dt * (Vector3.Dot(normal, acceleration) + Vector3.Dot(holdArm[k], angularAcceleration)) +
+                holdRow[k] = Vector3.Cross(arm, p.rate);
+                float gap = p.gap;
+                float separating = Vector3.Dot(p.rate, velocity + Vector3.Cross(spin, arm));
+                rhs[k] = separating + dt * (Vector3.Dot(p.rate, acceleration) + Vector3.Dot(holdRow[k], angularAcceleration)) +
                     gap / dt;
                 // Start from the force found at the step before, when there is one.
                 f[k] = Mathf.Abs(now - p.heldTime - dt) < dt * 0.25f ? p.held : 0f;
             }
             for (int k = 0; k < n; k++)
             {
-                Vector3 normal = groundedProbes[k].axis;
+                Vector3 rate = groundedProbes[k].rate;
                 for (int j = 0; j < n; j++)
                 {
-                    a[k * n + j] = Vector3.Dot(normal, groundedProbes[j].axis) / mass +
-                        Vector3.Dot(holdArm[k], holdTurn[j]);
+                    a[k * n + j] = Vector3.Dot(rate, groundedProbes[j].axis) / mass +
+                        Vector3.Dot(holdRow[k], holdTurn[j]);
                 }
                 trace += a[k * n + k];
             }
@@ -819,7 +861,16 @@ namespace com.github.lhervier.ksp.fix.suspensions.endstopslide
             // The vessel answers a force at a wheel more than the rigid body taken here does: a force found in full makes
             // it overshoot, and the next step swings back, a rocking that keeps going on a vessel at rest on its
             // end-stops. Slow, each force moves only part of the way from the one of the step before to the one found.
-            if (RelaxBelowSpeed < 0f || balance.vessel.srfSpeed < RelaxBelowSpeed)
+            // The forces that stop a hard landing are many times the weight: kept at 70 % a step once the vessel is slow,
+            // they would throw it back up.
+            float before = 0f;
+            for (int k = 0; k < n; k++)
+            {
+                Probe p = groundedProbes[k];
+                before += Mathf.Abs(now - p.heldTime - dt) < dt * 0.25f ? p.held : 0f;
+            }
+            float weight = mass * (float)balance.vessel.graviticAcceleration.magnitude;
+            if ((RelaxBelowSpeed < 0f || balance.vessel.srfSpeed < RelaxBelowSpeed) && before <= RelaxBelowWeights * weight)
             {
                 for (int k = 0; k < n; k++)
                 {
