@@ -29,7 +29,7 @@ cases where that model was not enough, each with its side effects. The stock gam
 
 Not a fix: the read of a vessel as one rigid body, once per vessel and per physics step, which the fixes share. It
 gives the mass the vessel answers with at a wheel's contact, which depends on how its mass is spread, never on what
-holds it up; and what the mod costs.
+holds it up; holds all the wheels of a vessel at once against their end-stops; and says what the mod costs.
 
 **→ Full chapter: [Vessel Bodies](vessel-bodies/README.md)**
 

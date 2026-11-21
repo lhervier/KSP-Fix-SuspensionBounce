@@ -5,7 +5,7 @@ using HarmonyLib;
 using ModuleWheels;
 using UnityEngine;
 using VehiclePhysics;
-using com.github.lhervier.ksp.fix.suspensions.endstopslide;
+using com.github.lhervier.ksp.fix.suspensions.vesselbodies;
 
 namespace com.github.lhervier.ksp.fix.suspensions
 {
@@ -66,12 +66,14 @@ namespace com.github.lhervier.ksp.fix.suspensions
         private static readonly MethodInfo DamageFixedUpdate =
             AccessTools.DeclaredMethod(typeof(ModuleWheelDamage), "FixedUpdate");
 
-        /// <summary>Prefixed by EndStopSlide, once per part and step: outside the game's wheel methods.</summary>
+        /// <summary>
+        /// Prefixed by EndStopSlide's contact solver, once per part and step: outside the game's wheel methods.
+        /// </summary>
         private static readonly MethodInfo Integrate =
             AccessTools.DeclaredMethod(typeof(FlightIntegrator), "Integrate", new[] { typeof(Part) });
 
-        /// <summary>The end-stop solver, run only at the steps a vessel needs it.</summary>
-        private static readonly MethodInfo HoldEndStops = AccessTools.DeclaredMethod(typeof(EndStopSlide), "HoldEndStops");
+        /// <summary>The contact solver of the end-stops, run only at the steps a vessel needs it.</summary>
+        private static readonly MethodInfo HoldContacts = AccessTools.DeclaredMethod(typeof(ContactSolver), "HoldContacts");
 
         private static readonly MethodInfo SuspensionFixedUpdate =
             AccessTools.DeclaredMethod(typeof(ModuleWheelSuspension), "FixedUpdate");
@@ -108,7 +110,7 @@ namespace com.github.lhervier.ksp.fix.suspensions
                 Patch(harmony, DamageFixedUpdate, nameof(StopEndStops), FixStop, null, 0);
                 Patch(harmony, Integrate, nameof(StartFix), FixStart, null, 0);
                 Patch(harmony, Integrate, nameof(StopIntegrate), FixStop, null, 0);
-                Patch(harmony, HoldEndStops, nameof(StartSolver), Priority.Normal, nameof(StopSolver), Priority.Normal);
+                Patch(harmony, HoldContacts, nameof(StartSolver), Priority.Normal, nameof(StopSolver), Priority.Normal);
             }
             catch (Exception e)
             {

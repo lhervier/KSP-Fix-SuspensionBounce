@@ -85,23 +85,30 @@ answers both faults of the end-stop: the force is its own, it no longer has to l
 
 ### The vessel taken as one body
 
-At each step where it follows the vessel ([When it works](#when-it-works)), the mod takes the vessel as the rigid body
-VPP expects, all its wheels at once, from the read of [Vessel Bodies](../vessel-bodies/README.md#all-the-wheels-at-once):
-its mass, its centre of mass, its inertia, its velocity and its rotation, and the forces known for the step. The same
-read checks the result, through a balance of the whole vessel
+At each step where it follows the vessel ([When it works](#when-it-works)), the mod hands every wheel on the ground to
+the contact solver of [Vessel Bodies](../vessel-bodies/README.md#the-contact-solver), which takes the vessel as the
+rigid body VPP expects, all its wheels at once: its mass, its centre of mass, its inertia, its velocity and its
+rotation, and the forces known for the step, among them the spring of each wheel and the force of each tyre, which the
+mod hands it too. The solver checks the result through a balance of the whole vessel
 ([Checking it](../vessel-bodies/README.md#checking-it)).
 
 ### One step ahead
 
-For each wheel on the ground, the mod knows the travel it has left before its end-stop. It looks for the smallest
-forces, never pulling, such that by the end of the coming step no wheel has gone past the end of its travel. The
-wheels are handled together: a force on one wheel also tilts the vessel, and changes what the others have to hold. A
-wheel resting on its end-stop gets its share of the load, beyond what its spring carries; a wheel leaving it, or still
-far from it, gets nothing; a wheel coming fast is slowed just enough to reach it. These forces are applied to the
-wheels' parts, at the contact point, along the axis of the suspension, as the end-stop they replace: PhysX's end-stop
-has nothing left to correct, and no longer beats. The axis matters at speed: measured along the normal of the ground
-instead, a normal tilted for a single step, by a bump or a seam between two pieces of terrain, would turn part of the
-forward speed into a speed towards the end-stop, and call for a force many times the weight.
+For each wheel on the ground, the mod knows the travel it has left before its end-stop. The solver looks for the
+smallest forces, never pulling, such that by the end of the coming step no wheel has gone past the end of its travel.
+The wheels are handled together: a force on one wheel also tilts the vessel, and changes what the others have to hold.
+A wheel resting on its end-stop gets its share of the load, beyond what its spring carries; a wheel leaving it, or
+still far from it, gets nothing; a wheel coming fast is slowed just enough to reach it. These forces are applied to
+the wheels' parts, at the contact point, along the axis of the suspension, as the end-stop they replace: PhysX's
+end-stop has nothing left to correct, and no longer beats. The axis matters at speed: measured along the normal of the
+ground instead, a normal tilted for a single step, by a bump or a seam between two pieces of terrain, would turn part
+of the forward speed into a speed towards the end-stop, and call for a force many times the weight.
+
+Among the endless ways four wheels can carry the same vessel, the solver takes the evenest
+([Sharing between the contacts](../vessel-bodies/README.md#sharing-between-the-contacts)); while the vessel is slow,
+each force moves only part of the way from the one of the step before, which keeps a vessel at rest on its end-stops
+from rocking from one long side to the other
+([Correcting the rigid model](../vessel-bodies/README.md#correcting-the-rigid-model)).
 
 ### Where the wheel is now
 
@@ -118,32 +125,11 @@ closes its travel faster than the lander comes down, and the lander comes down f
 axis: the speed along the axis is divided by the square of the axis's share along the normal of the ground. Only that
 share comes from the ground, not the direction of its normal, for the reason above.
 
-### A part of the way at a time, when slow
-
-The vessel answers a force at a wheel more than the rigid body the mod takes it for: a force found in full makes it
-overshoot, and the next step swings back. On a vessel at rest on its end-stops, that rocking keeps going: one long
-side of a rover held at a step, the other at the next, the whole rover tilting back and forth, and creeping down its
-slope. So, while the vessel is slower than 2 m/s, each force moves only 30 % of the way from the one of the step
-before to the one found: the rocking dies out. Faster, the forces move in full at every step, so that the tyres keep
-reading the weight over the bumps.
-
-The forces that stop a hard landing are many times the vessel's weight: kept at 70 % a step once the vessel is slow,
-they would throw it back up. They are let go at once: the forces move only part of the way while those of the step
-before add up to no more than twice the weight.
-
 ### After a time warp
 
 A vessel put on rails, by a time warp or when it is moved, gets new wheels from VPP when it comes back, on the same
 parts. The mod forgets a wheel that VPP has not updated for more than two and a half steps: the old one would
 otherwise be held as a wheel of its own, and take its share of the load away from the tyres that remain.
-
-### Sharing between the wheels
-
-Four wheels for three equations (one force, two torques): there are endless ways to carry the same vessel. The mod
-takes the evenest. A sharing left free to drift from one step to the next changes neither the weight carried nor the
-torques, but ends up putting the whole vessel on two wheels across a diagonal: the other two tyres have no load left,
-and the rover slides. The mod works it out in passes: the first finds the evenest sharing, the next ones keep that
-sharing and make up what the first left short.
 
 ### What the tyres see
 
@@ -162,9 +148,14 @@ The `endStopSlide` setting of the mod's `settings.cfg` file turns this fix off. 
 
 ### In the mod's code
 
-Everything is in [Src/EndStopSlide/EndStopSlide.cs](../Src/EndStopSlide/EndStopSlide.cs).
+The fix is in [Src/EndStopSlide/EndStopSlide.cs](../Src/EndStopSlide/EndStopSlide.cs); the solver it hands the wheels
+to, and how it finds and applies the forces, are in
+[Vessel Bodies](../vessel-bodies/README.md#in-the-mods-code).
 
-Each step starts by forgetting the wheels VPP no longer updates ([After a time warp](#after-a-time-warp)):
+The work is done in a postfix of `VehicleBase.CalculateSuspensionForces`, which VPP calls at each step for each wheel,
+once the spring force is read and before the tyre's load is drawn from it; only once per vessel and per step, at its
+first wheel (`Solve`). Each wheel has a probe (`Probe`), which is also its contact for the solver. Each step starts by
+forgetting the wheels VPP no longer updates ([After a time warp](#after-a-time-warp)):
 
 ```csharp
 if (p.lastTime >= 0f && now - p.lastTime > 2.5f * dt)
@@ -174,15 +165,8 @@ if (p.lastTime >= 0f && now - p.lastTime > 2.5f * dt)
 }
 ```
 
-What KSP gives each part for the coming step is recorded in a prefix of `FlightIntegrator.Integrate(Part)`
-(`IntegratePrefix`): the vessel's acceleration (`vessel.precalc.integrationAccel`, gravity included), and the forces
-and torques its modules gathered (`part.force`, `part.forces`, `part.torque`). The force VPP has just applied to each
-tyre is recorded in a postfix of `VehicleBase.ApplyTireForce` (`ApplyTireForcePostfix`).
-
-The work is done in a postfix of `VehicleBase.CalculateSuspensionForces`, which VPP calls at each step for each wheel,
-once the spring force is read and before the tyre's load is drawn from it; only once per vessel and per step, at its
-first wheel (`Solve`). It first reads the contact of each wheel: how fast it closes its travel, along the axis of its
-suspension over the square of the axis's share along the ground normal (`p.rate`), and the travel it has left, moved on
+It then reads the contact of each wheel: the axis of its suspension (`p.axis`), how fast it closes its travel, along
+that axis over the square of the axis's share along the ground normal (`p.rate`), and the travel it has left, moved on
 by a step for a wheel coming towards its end-stop ([Where the wheel is now](#where-the-wheel-is-now)). It follows the
 vessel only if one of them could reach its end-stop during the step:
 
@@ -197,87 +181,24 @@ p.gap -= Mathf.Max(0f, closing) * dt;
 near |= p.gap <= Mathf.Max(0f, closing + fall) * dt;
 ```
 
-The vessel's rigidbodies come from [Vessel Bodies](../vessel-bodies/README.md), read once per vessel and per step for
-the whole mod (`VesselBodies.Of`). `Solve` adds what only the end-stops need, read at the steps it follows the vessel:
-each body's velocity and angular momentum (`ReadMotion`). Why the reads are kept this short:
-[Keeping the cost low](../vessel-bodies/performance.md#keeping-the-cost-low).
+When it does, it hands the solver every wheel of the vessel, those on the ground, and the forces it knows acted on them
+over the last step: the spring, along the contact normal, and the tyre force VPP applied, which a postfix of
+`VehicleBase.ApplyTireForce` records (`ApplyTireForcePostfix`). `Hold` says whether the solver applies the forces it
+finds:
 
 ```csharp
-VesselBodies read = VesselBodies.Of(vessel);
-read.ReadMotion();
-```
-
-The vessel as one body (`HoldEndStops`): the momentum, the angular momentum and the inertia of all its parts, about
-its centre of mass:
-
-```csharp
-momentum += p;
-angularMomentum += b.spin + Vector3.Cross(offset, p);
-inertia.AddPrincipal(b.frame, b.inertia);
-inertia.AddPoint(b.mass, offset);
+known.Add(new ContactSolver.KnownForce { force = p.hit.normal * p.springForce, point = p.hit.point });
+if (p.lastTime >= 0f && Mathf.Abs(now - p.lastTime - dt) < dt * 0.25f)
+{
+    known.Add(new ContactSolver.KnownForce { force = p.lastTyreForce, point = p.lastTyrePoint });
+}
+normal += p.hit.normal;
+touching.Add(p);
 ...
-Vector3 velocity = momentum / mass;
-Vector3 spin = inverse.Times(angularMomentum);
-Vector3 acceleration = known / mass;
-Vector3 angularAcceleration = inverse.Times(knownTorque);
+ContactSolver.Solve(balance, contacts, touching, known, normal, Hold);
 ```
 
-For each wheel on the ground, measured along `p.rate`, the speed at which its contact would open its travel at the end
-of the step without the mod's force, plus the speed that would just close the travel it has left; the mod's forces,
-along the axis, must not bring it below zero:
-
-```csharp
-float gap = p.gap;
-float separating = Vector3.Dot(p.rate, velocity + Vector3.Cross(spin, arm));
-rhs[k] = separating + dt * (Vector3.Dot(p.rate, acceleration) + Vector3.Dot(holdRow[k], angularAcceleration)) +
-    gap / dt;
-```
-
-How a force on one wheel moves the contact of another, through the mass and the inertia of the vessel, is
-`a[k * n + j]`. The forces are found by projected Gauss-Seidel, none negative, in passes (`Sweep`): the first pulls
-them towards zero, the next ones towards the answer of the pass before:
-
-```csharp
-float s = -rhs[k] / dt + lambda * target[k];
-for (int j = 0; j < n; j++)
-{
-    if (j != k)
-    {
-        s -= a[k * n + j] * f[j];
-    }
-}
-float value = s / (a[k * n + k] + lambda);
-value = float.IsNaN(value) || value < 0f ? 0f : value;
-```
-
-While the vessel is slow, and the forces of the step before add up to no more than twice its weight, each force moves
-only a part of the way from the one of the step before ([A part of the way at a time, when
-slow](#a-part-of-the-way-at-a-time-when-slow)):
-
-```csharp
-if ((RelaxBelowSpeed < 0f || balance.vessel.srfSpeed < RelaxBelowSpeed) && before <= RelaxBelowWeights * weight)
-{
-    for (int k = 0; k < n; k++)
-    {
-        Probe p = groundedProbes[k];
-        float previous = Mathf.Abs(now - p.heldTime - dt) < dt * 0.25f ? p.held : 0f;
-        f[k] = previous + Relaxation * (f[k] - previous);
-    }
-}
-```
-
-Each force is applied to its wheel's part, at the contact point:
-
-```csharp
-p.heldForce = p.axis * f[k];
-p.heldPoint = p.hit.point;
-if (f[k] > 0f && p.body != null)
-{
-    p.body.AddForceAtPosition(p.heldForce, p.heldPoint, ForceMode.Force);
-}
-```
-
-and added to the force VPP is about to read for that wheel:
+The force the solver applied to a wheel at this step is added to the force VPP is about to read for it:
 
 ```csharp
 probe.injected = probe.held;
@@ -300,7 +221,5 @@ prefix and a postfix of `ModuleWheelDamage.FixedUpdate` show it to the damage mo
   (`damperBounce = false`), fell on its side as the save loaded in two trials out of eight; not with the mod's default
   settings, nor with Fixed Tuning alone. Why is not known yet.
 - **A rover on its end-stops driving slowly.** Below 2 m/s, each force moves only a part of the way at each step
-  ([A part of the way at a time, when slow](#a-part-of-the-way-at-a-time-when-slow)): how much of the weight the tyres
-  read over bumps at that speed is not checked yet.
-- **Why the vessel answers a force more than the rigid body taken for it.** It is what makes the relaxation
-  necessary; where the difference comes from is not known yet.
+  ([A part of the way at a time, when slow](../vessel-bodies/README.md#a-part-of-the-way-at-a-time-when-slow)): how
+  much of the weight the tyres read over bumps at that speed is not checked yet.
