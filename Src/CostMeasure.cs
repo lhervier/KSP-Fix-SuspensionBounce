@@ -5,8 +5,9 @@ using HarmonyLib;
 using ModuleWheels;
 using UnityEngine;
 using VehiclePhysics;
+using com.github.lhervier.ksp.fix.suspensions.endstopslide;
 
-namespace com.github.lhervier.ksp.fix.suspensionbounce
+namespace com.github.lhervier.ksp.fix.suspensions
 {
     /// <summary>
     /// Measures what the mod costs per physics step, and what the game's wheels cost beside it, and writes it to
@@ -46,14 +47,14 @@ namespace com.github.lhervier.ksp.fix.suspensionbounce
             AccessTools.DeclaredMethod(typeof(ModuleWheelDamage), "FixedUpdate"),
         };
 
-        /// <summary>Patched by the damper and spring fixes, inside ModuleWheelSuspension.FixedUpdate.</summary>
+        /// <summary>Postfixed by DamperBounce, inside ModuleWheelSuspension.FixedUpdate.</summary>
         private static readonly MethodInfo[] SuspensionPostfixed =
         {
             AccessTools.DeclaredMethod(typeof(ModuleWheelSuspension), "SuspensionSpringUpdate"),
             AccessTools.DeclaredMethod(typeof(ModuleWheelSuspension), "FixedUpdate"),
         };
 
-        /// <summary>Patched by the end-stop fix, inside VehicleBase.FixedUpdate or ModuleWheelDamage.FixedUpdate.</summary>
+        /// <summary>Postfixed by EndStopSlide, inside VehicleBase.FixedUpdate or ModuleWheelDamage.FixedUpdate.</summary>
         private static readonly MethodInfo[] EndStopPostfixed =
         {
             AccessTools.DeclaredMethod(typeof(VehicleBase), "CalculateSuspensionForces"),
@@ -65,12 +66,12 @@ namespace com.github.lhervier.ksp.fix.suspensionbounce
         private static readonly MethodInfo DamageFixedUpdate =
             AccessTools.DeclaredMethod(typeof(ModuleWheelDamage), "FixedUpdate");
 
-        /// <summary>Prefixed by the end-stop fix, once per part and step: outside the game's wheel methods.</summary>
+        /// <summary>Prefixed by EndStopSlide, once per part and step: outside the game's wheel methods.</summary>
         private static readonly MethodInfo Integrate =
             AccessTools.DeclaredMethod(typeof(FlightIntegrator), "Integrate", new[] { typeof(Part) });
 
         /// <summary>The end-stop solver, run only at the steps a vessel needs it.</summary>
-        private static readonly MethodInfo HoldEndStops = AccessTools.DeclaredMethod(typeof(BumpStopLoad), "HoldEndStops");
+        private static readonly MethodInfo HoldEndStops = AccessTools.DeclaredMethod(typeof(EndStopSlide), "HoldEndStops");
 
         private static readonly MethodInfo SuspensionFixedUpdate =
             AccessTools.DeclaredMethod(typeof(ModuleWheelSuspension), "FixedUpdate");
@@ -217,7 +218,7 @@ namespace com.github.lhervier.ksp.fix.suspensionbounce
                 Log.Info(string.Format(
                     "Cost over {0} physics steps ({1:F0} s), {2:F1} suspensions per step, active vessel {3}: " +
                     "wheels and mod {4:F1} µs/step, of which the game's wheels {5:F1} and the mod {6:F1} " +
-                    "(dampers and springs {7:F1}; end-stops {8:F1}, of which force records {9:F1} and the solver " +
+                    "(dampers {7:F1}; end-stops {8:F1}, of which force records {9:F1} and the solver " +
                     "{10:F1}, run {11} times)",
                     steps, now - windowStart, (float)suspensionCalls / steps,
                     active == null ? "none" : "'" + active.vesselName + "'", wheels + suspension + endStops, wheels,

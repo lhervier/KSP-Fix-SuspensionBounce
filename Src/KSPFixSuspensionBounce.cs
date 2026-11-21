@@ -2,17 +2,21 @@ using System;
 using System.Reflection;
 using HarmonyLib;
 using UnityEngine;
+using com.github.lhervier.ksp.fix.suspensions.damperbounce;
+using com.github.lhervier.ksp.fix.suspensions.endstopslide;
+using com.github.lhervier.ksp.fix.suspensions.fixedtuning;
+using com.github.lhervier.ksp.fix.suspensions.vesselbodies;
 
-namespace com.github.lhervier.ksp.fix.suspensionbounce
+namespace com.github.lhervier.ksp.fix.suspensions
 {
     /// <summary>
-    /// Installs the fix once, when KSP starts: from then on, every suspension of a vessel in flight keeps the damper KSP
-    /// sets, unless it is stiffer than the mass it carries can take in one physics step without bouncing back.
+    /// Installs the mod once, when KSP starts: each of its fixes that settings.cfg switches on, and the read of the
+    /// vessels' bodies they share.
     /// </summary>
     [KSPAddon(KSPAddon.Startup.Instantly, true)]
     public class KSPFixSuspensionBounce : MonoBehaviour
     {
-        private const string HarmonyId = "com.github.lhervier.ksp.fix.suspensionbounce";
+        private const string HarmonyId = "com.github.lhervier.ksp.fix.suspensions";
 
         private void Start()
         {
@@ -20,100 +24,42 @@ namespace com.github.lhervier.ksp.fix.suspensionbounce
             string version = typeof(KSPFixSuspensionBounce).Assembly
                 .GetCustomAttribute<AssemblyInformationalVersionAttribute>()?.InformationalVersion;
             Log.Info($"Version {version}, log level {Log.Level}");
-            // The read of the vessels' bodies that the damper and end-stop fixes share.
+            // The read of the vessels' bodies that DamperBounce and EndStopSlide share.
             VesselBodies.Install();
             if (FixedTuning.Enabled)
             {
-                // Prototype: while the fixed tuning is active, the gravity curve fix steps aside.
                 try
                 {
                     FixedTuning.Install(new Harmony(HarmonyId + ".fixedtuning"));
-                    Log.Info($"Fixed tuning installed: compression {FixedTuning.Compression}, damping {FixedTuning.Damping}");
+                    Log.Info($"FixedTuning installed: compression {FixedTuning.Compression}, damping {FixedTuning.Damping}");
                 }
                 catch (Exception e)
                 {
-                    Log.Error($"Could not install the fixed tuning: {e}");
+                    Log.Error($"Could not install FixedTuning, the game sets the suspensions: {e}");
                 }
             }
-            if (DockingWheelReset.Enabled)
+            if (DamperBounce.Enabled)
             {
                 try
                 {
-                    DockingWheelReset.Install(new Harmony(HarmonyId + ".dockingwheels"));
-                    Log.Info("Docking wheel reset installed");
+                    DamperBounce.Install(new Harmony(HarmonyId + ".damperbounce"));
+                    Log.Info("DamperBounce installed");
                 }
                 catch (Exception e)
                 {
-                    Log.Error($"Could not install the docking wheel reset, a docking makes landed vessels jump: {e}");
+                    Log.Error($"Could not install DamperBounce, the dampers are the ones KSP sets, as without it: {e}");
                 }
             }
-            if (SpringGravityCurve.Enabled)
-            {
-                // Ahead of the damper fix, which starts from the damper the spring fix sets.
-                try
-                {
-                    SpringGravityCurve.Install(new Harmony(HarmonyId + ".gravitycurve"));
-                    Log.Info("Spring gravity curve fix installed");
-                }
-                catch (Exception e)
-                {
-                    Log.Error($"Could not install the spring gravity curve fix, the springs are the game's: {e}");
-                }
-            }
-            if (SuspensionDamper.OnGround || SuspensionDamper.InAir)
+            if (EndStopSlide.Enabled)
             {
                 try
                 {
-                    SuspensionDamper.Install(new Harmony(HarmonyId));
-                    string where = !SuspensionDamper.InAir ? ", on the ground only"
-                        : !SuspensionDamper.OnGround ? ", in the air only" : "";
-                    Log.Info("Suspension damper fix installed" + where);
+                    EndStopSlide.Install(new Harmony(HarmonyId + ".endstopslide"));
+                    Log.Info("EndStopSlide installed");
                 }
                 catch (Exception e)
                 {
-                    Log.Error("Could not install the suspension damper fix, the dampers are the ones KSP sets, as " +
-                        $"without it: {e}");
-                }
-            }
-            if (BumpStopLoad.Enabled)
-            {
-                try
-                {
-                    BumpStopLoad.Install(new Harmony(HarmonyId + ".bumpstop"));
-                    Log.Info("Bump-stop load fix installed");
-                }
-                catch (Exception e)
-                {
-                    Log.Error($"Could not install the bump-stop load fix, the tyres read the spring alone: {e}");
-                }
-            }
-            if (TyreStaticGrip.Enabled && !PoseMotion.Enabled)
-            {
-                // The anchors would sum the steady velocities the joints leave in the wheels' Rigidbody velocity.
-                Log.Warning("Tyre static grip fix not installed: it needs tyreReadsPoses = true");
-            }
-            else if (TyreStaticGrip.Enabled)
-            {
-                try
-                {
-                    TyreStaticGrip.Install(new Harmony(HarmonyId + ".staticgrip"));
-                    Log.Info("Tyre static grip fix installed");
-                }
-                catch (Exception e)
-                {
-                    Log.Error($"Could not install the tyre static grip fix, slow tyres hold as in the game: {e}");
-                }
-            }
-            if (PoseMotion.Enabled)
-            {
-                try
-                {
-                    PoseMotion.Install(new Harmony(HarmonyId + ".posemotion"));
-                    Log.Info("Tyre slide from poses fix installed");
-                }
-                catch (Exception e)
-                {
-                    Log.Error($"Could not install the tyre slide from poses fix, tyres read their slide as in the game: {e}");
+                    Log.Error($"Could not install EndStopSlide, the tyres read the spring alone: {e}");
                 }
             }
             if (CostMeasure.Enabled)

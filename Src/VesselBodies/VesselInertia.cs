@@ -1,6 +1,6 @@
 using UnityEngine;
 
-namespace com.github.lhervier.ksp.fix.suspensionbounce
+namespace com.github.lhervier.ksp.fix.suspensions.vesselbodies
 {
     /// <summary>
     /// The mass, centre of mass and inertia of a vessel taken as one rigid body, from the rigidbodies of its parts.

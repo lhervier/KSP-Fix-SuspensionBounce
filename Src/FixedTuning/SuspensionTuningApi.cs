@@ -1,7 +1,7 @@
 using System.Collections.Generic;
 using System.Text;
 
-namespace com.github.lhervier.ksp.fix.suspensionbounce
+namespace com.github.lhervier.ksp.fix.suspensions.fixedtuning
 {
     /// <summary>
     /// What the suspension window does, callable from outside the game (the MCP server's call_method), for the test
@@ -72,6 +72,7 @@ namespace com.github.lhervier.ksp.fix.suspensionbounce
             foreach (ModuleSuspensionTuning t in FixedTuning.TuningsOf(TuningChoices.Parts()))
             {
                 t.Set(0f, FixedTuning.Damping, 0f, "");
+                FixedTuning.Forget(t);
                 count++;
             }
             return $"{count} suspensions cleared";

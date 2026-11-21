@@ -2,7 +2,7 @@ using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
 
-namespace com.github.lhervier.ksp.fix.suspensionbounce
+namespace com.github.lhervier.ksp.fix.suspensions.fixedtuning
 {
     /// <summary>
     /// What the player chose in the suspension window, kept from one scene to the next for the session: the body and the

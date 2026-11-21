@@ -1,4 +1,4 @@
-namespace com.github.lhervier.ksp.fix.suspensionbounce
+namespace com.github.lhervier.ksp.fix.suspensions
 {
     /// <summary>How much the mod writes to KSP.log, from the quietest to the most talkative.</summary>
     internal enum LogLevel

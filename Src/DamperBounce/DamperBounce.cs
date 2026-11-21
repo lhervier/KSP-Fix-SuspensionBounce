@@ -5,8 +5,9 @@ using HarmonyLib;
 using ModuleWheels;
 using UnityEngine;
 using VehiclePhysics;
+using com.github.lhervier.ksp.fix.suspensions.vesselbodies;
 
-namespace com.github.lhervier.ksp.fix.suspensionbounce
+namespace com.github.lhervier.ksp.fix.suspensions.damperbounce
 {
     /// <summary>
     /// Sizes the damper of each suspension so that it can no longer throw its vessel. Two stock flaws are taken care
@@ -16,14 +17,13 @@ namespace com.github.lhervier.ksp.fix.suspensionbounce
     /// whose damper pushes the wheel's own part first. And the game only sizes a suspension while its wheel touches the
     /// ground, and keeps the last spring and damper while it does not, whatever happens to the vessel's mass meanwhile.
     /// </summary>
-    internal static class SuspensionDamper
+    internal static class DamperBounce
     {
-        /// <summary>Whether the damper of a wheel on the ground is kept under the limit. Read from settings.cfg.
+        /// <summary>
+        /// Whether the fix is installed, and sizes the damper of every suspension at every physics step, its wheel on
+        /// the ground or not (settings.cfg, damperBounce).
         /// </summary>
-        public static bool OnGround = true;
-
-        /// <summary>Whether the damper of a wheel off the ground is sized too. Read from settings.cfg.</summary>
-        public static bool InAir = true;
+        public static bool Enabled = true;
 
         private static readonly MethodInfo SuspensionSpringUpdate =
             AccessTools.DeclaredMethod(typeof(ModuleWheelSuspension), "SuspensionSpringUpdate");
@@ -58,31 +58,23 @@ namespace com.github.lhervier.ksp.fix.suspensionbounce
         private static readonly HashSet<ModuleWheelSuspension> limited = new HashSet<ModuleWheelSuspension>();
 
         /// <summary>
-        /// Patches the spring and damper update of the suspensions on the ground when <see cref="OnGround"/> is set,
-        /// and off it when <see cref="InAir"/> is: the two are independent, KSP setting its own damper back at the next
-        /// contact when only the second is.
+        /// Patches the spring and damper update of the suspensions whose wheel is on the ground, and the physics step of
+        /// those whose wheel is off it.
         /// </summary>
         /// <exception cref="MissingMemberException">A member the fix reads is missing from the game.</exception>
         public static void Install(Harmony harmony)
         {
-            if (OnGround && SuspensionSpringUpdate == null)
+            if (SuspensionSpringUpdate == null)
             {
                 throw new MissingMemberException("ModuleWheelSuspension.SuspensionSpringUpdate");
             }
-            if (InAir && FixedUpdate == null)
+            if (FixedUpdate == null)
             {
                 throw new MissingMemberException("ModuleWheelSuspension.FixedUpdate");
             }
-            if (OnGround)
-            {
-                harmony.Patch(SuspensionSpringUpdate,
-                    postfix: new HarmonyMethod(typeof(SuspensionDamper), nameof(SuspensionSpringUpdatePostfix)));
-            }
-            if (InAir)
-            {
-                harmony.Patch(FixedUpdate,
-                    postfix: new HarmonyMethod(typeof(SuspensionDamper), nameof(FixedUpdatePostfix)));
-            }
+            harmony.Patch(SuspensionSpringUpdate,
+                postfix: new HarmonyMethod(typeof(DamperBounce), nameof(SuspensionSpringUpdatePostfix)));
+            harmony.Patch(FixedUpdate, postfix: new HarmonyMethod(typeof(DamperBounce), nameof(FixedUpdatePostfix)));
             // The set holds no suspension of a scene that is gone.
             GameEvents.onGameSceneLoadRequested.Add(scene => limited.Clear());
         }
@@ -118,11 +110,10 @@ namespace com.github.lhervier.ksp.fix.suspensionbounce
             {
                 return;
             }
-            // The spring and damper were sized for the mass and gravity of the last contact: since then, the vessel may
-            // have burnt or transferred most of its mass, or, for a part placed alone in EVA construction, lost the 4 t
-            // ModuleCargoPart.MakePartSettle gives it for 3 s. The wheel pushes with them at the first step of the next
-            // contact, before SuspensionSpringUpdate sizes them again. Each suspension will then carry its share of the
-            // vessel: the share among all of them, the smallest it can be when they all touch.
+            // The physics pushes with the damper left on the wheel at the first step of the next contact, before
+            // SuspensionSpringUpdate runs again: it must already be bounded. The game's damper was sized for the last
+            // contact, since when the vessel may have burnt or transferred most of its mass. Each suspension will then
+            // carry its share of the vessel: the share among all of them, the smallest it can be when they all touch.
             SuspensionCount count = Count(vessel);
             float share = (float)vessel.totalMass / Mathf.Max(count.All, 1);
             // The wheel's own damper may already hold what the mod set at the previous step: start again from the

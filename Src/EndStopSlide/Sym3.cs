@@ -1,7 +1,8 @@
 using System;
 using UnityEngine;
+using com.github.lhervier.ksp.fix.suspensions.vesselbodies;
 
-namespace com.github.lhervier.ksp.fix.suspensionbounce
+namespace com.github.lhervier.ksp.fix.suspensions.endstopslide
 {
     /// <summary>A symmetric 3 x 3 matrix, in doubles: the inertia tensor of a vessel.</summary>
     internal struct Sym3

@@ -5,8 +5,9 @@ using System.Globalization;
 using ModuleWheels;
 using UnityEngine;
 using VehiclePhysics;
+using com.github.lhervier.ksp.fix.suspensions.endstopslide;
 
-namespace com.github.lhervier.ksp.fix.suspensionbounce
+namespace com.github.lhervier.ksp.fix.suspensions.fixedtuning
 {
     /// <summary>
     /// Levels a vessel standing still on the ground: measures, over a second, the load and the compression of each
@@ -262,7 +263,7 @@ namespace com.github.lhervier.ksp.fix.suspensionbounce
             }
             m.Grounded++;
             m.Force += hit.force;
-            m.Compression += BumpStopLoad.ContactDepth(col, hit.point, travel) / travel;
+            m.Compression += EndStopSlide.ContactDepth(col, hit.point, travel) / travel;
             m.Point = hit.point;
             m.Axis = col.cachedTransform.up;
             m.Spring = col.springRate;

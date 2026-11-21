@@ -4,8 +4,9 @@ using KSP.UI.Screens;
 using ModuleWheels;
 using UnityEngine;
 using VehiclePhysics;
+using com.github.lhervier.ksp.fix.suspensions.endstopslide;
 
-namespace com.github.lhervier.ksp.fix.suspensionbounce
+namespace com.github.lhervier.ksp.fix.suspensions.fixedtuning
 {
     /// <summary>
     /// The suspension window, opened from the toolbar: lists the vessel's suspensions with their setting, lets the
@@ -287,7 +288,7 @@ namespace com.github.lhervier.ksp.fix.suspensionbounce
             {
                 return "in the air";
             }
-            float compression = BumpStopLoad.ContactDepth(col, hit.point, travel) / travel;
+            float compression = EndStopSlide.ContactDepth(col, hit.point, travel) / travel;
             return $"{Format(100f * compression, "0")} %, {Format(hit.force, "0.##")} kN";
         }
 

@@ -1,13 +1,13 @@
 using ModuleWheels;
 using UnityEngine;
 
-namespace com.github.lhervier.ksp.fix.suspensionbounce
+namespace com.github.lhervier.ksp.fix.suspensions.fixedtuning
 {
     /// <summary>
     /// The spring and damping the player sets on a part's suspension, in place of the game's two multipliers and its
     /// automatic mode. Added by ModuleManager to every part with a <see cref="ModuleWheelSuspension"/>; saved with the
-    /// craft and the vessel. A spring of 0 means the suspension was never set: the game sizes it until the fix predicts
-    /// a setting for it (see <see cref="FixedTuning"/>).
+    /// craft and the vessel. A spring of 0 means the suspension was never set: the fix predicts a setting for it at the
+    /// first physics step it sees it in flight (see <see cref="FixedTuning"/>).
     /// </summary>
     public class ModuleSuspensionTuning : PartModule
     {

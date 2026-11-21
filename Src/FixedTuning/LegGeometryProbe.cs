@@ -3,7 +3,7 @@ using System.Diagnostics;
 using ModuleWheels;
 using UnityEngine;
 
-namespace com.github.lhervier.ksp.fix.suspensionbounce
+namespace com.github.lhervier.ksp.fix.suspensions.fixedtuning
 {
     /// <summary>
     /// Prototype probe for the fixed tuning: measures, without showing anything, where the wheel collider of every

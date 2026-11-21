@@ -2,11 +2,12 @@ using System;
 using System.Collections.Generic;
 using UnityEngine;
 
-namespace com.github.lhervier.ksp.fix.suspensionbounce
+namespace com.github.lhervier.ksp.fix.suspensions.vesselbodies
 {
     /// <summary>
     /// The rigidbodies of a vessel, read from Unity once per vessel and physics step for every fix that takes the
-    /// vessel as one rigid body: the dampers (<see cref="VesselInertia"/>) and the end-stops (<see cref="BumpStopLoad"/>).
+    /// vessel as one rigid body: DamperBounce, through <see cref="VesselInertia"/>, and
+    /// <see cref="endstopslide.EndStopSlide"/>.
     /// <para>
     /// A body's mass, its principal moments of inertia and their axes in the body only change with its resources and
     /// the vessel's structure: they are kept from step to step, and read again at once when the body's mass is no

@@ -5,17 +5,18 @@ using System.Text;
 using HarmonyLib;
 using ModuleWheels;
 using UnityEngine;
+using com.github.lhervier.ksp.fix.suspensions.damperbounce;
 
-namespace com.github.lhervier.ksp.fix.suspensionbounce
+namespace com.github.lhervier.ksp.fix.suspensions.fixedtuning
 {
     /// <summary>
     /// Replaces the game's spring and damper, recomputed at each physics step from the wheel's compression and the
     /// vessel's mass, with the setting the player gives each suspension (<see cref="ModuleSuspensionTuning"/>): a spring
     /// in kN/m and a damping ratio, which nothing changes behind the player's back, not a docking, not a burn, not a
     /// wheel leaving the ground. The player sets them by hand, or has them predicted for a body and a mass
-    /// (<see cref="Predict"/>), or levelled on the ground (<see cref="Leveller"/>). A suspension never set keeps the
-    /// game's setting until its vessel has been in physics for <see cref="PredictDelay"/> s, then gets the prediction
-    /// for that vessel where it stands.
+    /// (<see cref="Predict"/>), or levelled on the ground (<see cref="Leveller"/>). A suspension never set gets, at the
+    /// first physics step the fix sees it, the prediction for its vessel's mass shared equally among all the vessel's
+    /// suspensions.
     /// </summary>
     internal static class FixedTuning
     {
@@ -39,8 +40,8 @@ namespace com.github.lhervier.ksp.fix.suspensionbounce
 
         /// <summary>
         /// The damping ratio offered by default, and given to a suspension predicted without the player. It is the ratio
-        /// the wheel gets once the damper fix has made its damper implicit on the mass the wheel's part moves (see
-        /// <see cref="SuspensionDamper"/>). Read from settings.cfg.
+        /// the wheel gets once DamperBounce has made its damper implicit on the mass the wheel's part moves (see
+        /// <see cref="DamperBounce"/>). Read from settings.cfg.
         /// </summary>
         public static float Damping = 0.7f;
 
@@ -49,12 +50,6 @@ namespace com.github.lhervier.ksp.fix.suspensionbounce
         /// the sinking is lowered below the compression asked for until it does. 0 leaves it. Read from settings.cfg.
         /// </summary>
         public static float TipMargin = 2f;
-
-        /// <summary>
-        /// How long a vessel stays in physics before its suspensions never set are predicted, in s: a part placed alone
-        /// in EVA construction weighs 4 or 20 t for its first seconds (ModuleCargoPart.MakePartSettle).
-        /// </summary>
-        public static float PredictDelay = 5f;
 
         /// <summary>
         /// The most of m / dt, the most an implicit damper can give on the mass m it moves, the damper aims at when the
@@ -81,8 +76,20 @@ namespace com.github.lhervier.ksp.fix.suspensionbounce
         private static readonly Dictionary<ModuleWheelSuspension, ModuleSuspensionTuning> tunings =
             new Dictionary<ModuleWheelSuspension, ModuleSuspensionTuning>();
 
-        /// <summary>When each vessel was first met in physics with a suspension never set (Time.time).</summary>
-        private static readonly Dictionary<Guid, float> unsetSince = new Dictionary<Guid, float>();
+        /// <summary>
+        /// The suspensions never set that a prediction was already made for, set or not by it (a broken wheel is left
+        /// out of a prediction): each is predicted once, not again at every step.
+        /// </summary>
+        private static readonly HashSet<ModuleSuspensionTuning> predicted = new HashSet<ModuleSuspensionTuning>();
+
+        /// <summary>
+        /// Forgets that a suspension was predicted: once its setting is removed, it is predicted again at the next step
+        /// it is seen, as a suspension never set.
+        /// </summary>
+        internal static void Forget(ModuleSuspensionTuning tuning)
+        {
+            predicted.Remove(tuning);
+        }
 
         /// <summary>Whether a part without a tuning module was already reported.</summary>
         private static bool missingReported;
@@ -101,7 +108,7 @@ namespace com.github.lhervier.ksp.fix.suspensionbounce
             GameEvents.onGameSceneLoadRequested.Add(scene =>
             {
                 tunings.Clear();
-                unsetSince.Clear();
+                predicted.Clear();
             });
         }
 
@@ -135,9 +142,10 @@ namespace com.github.lhervier.ksp.fix.suspensionbounce
         }
 
         /// <summary>
-        /// Sets the suspension's spring and damper to the player's setting, on the wheel collider and in the module's
-        /// own fields, which the damper fix starts from, and which the game hands to a wheel it sets up again. Predicts
-        /// a setting for the suspensions of the vessel never set, once it has been in physics long enough.
+        /// Sets the suspension's spring and damper to the player's setting, in the module's own fields, which
+        /// DamperBounce starts from, and which the game hands to a wheel it sets up again, and on the wheel collider:
+        /// the spring always, the damper only while DamperBounce is off, DamperBounce writing its own bound of it
+        /// otherwise. Predicts a setting for the suspensions of the vessel never set, at the first step it sees one.
         /// </summary>
         private static void FixedUpdatePrefix(ModuleWheelSuspension __instance)
         {
@@ -159,7 +167,10 @@ namespace com.github.lhervier.ksp.fix.suspensionbounce
             }
             if (!tuning.IsTuned)
             {
-                PredictUnset(vessel);
+                if (!predicted.Contains(tuning))
+                {
+                    PredictUnset(vessel);
+                }
                 if (!tuning.IsTuned)
                 {
                     return;
@@ -178,10 +189,9 @@ namespace com.github.lhervier.ksp.fix.suspensionbounce
             {
                 wheel.wheelCollider.springRate = spring;
             }
-            // The damper fix writes its own bound of this damper at every step, on the ground and off it: writing it
-            // here too would change the wheel's damper twice a step.
-            bool damperFixWrites = SuspensionDamper.OnGround && SuspensionDamper.InAir;
-            if (!damperFixWrites && wheel.wheelCollider.damperRate != damper)
+            // DamperBounce writes its own bound of this damper at every step, on the ground and off it: writing it here
+            // too would change the wheel's damper twice a step.
+            if (!DamperBounce.Enabled && wheel.wheelCollider.damperRate != damper)
             {
                 wheel.wheelCollider.damperRate = damper;
             }
@@ -203,9 +213,11 @@ namespace com.github.lhervier.ksp.fix.suspensionbounce
 
         /// <summary>
         /// Returns the damper to write for a spring <paramref name="spring"/> carrying <paramref name="share"/> t at the
-        /// damping ratio <paramref name="damping"/>: 2 ζ √(k m), as the wheel gets it once the damper fix has made it
-        /// implicit on <paramref name="movedMass"/>, the mass the wheel's part moves in a step, and at most
-        /// <see cref="ImplicitCeiling"/> of what that implicit damper can give (<paramref name="capped"/>).
+        /// damping ratio <paramref name="damping"/>, aimed at 2 ζ √(k m) (<paramref name="effective"/>). While
+        /// DamperBounce is on, it returns the damper that DamperBounce turns into that aim when it makes it implicit on
+        /// <paramref name="movedMass"/>, the mass the wheel's part moves in a step, the aim held to at most
+        /// <see cref="ImplicitCeiling"/> of what that implicit damper can give (<paramref name="capped"/>); while it is
+        /// off, it returns the aim itself, <paramref name="movedMass"/> 0.
         /// </summary>
         internal static float Damper(float spring, float damping, float share, Part part, out float effective,
             out bool capped, out float movedMass)
@@ -214,11 +226,11 @@ namespace com.github.lhervier.ksp.fix.suspensionbounce
             double damper = aimed;
             capped = false;
             movedMass = 0f;
-            if (part != null && (SuspensionDamper.OnGround || SuspensionDamper.InAir))
+            if (part != null && DamperBounce.Enabled)
             {
-                // The damper fix sets c / (1 + c dt / m) on the wheel, m the mass its part moves within a step: the
+                // DamperBounce sets c / (1 + c dt / m) on the wheel, m the mass its part moves within a step: the
                 // damper that gives the effective one aimed at is c = e / (1 - e dt / m), while e < m / dt.
-                movedMass = SuspensionDamper.MovedMass(part);
+                movedMass = DamperBounce.MovedMass(part);
                 if (movedMass > 0f)
                 {
                     double dt = Time.fixedDeltaTime;
@@ -236,28 +248,18 @@ namespace com.github.lhervier.ksp.fix.suspensionbounce
         }
 
         /// <summary>
-        /// Predicts, once the vessel has been in physics for <see cref="PredictDelay"/> s, a setting for each of its
-        /// suspensions never set: from all its suspensions, its mass and centre of mass, on the body it orbits, at the
-        /// default compression and damping ratio. The suspensions already set keep theirs.
+        /// Predicts a setting for each suspension of the vessel never set: from all its suspensions, its mass shared
+        /// equally among them, on the body it orbits, at the default compression and damping ratio. The suspensions
+        /// already set keep theirs. Each suspension never set is predicted once, whether the prediction sets it or not.
         /// </summary>
         private static void PredictUnset(Vessel vessel)
         {
-            float since;
-            if (!unsetSince.TryGetValue(vessel.id, out since))
-            {
-                unsetSince[vessel.id] = Time.time;
-                return;
-            }
-            if (Time.time - since < PredictDelay)
-            {
-                return;
-            }
-            unsetSince.Remove(vessel.id);
             List<ModuleSuspensionTuning> all = TuningsOf(vessel.parts);
             CelestialBody body = vessel.mainBody;
-            List<Prediction> predictions = Predict(all, vessel.totalMass, vessel.CoM, SurfaceGravity(body),
-                Compression);
-            string what = $"predicted at load for {body.bodyName}, {vessel.totalMass:0.###} t";
+            // No centre of mass: shared equally, as the window's Auto does with its centre of mass option off.
+            List<Prediction> predictions = Predict(all, vessel.totalMass, null, SurfaceGravity(body), Compression);
+            string what = $"predicted in flight for {body.bodyName}, {vessel.totalMass:0.###} t over " +
+                $"{predictions.Count}, shared equally";
             int set = 0;
             foreach (Prediction p in predictions)
             {
@@ -265,6 +267,13 @@ namespace com.github.lhervier.ksp.fix.suspensionbounce
                 {
                     p.Tuning.Set(p.Spring, Damping, p.Share, what);
                     set++;
+                }
+            }
+            foreach (ModuleSuspensionTuning t in all)
+            {
+                if (!t.IsTuned)
+                {
+                    predicted.Add(t);
                 }
             }
             Log.Info($"{vessel.vesselName}: {set} suspensions never set, {what}{Describe(predictions)}");
@@ -441,15 +450,16 @@ namespace com.github.lhervier.ksp.fix.suspensionbounce
         }
 
         /// <summary>
-        /// Returns the mass of the wheel's collider, in t, whose weight the spring does not carry: the sprung mass Unity
-        /// gives the collider in flight, the part's mass where it has none (in the editor). Both are the part's mass.
+        /// Returns the mass of the wheel's collider, in t, whose weight the spring does not carry: the mass of the
+        /// suspension's part, its resources included, as the game knows it in the editor and in flight alike.
         /// </summary>
         internal static float SprungMass(ModuleWheelSuspension suspension)
         {
-            KSPWheelController wheel = HighLogic.LoadedSceneIsFlight ? Wheel(suspension) : null;
-            WheelCollider collider = wheel != null && wheel.wheelCollider != null
-                ? wheel.wheelCollider.GetComponent<WheelCollider>() : null;
-            return collider != null ? collider.sprungMass : suspension.part.mass;
+            // Not WheelCollider.sprungMass: at the first physics step of a vessel, before Unity has applied the part's
+            // mass to the collider, it still holds Unity's default of 1 t, which made the spring of a 50 kg wheel ten
+            // times too stiff. The collider's sprung mass is the part's mass once applied.
+            Part part = suspension.part;
+            return part.mass + part.GetResourceMass();
         }
 
         /// <summary>

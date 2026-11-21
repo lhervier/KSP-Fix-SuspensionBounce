@@ -5,8 +5,9 @@ using HarmonyLib;
 using ModuleWheels;
 using UnityEngine;
 using VehiclePhysics;
+using com.github.lhervier.ksp.fix.suspensions.vesselbodies;
 
-namespace com.github.lhervier.ksp.fix.suspensionbounce
+namespace com.github.lhervier.ksp.fix.suspensions.endstopslide
 {
     /// <summary>
     /// Holds the suspensions at the end of their travel itself, and gives the tyres the weight they carry there.
@@ -27,11 +28,11 @@ namespace com.github.lhervier.ksp.fix.suspensionbounce
     /// of its tyre.
     /// </para>
     /// </summary>
-    public static class BumpStopLoad
+    public static class EndStopSlide
     {
         // Knobs, public so that they can be changed in game (KSP-Util-MCPServer set_member).
 
-        /// <summary>Whether the fix runs at all (settings.cfg, bumpStopLoad).</summary>
+        /// <summary>Whether the fix runs at all (settings.cfg, endStopSlide).</summary>
         public static bool Enabled = true;
 
         /// <summary>Whether the fix applies the end-stop forces it finds to the wheels.</summary>
@@ -59,6 +60,17 @@ namespace com.github.lhervier.ksp.fix.suspensionbounce
         /// the regularisation.
         /// </summary>
         public static int Passes = 4;
+
+        /// <summary>
+        /// Share of the way from the force of the step before to the one found that each end-stop force moves in a step.
+        /// </summary>
+        public static float Relaxation = 0.3f;
+
+        /// <summary>
+        /// The vessel's speed over the ground (m/s) under which <see cref="Relaxation"/> applies; faster, the forces
+        /// move in full at every step, so that the tyres keep reading the weight over the bumps. Negative: always.
+        /// </summary>
+        public static float RelaxBelowSpeed = 2f;
 
         /// <summary>What the fix found for one wheel at the last physics step, kept for reading in game.</summary>
         public class Probe
@@ -218,16 +230,16 @@ namespace com.github.lhervier.ksp.fix.suspensionbounce
             {
                 throw new MissingMemberException("VehicleBase.ApplyTireForce");
             }
-            harmony.Patch(Integrate, prefix: new HarmonyMethod(typeof(BumpStopLoad), nameof(IntegratePrefix)));
+            harmony.Patch(Integrate, prefix: new HarmonyMethod(typeof(EndStopSlide), nameof(IntegratePrefix)));
             harmony.Patch(CalculateSuspensionForces,
-                postfix: new HarmonyMethod(typeof(BumpStopLoad), nameof(CalculateSuspensionForcesPostfix)));
+                postfix: new HarmonyMethod(typeof(EndStopSlide), nameof(CalculateSuspensionForcesPostfix)));
             harmony.Patch(CalculateDownforce,
-                postfix: new HarmonyMethod(typeof(BumpStopLoad), nameof(CalculateDownforcePostfix)));
+                postfix: new HarmonyMethod(typeof(EndStopSlide), nameof(CalculateDownforcePostfix)));
             harmony.Patch(ApplyTireForce,
-                postfix: new HarmonyMethod(typeof(BumpStopLoad), nameof(ApplyTireForcePostfix)));
+                postfix: new HarmonyMethod(typeof(EndStopSlide), nameof(ApplyTireForcePostfix)));
             harmony.Patch(DamageFixedUpdate,
-                prefix: new HarmonyMethod(typeof(BumpStopLoad), nameof(DamageFixedUpdatePrefix)),
-                postfix: new HarmonyMethod(typeof(BumpStopLoad), nameof(DamageFixedUpdatePostfix)));
+                prefix: new HarmonyMethod(typeof(EndStopSlide), nameof(DamageFixedUpdatePrefix)),
+                postfix: new HarmonyMethod(typeof(EndStopSlide), nameof(DamageFixedUpdatePostfix)));
             GameEvents.onGameSceneLoadRequested.Add(scene => Clear());
         }
 
@@ -514,6 +526,19 @@ namespace com.github.lhervier.ksp.fix.suspensionbounce
             float dt = Time.fixedDeltaTime;
 
             balance.wheels.Clear();
+            for (int i = Probes.Count - 1; i >= 0; i--)
+            {
+                Probe p = Probes[i];
+                // A wheel state VPP no longer updates is dropped: a vessel packed and unpacked again (time warp on
+                // rails, a vessel moved) gets new wheel states on the same parts, and the old ones would be held as
+                // wheels of their own, their share of the load given to tyres that no longer exist. A wheel still in
+                // use gets a new probe at its next step.
+                if (p.lastTime >= 0f && now - p.lastTime > 2.5f * dt)
+                {
+                    probes.Remove(p.state);
+                    Probes.RemoveAt(i);
+                }
+            }
             for (int i = 0; i < Probes.Count; i++)
             {
                 Probe p = Probes[i];
@@ -694,7 +719,9 @@ namespace com.github.lhervier.ksp.fix.suspensionbounce
         /// <paramref name="centre"/>, their velocities read for this step), pushed by the <paramref name="known"/> forces and
         /// <paramref name="knownTorque"/> of the last step. Finds the least normal forces, none pulling, that keep every
         /// wheel of <see cref="groundedProbes"/> from going past the end of its travel by the end of the coming step,
-        /// all wheels at once; applies them to the wheels' bodies at their contacts, and records them in
+        /// all wheels at once; moves a force only <see cref="Relaxation"/> of the way there from the one of the step
+        /// before while the vessel is slower than <see cref="RelaxBelowSpeed"/>; applies them to the wheels' bodies at
+        /// their contacts, and records them in
         /// <see cref="Probe.held"/>, <see cref="Balance.heldNormal"/> and <see cref="Balance.holding"/>. A wheel
         /// resting on its end-stop gets its share of the load beyond its spring; a wheel leaving it, or far from it, gets
         /// nothing; a wheel coming fast is slowed to just reach it.
@@ -786,6 +813,19 @@ namespace com.github.lhervier.ksp.fix.suspensionbounce
                 for (int k = 0; k < n; k++)
                 {
                     target[k] = f[k];
+                }
+            }
+
+            // The vessel answers a force at a wheel more than the rigid body taken here does: a force found in full makes
+            // it overshoot, and the next step swings back, a rocking that keeps going on a vessel at rest on its
+            // end-stops. Slow, each force moves only part of the way from the one of the step before to the one found.
+            if (RelaxBelowSpeed < 0f || balance.vessel.srfSpeed < RelaxBelowSpeed)
+            {
+                for (int k = 0; k < n; k++)
+                {
+                    Probe p = groundedProbes[k];
+                    float previous = Mathf.Abs(now - p.heldTime - dt) < dt * 0.25f ? p.held : 0f;
+                    f[k] = previous + Relaxation * (f[k] - previous);
                 }
             }
 

@@ -2,12 +2,13 @@ using System.Reflection;
 using HarmonyLib;
 using UnityEngine;
 
-namespace com.github.lhervier.ksp.fix.suspensionbounce
+namespace com.github.lhervier.ksp.fix.suspensions.fixedtuning
 {
     /// <summary>
     /// Stops a launch from the editor while some suspensions of the vessel have no setting, and asks the player to set
     /// them: for the body chosen in the suspension window, from the vessel's mass and centre of mass; or to launch them
-    /// as they are, the game sizing them until the fix predicts a setting in flight.
+    /// as they are, the fix setting them at the first physics step of the flight, from the vessel's mass shared equally
+    /// among its suspensions.
     /// </summary>
     internal static class LaunchCheck
     {
@@ -60,8 +61,8 @@ namespace com.github.lhervier.ksp.fix.suspensionbounce
                 $"Set them for {body}, from the vessel's mass and centre of mass, at " +
                 $"{100f * TuningChoices.Compression:0} % compression and a damping ratio of " +
                 $"{TuningChoices.Damping:0.00}? The suspension window, from the toolbar, picks another body, mass or " +
-                "set of suspensions.\n\nLaunched as they are, the game sizes them, until the fix predicts their setting " +
-                "a few seconds into the flight, from the vessel as it is then.";
+                "set of suspensions.\n\nLaunched as they are, the fix sets them at the first physics step of the " +
+                "flight, from the vessel's mass shared equally among its suspensions.";
             Asking = true;
             PopupDialog.SpawnPopupDialog(new Vector2(0.5f, 0.5f), new Vector2(0.5f, 0.5f),
                 new MultiOptionDialog("KSPFixSuspensionBounceLaunch", message, "Suspensions not set", HighLogic.UISkin,

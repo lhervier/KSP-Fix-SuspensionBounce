@@ -1,7 +1,10 @@
 using System;
 using System.IO;
+using com.github.lhervier.ksp.fix.suspensions.damperbounce;
+using com.github.lhervier.ksp.fix.suspensions.endstopslide;
+using com.github.lhervier.ksp.fix.suspensions.fixedtuning;
 
-namespace com.github.lhervier.ksp.fix.suspensionbounce
+namespace com.github.lhervier.ksp.fix.suspensions
 {
     /// <summary>
     /// What the player can set in PluginData/settings.cfg, next to the DLL. Read once, when KSP starts.
@@ -29,20 +32,14 @@ namespace com.github.lhervier.ksp.fix.suspensionbounce
             }
 
             Log.Level = ReadEnum(node, "logLevel", Log.Level, path);
-            BumpStopLoad.Enabled = ReadBool(node, "bumpStopLoad", BumpStopLoad.Enabled, path);
-            SpringGravityCurve.Enabled = ReadBool(node, "kerbinCurve", SpringGravityCurve.Enabled, path);
-            SuspensionDamper.OnGround = ReadBool(node, "damperLimit", SuspensionDamper.OnGround, path);
-            SuspensionDamper.InAir = ReadBool(node, "airDamper", SuspensionDamper.InAir, path);
-            TyreStaticGrip.Enabled = ReadBool(node, "staticGrip", TyreStaticGrip.Enabled, path);
-            PoseMotion.Enabled = ReadBool(node, "tyreReadsPoses", PoseMotion.Enabled, path);
+            EndStopSlide.Enabled = ReadBool(node, "endStopSlide", EndStopSlide.Enabled, path);
+            DamperBounce.Enabled = ReadBool(node, "damperBounce", DamperBounce.Enabled, path);
             CostMeasure.Enabled = ReadBool(node, "measureCost", CostMeasure.Enabled, path);
             LegGeometryProbe.Enabled = ReadBool(node, "probeLegGeometry", LegGeometryProbe.Enabled, path);
             FixedTuning.Enabled = ReadBool(node, "fixedTuning", FixedTuning.Enabled, path);
-            DockingWheelReset.Enabled = ReadBool(node, "dockingWheelReset", DockingWheelReset.Enabled, path);
             FixedTuning.Compression = ReadFloat(node, "fixedTuningCompression", FixedTuning.Compression, path);
             FixedTuning.Damping = ReadFloat(node, "fixedTuningDamping", FixedTuning.Damping, path);
             FixedTuning.TipMargin = ReadFloat(node, "fixedTuningTipMargin", FixedTuning.TipMargin, path);
-            FixedTuning.PredictDelay = ReadFloat(node, "fixedTuningPredictDelay", FixedTuning.PredictDelay, path);
         }
 
         /// <summary>
