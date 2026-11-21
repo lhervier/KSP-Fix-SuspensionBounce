@@ -42,14 +42,18 @@ Played five times without this mod: KSP 1.12.5 with KSP Community Fixes 1.41.1,
 [Terrain Precision Fix](https://github.com/lhervier/KSP-Fix-TerrainPrecision),
 [KSP-Fix-AutoStrut](https://github.com/lhervier/KSP-Fix-AutoStrut) and Parking Brake; every run was still under the
 parking brake before it was let go, and reached 25.8 m/s. With this mod, KSP 1.12.5, KSP Community Fixes, Terrain
-Precision Fix, KSP-Fix-AutoStrut and Parking Brake, three times with its default settings, and three times with Fixed
-Tuning alone, `damperBounce = false` and `endStopSlide = false` in the mod's `settings.cfg`: Parking Brake let the
-rover go as it loaded, and it settled on its own; every run reached 25.8 to 25.9 m/s.
+Precision Fix, KSP-Fix-AutoStrut and Parking Brake, three times in each configuration: with its default settings; with
+Fixed Tuning alone, `damperBounce = false` and `endStopSlide = false` in the mod's `settings.cfg`; and with Fixed
+Tuning and this fix, `damperBounce = false`. Parking Brake let the rover go as it loaded, and it settled on its own;
+every run that kept its wheels reached 25.8 to 25.9 m/s.
 
-| | Without this mod | Fixed Tuning alone | This mod |
-|---|---|---|---|
-| How far the rover turned in 30 s, each trial | −0.53°, −0.32°, −0.48°, −0.53°, −0.35° | −0.02°, −0.15°, −0.72° | −0.58°, −0.56°, −0.33° |
-| Fastest turn, each trial | 0.03 to 0.05°/s | 5.5°/s, 5.9°/s, 0.22°/s | 0.22°/s, 1.1°/s, 0.08°/s |
-| Time with no wheel on the ground | — | 0.5 %, 0.3 %, 0 | 0 |
+| | Without this mod | Fixed Tuning alone | Fixed Tuning and this fix | This mod |
+|---|---|---|---|---|
+| How far the rover turned in 30 s, each trial | −0.53°, −0.32°, −0.48°, −0.53°, −0.35° | −0.66°, −1.85°, 0.25° | on its side, −0.66°, −0.46° | −0.71°, −0.46°, −0.22° |
+| Fastest turn, each trial | 0.03 to 0.05°/s | 1.7°/s, 32°/s, 9.0°/s | on its side, 1.5°/s, 0.79°/s | 0.18°/s, 0.14°/s, 0.33°/s |
+| Time with no wheel on the ground | — | 0 | on its side, 0, 0 | 0 |
 
-Set off from the same place, the rover keeps its line within a degree, with or without this mod.
+Set off from the same place, the rover keeps its line within a degree, with or without this mod; once within two with
+Fixed Tuning alone. With Fixed Tuning and
+this fix but without Damper Bounce, the rover fell on its side as it loaded, before it was set off, in one trial out
+of three (two out of eight in all); not with the mod's default settings.

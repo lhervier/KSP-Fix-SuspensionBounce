@@ -62,6 +62,6 @@ Tuning alone, `damperBounce = false` and `endStopSlide = false` in the mod's `se
 |---|---|---|
 | Broke apart | 0 of 20 | 0 of 20 |
 | Top speed over the ground: median | 2.4 m/s | 2.4 m/s |
-| Top speed over the ground: lowest to highest | 2.3 to 3.1 m/s | 2.3 to 3.6 m/s |
+| Top speed over the ground: lowest to highest | 2.3 to 3.1 m/s | 2.2 to 2.7 m/s |
 
 Fixed Tuning alone gives the same as the whole mod: the mod's other fixes change nothing here.

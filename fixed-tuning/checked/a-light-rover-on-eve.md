@@ -47,7 +47,7 @@ settings, and three times with Fixed Tuning alone, `damperBounce = false` and `e
 |---|---|---|---|
 | Top speed over the ground | 24 m/s | 0.05 m/s | 0.05 m/s |
 | Time with no wheel on the ground | 47 % | 0 | 0 |
-| Speed over the last 10 s | up to 0.40 m/s | up to 0.08 mm/s | up to 0.03 mm/s |
+| Speed over the last 10 s | up to 0.40 m/s | up to 0.08 mm/s | up to 0.04 mm/s |
 | `KSP.log` | `roverWheel2 Exploded!!` | nothing | nothing |
 
 Fixed Tuning alone keeps the rover on its wheels: the mod's other fixes change nothing here.

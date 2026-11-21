@@ -466,9 +466,9 @@ GAME
 	{
 		name = ScenarioDiscoverableObjects
 		scene = 7, 8, 5
-		lastSeed = 892544407
-		untrackedIDs = 1231011346,2274296593,3455688127,749663267,2801881019,3531709264,6345735,1643786725,2717305772
-		discoveredIDs = 1231011346,2274296593,3455688127,749663267,2801881019,3531709264,6345735,1643786725,2717305772
+		lastSeed = 672288992
+		untrackedIDs = 1973673750
+		discoveredIDs = 1231011346,2274296593,3455688127,749663267,2801881019,3531709264,6345735,1643786725,2717305772,1973673750
 		sizeCurve
 		{
 			key = 0 0 1.5 1.5
@@ -609,7 +609,7 @@ GAME
 	FLIGHTSTATE
 	{
 		version = 1.12.5
-		UT = 1192.9999999992051
+		UT = 1238.9199999991633
 		activeVessel = 0
 		mapViewFiltering = -1026
 		commNetUIModeTracking = Network
@@ -629,18 +629,18 @@ GAME
 			landedAt = 
 			displaylandedAt = 
 			splashed = False
-			met = 519.95999999952721
+			met = 565.87999999948545
 			lct = 673.03999999967789
-			lastUT = 1192.9999999992051
-			distanceTraveled = 5.2049582430697754
+			lastUT = 1238.9199999991633
+			distanceTraveled = 5.2090338891532015
 			root = 0
-			lat = 1.1029784649525396
-			lon = -78.048541372875263
-			alt = 1484.7450126807671
-			hgt = 0.768221498
-			nrm = -0.000151664019,1.75144523E-05,-1
-			rot = 0.126456022,0.204533711,0.163914263,-0.956716835
-			CoM = 1.50203705E-05,-4.63798642E-07,-0.295799404
+			lat = 1.1029517890546585
+			lon = -78.048525495214164
+			alt = 1484.6180802643066
+			hgt = 0.768038869
+			nrm = -2.98023224E-06,-3.61353159E-06,-1.00000012
+			rot = 0.118607618,0.209101558,0.200000733,-0.949846625
+			CoM = 7.82310963E-07,-1.37276947E-06,-0.295800865
 			stg = 0
 			prst = False
 			ref = 3220268746
@@ -658,13 +658,13 @@ GAME
 			cMod = 0
 			ORBIT
 			{
-				SMA = 301532.10148151097
-				ECC = 0.99476280502375747
-				INC = 1.1030320784038927
-				LPE = 270.61151528056439
-				LAN = 301.26984925295159
-				MNA = 3.1415812507251641
-				EPH = 1192.9999999992051
+				SMA = 301531.91316836624
+				ECC = 0.99476362987872535
+				INC = 1.1029425784088061
+				LPE = 270.00349358977178
+				LAN = 302.64511271597121
+				MNA = 3.1415923192870108
+				EPH = 1238.9199999991633
 				REF = 1
 			}
 			PART
@@ -693,10 +693,10 @@ GAME
 				attN = top, 11
 				mass = 0.375
 				shielded = False
-				temp = 306.71076453137624
-				tempExt = 305.45645509292251
-				tempExtUnexp = 305.45646249531524
-				staticPressureAtm = 0.7987462930140482
+				temp = 306.51391747325448
+				tempExt = 305.46479746890327
+				tempExtUnexp = 305.46490017672045
+				staticPressureAtm = 0.79876187934188403
 				expt = 0.5
 				state = 0
 				PreFailState = 0
@@ -704,7 +704,7 @@ GAME
 				autostrutMode = Off
 				rigidAttachment = False
 				flag = Squad/Flags/default
-				rTrf = trussPiece3x (Rover A)
+				rTrf = trussPiece3x (SuspensionBounce Rover)
 				modCost = 0
 				modMass = 0
 				moduleVariantName = 
@@ -810,10 +810,10 @@ GAME
 				srfN = srfAttach, 0,truss3x
 				mass = 0.0199999996
 				shielded = False
-				temp = 305.82032083632885
-				tempExt = 305.31853160369661
-				tempExtUnexp = 305.31855304194784
-				staticPressureAtm = 0.79872054168979767
+				temp = 305.69298982880122
+				tempExt = 305.26817128828685
+				tempExtUnexp = 305.26823540726156
+				staticPressureAtm = 0.79873710686914012
 				expt = 0.5
 				state = 0
 				PreFailState = 0
@@ -906,7 +906,7 @@ GAME
 				RESOURCE
 				{
 					name = ElectricCharge
-					amount = 305.22826863763692
+					amount = 313.29466484611248
 					maxAmount = 400
 					flowState = True
 					isTweakable = True
@@ -940,10 +940,10 @@ GAME
 				srfN = srfAttach, 0,truss3x
 				mass = 0.0199999996
 				shielded = False
-				temp = 305.82041534399485
-				tempExt = 305.31857683700463
-				tempExtUnexp = 305.31859829165342
-				staticPressureAtm = 0.79873289027803474
+				temp = 305.69303095500214
+				tempExt = 305.26819097550316
+				tempExtUnexp = 305.26825510162223
+				staticPressureAtm = 0.79875043430888382
 				expt = 0.5
 				state = 0
 				PreFailState = 0
@@ -1036,7 +1036,7 @@ GAME
 				RESOURCE
 				{
 					name = ElectricCharge
-					amount = 305.22826863763692
+					amount = 313.29466484611248
 					maxAmount = 400
 					flowState = True
 					isTweakable = True
@@ -1070,10 +1070,10 @@ GAME
 				srfN = srfAttach, 0,truss3x
 				mass = 0.0199999996
 				shielded = False
-				temp = 305.82047720985145
-				tempExt = 305.31860644727317
-				tempExtUnexp = 305.3186279126561
-				staticPressureAtm = 0.79874011871992967
+				temp = 305.69305787670868
+				tempExt = 305.2682038629913
+				tempExtUnexp = 305.26826799378711
+				staticPressureAtm = 0.79875525327014707
 				expt = 0.5
 				state = 0
 				PreFailState = 0
@@ -1166,7 +1166,7 @@ GAME
 				RESOURCE
 				{
 					name = ElectricCharge
-					amount = 305.22826863763692
+					amount = 313.29466484611248
 					maxAmount = 400
 					flowState = True
 					isTweakable = True
@@ -1200,10 +1200,10 @@ GAME
 				srfN = srfAttach, 0,truss3x
 				mass = 0.0199999996
 				shielded = False
-				temp = 305.82070098825881
-				tempExt = 305.31871356078199
-				tempExtUnexp = 305.31873506509766
-				staticPressureAtm = 0.79875246730816674
+				temp = 305.69315525682231
+				tempExt = 305.26825047909693
+				tempExtUnexp = 305.26831462680934
+				staticPressureAtm = 0.79876858070989076
 				expt = 0.5
 				state = 0
 				PreFailState = 0
@@ -1296,7 +1296,7 @@ GAME
 				RESOURCE
 				{
 					name = ElectricCharge
-					amount = 305.22826863763692
+					amount = 313.29466484611248
 					maxAmount = 400
 					flowState = True
 					isTweakable = True
@@ -1330,10 +1330,10 @@ GAME
 				srfN = srfAttach, 0,truss3x
 				mass = 0.0199999996
 				shielded = False
-				temp = 305.82033134535465
-				tempExt = 305.31853663353183
-				tempExtUnexp = 305.31855807360643
-				staticPressureAtm = 0.79875969575006167
+				temp = 305.6929944019364
+				tempExt = 305.26817347745884
+				tempExtUnexp = 305.26823759722794
+				staticPressureAtm = 0.79877339967115402
 				expt = 0.5
 				state = 0
 				PreFailState = 0
@@ -1426,7 +1426,7 @@ GAME
 				RESOURCE
 				{
 					name = ElectricCharge
-					amount = 305.22826863763692
+					amount = 313.29466484611248
 					maxAmount = 400
 					flowState = True
 					isTweakable = True
@@ -1460,10 +1460,10 @@ GAME
 				srfN = srfAttach, 0,truss3x
 				mass = 0.0199999996
 				shielded = False
-				temp = 305.82073604646706
-				tempExt = 305.31873038129902
-				tempExtUnexp = 305.31875189220358
-				staticPressureAtm = 0.79877204433829874
+				temp = 305.69317051344126
+				tempExt = 305.26825778247843
+				tempExtUnexp = 305.26832193284116
+				staticPressureAtm = 0.79878665181462805
 				expt = 0.5
 				state = 0
 				PreFailState = 0
@@ -1556,7 +1556,7 @@ GAME
 				RESOURCE
 				{
 					name = ElectricCharge
-					amount = 305.22826863763692
+					amount = 313.29466484611248
 					maxAmount = 400
 					flowState = True
 					isTweakable = True
@@ -1590,10 +1590,10 @@ GAME
 				srfN = srfAttach, 0,truss3x
 				mass = 0.104999997
 				shielded = False
-				temp = 306.77711884237812
-				tempExt = 306.21398021513545
-				tempExtUnexp = 306.21400976963264
-				staticPressureAtm = 0.79869479036554714
+				temp = 306.42678511766422
+				tempExt = 305.94746654955492
+				tempExtUnexp = 305.94759429468593
+				staticPressureAtm = 0.79871233439639611
 				expt = 0.5
 				state = 0
 				PreFailState = 0
@@ -1693,7 +1693,7 @@ GAME
 					springTweakable = 0.300000012
 					damperTweakable = 1
 					autoSpringDamper = False
-					suspensionPos = (-0.746000528, -0.155866295, 0.00199983991)
+					suspensionPos = (-0.74600023, -0.155500278, 0.00199991418)
 					suspensionDefaultPos = (-0.745999992, -0.197999999, 0.00199985504)
 					autoBoost = 2
 					stagingEnabled = True
@@ -1858,6 +1858,25 @@ GAME
 					beingAttached = False
 					beingSettled = False
 					reinitResourcesOnStoreInVessel = False
+					stagingEnabled = True
+					EVENTS
+					{
+					}
+					ACTIONS
+					{
+					}
+					UPGRADESAPPLIED
+					{
+					}
+				}
+				MODULE
+				{
+					name = ModuleSuspensionTuning
+					isEnabled = True
+					springRate = 25.565443
+					dampingRatio = 0.699999988
+					tunedMass = 0.00249996246
+					tunedFor = auto for Kerbin, 0.01 t over 4, by the centre of mass
 					stagingEnabled = True
 					EVENTS
 					{
@@ -1895,10 +1914,10 @@ GAME
 				srfN = srfAttach, 0,truss3x
 				mass = 0.104999997
 				shielded = False
-				temp = 306.52132592850262
-				tempExt = 305.85722208452654
-				tempExtUnexp = 305.8573322185083
-				staticPressureAtm = 0.79871948754202127
+				temp = 306.09295863633974
+				tempExt = 305.47796805032931
+				tempExtUnexp = 305.4781285050766
+				staticPressureAtm = 0.79873891397961383
 				expt = 0.5
 				state = 0
 				PreFailState = 0
@@ -1998,7 +2017,7 @@ GAME
 					springTweakable = 0.300000012
 					damperTweakable = 1
 					autoSpringDamper = False
-					suspensionPos = (-0.746000111, -0.155500174, 0.0020002129)
+					suspensionPos = (-0.74600035, -0.155510902, 0.00200027251)
 					suspensionDefaultPos = (-0.745999992, -0.197999999, 0.00199985504)
 					autoBoost = 2
 					stagingEnabled = True
@@ -2155,6 +2174,25 @@ GAME
 					beingAttached = False
 					beingSettled = False
 					reinitResourcesOnStoreInVessel = False
+					stagingEnabled = True
+					EVENTS
+					{
+					}
+					ACTIONS
+					{
+					}
+					UPGRADESAPPLIED
+					{
+					}
+				}
+				MODULE
+				{
+					name = ModuleSuspensionTuning
+					isEnabled = True
+					springRate = 25.5654469
+					dampingRatio = 0.699999988
+					tunedMass = 0.00249997806
+					tunedFor = auto for Kerbin, 0.01 t over 4, by the centre of mass
 					stagingEnabled = True
 					EVENTS
 					{
@@ -2192,10 +2230,10 @@ GAME
 				srfN = srfAttach, 0,truss3x
 				mass = 0.104999997
 				shielded = False
-				temp = 306.68763036812987
-				tempExt = 306.1636568112969
-				tempExtUnexp = 306.16363544029667
-				staticPressureAtm = 0.79877309848607514
+				temp = 306.36280736060553
+				tempExt = 305.91509898747518
+				tempExtUnexp = 305.91521528020911
+				staticPressureAtm = 0.79878484470415434
 				expt = 0.5
 				state = 0
 				PreFailState = 0
@@ -2295,7 +2333,7 @@ GAME
 					springTweakable = 0.300000012
 					damperTweakable = 1
 					autoSpringDamper = False
-					suspensionPos = (-0.746000588, -0.15583545, 0.00199988461)
+					suspensionPos = (-0.746000409, -0.155505493, 0.00199973537)
 					suspensionDefaultPos = (-0.745999992, -0.197999999, 0.00199985504)
 					autoBoost = 2
 					stagingEnabled = True
@@ -2452,6 +2490,25 @@ GAME
 					beingAttached = False
 					beingSettled = False
 					reinitResourcesOnStoreInVessel = False
+					stagingEnabled = True
+					EVENTS
+					{
+					}
+					ACTIONS
+					{
+					}
+					UPGRADESAPPLIED
+					{
+					}
+				}
+				MODULE
+				{
+					name = ModuleSuspensionTuning
+					isEnabled = True
+					springRate = 25.5654583
+					dampingRatio = 0.699999988
+					tunedMass = 0.00250002183
+					tunedFor = auto for Kerbin, 0.01 t over 4, by the centre of mass
 					stagingEnabled = True
 					EVENTS
 					{
@@ -2489,10 +2546,10 @@ GAME
 				srfN = srfAttach, 0,truss3x
 				mass = 0.104999997
 				shielded = False
-				temp = 306.37279122556708
-				tempExt = 305.72076771371508
-				tempExtUnexp = 305.72086953789068
-				staticPressureAtm = 0.79879772036627961
+				temp = 305.96381866303625
+				tempExt = 305.37769144724143
+				tempExtUnexp = 305.37782633224469
+				staticPressureAtm = 0.79881142428737195
 				expt = 0.5
 				state = 0
 				PreFailState = 0
@@ -2592,7 +2649,7 @@ GAME
 					springTweakable = 0.300000012
 					damperTweakable = 1
 					autoSpringDamper = False
-					suspensionPos = (-0.746000171, -0.155500114, 0.00200009369)
+					suspensionPos = (-0.74600023, -0.155500203, 0.00200045132)
 					suspensionDefaultPos = (-0.745999992, -0.197999999, 0.00199985504)
 					autoBoost = 2
 					stagingEnabled = True
@@ -2749,6 +2806,25 @@ GAME
 					beingAttached = False
 					beingSettled = False
 					reinitResourcesOnStoreInVessel = False
+					stagingEnabled = True
+					EVENTS
+					{
+					}
+					ACTIONS
+					{
+					}
+					UPGRADESAPPLIED
+					{
+					}
+				}
+				MODULE
+				{
+					name = ModuleSuspensionTuning
+					isEnabled = True
+					springRate = 25.5654621
+					dampingRatio = 0.699999988
+					tunedMass = 0.00250003766
+					tunedFor = auto for Kerbin, 0.01 t over 4, by the centre of mass
 					stagingEnabled = True
 					EVENTS
 					{
@@ -2789,10 +2865,10 @@ GAME
 				attN = top, -1
 				mass = 1.26100004
 				shielded = False
-				temp = 306.19156701008819
-				tempExt = 305.88137397393575
-				tempExtUnexp = 305.88047396852716
-				staticPressureAtm = 0.79867724633469805
+				temp = 306.15141843557535
+				tempExt = 305.88695522359473
+				tempExtUnexp = 305.88784307585018
+				staticPressureAtm = 0.79869290795880366
 				expt = 0.5
 				state = 0
 				PreFailState = 0
@@ -2895,7 +2971,7 @@ GAME
 					isEnabled = True
 					actuatorModeCycle = 0
 					authorityLimiter = 100
-					stateString = En cours
+					stateString = En attente
 					stagingEnabled = True
 					WheelState = Active
 					EVENTS
@@ -3148,6 +3224,22 @@ GAME
 				}
 				MODULE
 				{
+					name = ParkingBrakeModule
+					isEnabled = True
+					brakeActive = True
+					stagingEnabled = True
+					EVENTS
+					{
+					}
+					ACTIONS
+					{
+					}
+					UPGRADESAPPLIED
+					{
+					}
+				}
+				MODULE
+				{
 					name = ModuleTripLogger
 					isEnabled = True
 					stagingEnabled = True
@@ -3167,26 +3259,10 @@ GAME
 					{
 					}
 				}
-				MODULE
-				{
-					name = ParkingBrakeModule
-					isEnabled = True
-					brakeActive = True
-					stagingEnabled = True
-					EVENTS
-					{
-					}
-					ACTIONS
-					{
-					}
-					UPGRADESAPPLIED
-					{
-					}
-				}
 				RESOURCE
 				{
 					name = ElectricCharge
-					amount = 76.307067159409229
+					amount = 78.323666211528121
 					maxAmount = 100
 					flowState = True
 					isTweakable = True
@@ -3231,10 +3307,10 @@ GAME
 				srfN = srfAttach, 11,COLPod
 				mass = 0.00499999989
 				shielded = False
-				temp = 306.17441361721808
-				tempExt = 305.75285785641398
-				tempExtUnexp = 305.75281970929484
-				staticPressureAtm = 0.7986032301015451
+				temp = 306.13616941674866
+				tempExt = 305.75546760295174
+				tempExtUnexp = 305.75559113137274
+				staticPressureAtm = 0.79861580457859149
 				expt = 0.5
 				state = 0
 				PreFailState = 0
@@ -3391,10 +3467,10 @@ GAME
 				srfN = srfAttach, 11,COLPod
 				mass = 0.00499999989
 				shielded = False
-				temp = 306.17441361721808
-				tempExt = 305.75285785641398
-				tempExtUnexp = 305.75281970929484
-				staticPressureAtm = 0.79863267094301282
+				temp = 306.13616941674866
+				tempExt = 305.75546760295174
+				tempExtUnexp = 305.75559113137274
+				staticPressureAtm = 0.79864742901188157
 				expt = 0.5
 				state = 0
 				PreFailState = 0
@@ -3551,10 +3627,10 @@ GAME
 				srfN = srfAttach, 11,COLPod
 				mass = 0.00499999989
 				shielded = False
-				temp = 306.17441361721808
-				tempExt = 305.75285785641398
-				tempExtUnexp = 305.75281970929484
-				staticPressureAtm = 0.79854924267614269
+				temp = 306.13616941674866
+				tempExt = 305.75546760295174
+				tempExtUnexp = 305.75559113137274
+				staticPressureAtm = 0.79856573255921537
 				expt = 0.5
 				state = 0
 				PreFailState = 0
@@ -3711,10 +3787,10 @@ GAME
 				srfN = srfAttach, 11,COLPod
 				mass = 0.00499999989
 				shielded = False
-				temp = 306.17441361721808
-				tempExt = 305.75285785641398
-				tempExtUnexp = 305.75281970929484
-				staticPressureAtm = 0.79857875881388007
+				temp = 306.13616941674866
+				tempExt = 305.75546760295174
+				tempExtUnexp = 305.75559113137274
+				staticPressureAtm = 0.798597507585045
 				expt = 0.5
 				state = 0
 				PreFailState = 0
@@ -3871,10 +3947,10 @@ GAME
 				srfN = srfAttach, 11,COLPod
 				mass = 0.00499999989
 				shielded = False
-				temp = 306.17441361721808
-				tempExt = 305.75285785641398
-				tempExtUnexp = 305.75281970929484
-				staticPressureAtm = 0.7986340262758681
+				temp = 306.13616941674866
+				tempExt = 305.75546760295174
+				tempExtUnexp = 305.75559113137274
+				staticPressureAtm = 0.79864825727084876
 				expt = 0.5
 				state = 0
 				PreFailState = 0
@@ -4031,10 +4107,10 @@ GAME
 				srfN = srfAttach, 11,COLPod
 				mass = 0.00499999989
 				shielded = False
-				temp = 306.17441369808438
-				tempExt = 305.7528579102152
-				tempExtUnexp = 305.75281976364585
-				staticPressureAtm = 0.79867265326224401
+				temp = 306.13616941674866
+				tempExt = 305.75546760295174
+				tempExtUnexp = 305.75559113137274
+				staticPressureAtm = 0.79868974551547456
 				expt = 0.5
 				state = 0
 				PreFailState = 0
@@ -4190,10 +4266,10 @@ GAME
 				srfN = srfAttach, 0,truss3x
 				mass = 0.00499999989
 				shielded = False
-				temp = 305.59160602134131
-				tempExt = 305.09371488289196
-				tempExtUnexp = 305.09357185607917
-				staticPressureAtm = 0.79876617122925919
+				temp = 305.57478753937033
+				tempExt = 305.13481598046883
+				tempExtUnexp = 305.13486322233751
+				staticPressureAtm = 0.79877851981749626
 				expt = 0.5
 				state = 0
 				PreFailState = 0
@@ -4350,9 +4426,9 @@ GAME
 			}
 			CTRLSTATE
 			{
-				pitch = 0.0165637452
-				yaw = -0.0147006493
-				roll = 0.0195225235
+				pitch = 0
+				yaw = 0
+				roll = 0
 				trimPitch = 0
 				trimYaw = 0
 				trimRoll = 0
@@ -4374,6 +4450,13 @@ GAME
 					controlState = KerbalFull
 					canComm = True
 				}
+				ParkingBrake
+				{
+					lat = 1.1029518097951887
+					lon = -78.048525495998561
+					alt = 1484.6181677232962
+					positionSet = True
+				}
 			}
 		}
 	}
@@ -4384,7 +4467,7 @@ GAME
 		HarmonyInstallChecker v2.2.1.0 = True
 		0_MultipleModuleInPartAPI v1.0.0.0 / v1.0.0+7969fdc50bf4e350193abe5ba2e89533b12ca02f = True
 		KSPCommunityFixes v1.41.0.0 / v1.41.1+7969fdc50bf4e350193abe5ba2e89533b12ca02f / v1.41.1.0 = True
-		KSPUtilMCPServer v0.0.0.0 = True
+		KSPUtilMCPServer v0.0.0.0 = False
 		000_Harmony = True
 		KSPCommunityFixes = True
 		KSPUtilMCPServer = True
@@ -4394,14 +4477,21 @@ GAME
 		ModuleManager.Physics = True
 		ModuleManager.TechTree = True
 		KSPDiagSuspension v1.0.9806.28591 = False
-		KSPFixAutoStrut v0.1.0.0 / v0.1.0+b368e32c4303ced537829d163a27c8d502be829b = True
-		KSPFixTerrainPrecision v0.3.0.0 / v0.3.0+576ea9ebf41254de8f2d4be2828bd0e366c01537 = True
+		KSPFixAutoStrut v0.1.0.0 / v0.1.0+b368e32c4303ced537829d163a27c8d502be829b = False
+		KSPFixTerrainPrecision v0.3.0.0 / v0.3.0+576ea9ebf41254de8f2d4be2828bd0e366c01537 = False
 		KSPDiagSuspension = True
 		KSPFixAutoStrut = True
 		KSPFixTerrainPrecision = True
-		KSPDiagSuspension v1.0.9806.36801 = True
-		KSPFixSuspensionBounce v0.1.0.0 / v0.1.0+d82efd8770eb4395bab73072fda67acdcc4bcf3e = True
+		KSPDiagSuspension v1.0.9806.36801 = False
+		KSPFixSuspensionBounce v0.1.0.0 / v0.1.0+d82efd8770eb4395bab73072fda67acdcc4bcf3e = False
 		KSPFixSuspensionBounce = True
+		KSPDiagSuspension v0.1.0.0 / v0.1.0-dev+32f9754995e404efb3f2d828aa3066353f3975ff = True
+		KSPFixAutoStrut v0.1.1.0 / v0.1.1-dev+9e54c2f597c402ac74a855202e08a258004cc39d = True
+		KSPFixSuspensionBounce v0.1.0.0 / v0.1.0-dev+08d2c1b2eaf5fa5362db66b936e15f810de9d0c1 = True
+		KSPFixTerrainPrecision v0.4.1.0 / v0.4.1-dev+3c165f702f1012a580c90b6d8cd28fe9f0262217 = True
+		KSPUtilMCPServer v0.1.2.0 / v0.1.2-dev+88bdd55b9c7d6faf059c6528a41c4ac455cd0f65 = True
+		ParkingBrake v0.4.4.0 = True
+		ParkingBrake = True
 	}
 	ROSTER
 	{
@@ -4777,12 +4867,12 @@ GAME
 			badS = False
 			veteran = True
 			tour = False
-			state = Assigned
+			state = Missing
 			inactive = False
 			inactiveTimeEnd = 0
 			gExperienced = 0
 			outDueToG = False
-			ToD = 0
+			ToD = 3193.2399999992049
 			idx = -1
 			extraXP = 0
 			hasHelmetOn = True

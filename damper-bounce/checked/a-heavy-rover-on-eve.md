@@ -52,13 +52,13 @@ and three times with Fixed Tuning alone, `damperBounce = false` and `endStopSlid
 
 | | Without this mod | Fixed Tuning alone | This mod |
 |---|---|---|---|
-| **Heavy rover**: top speed over the ground | 2.9 m/s | 2.4 to 3.3 m/s | 0.08 to 0.09 m/s |
+| **Heavy rover**: top speed over the ground | 2.9 m/s | 2.4 to 3.3 m/s | 0.04 to 0.05 m/s |
 | Time with no wheel on the ground | 11 % | 7 to 28 % | 0 |
-| How far it turned in 30 s | — | −182°, 772°, −118° | −0.4° to 1.2° |
-| Speed over the last 10 s | up to 0.85 m/s | up to 0.1 mm/s, 1.0 m/s and 1.8 m/s | up to 1.1 mm/s |
+| How far it turned in 30 s | — | −182°, 772°, −118° | 0.2° to 2.1° |
+| Speed over the last 10 s | up to 0.85 m/s | up to 0.1 mm/s, 1.0 m/s and 1.8 m/s | up to 1.9 mm/s |
 | `KSP.log` | `Hit Eve … at 73.5 m.s and damaged wheel.` | `Hit Eve … at 74.6 to 88.4 m.s and damaged wheel.`, 3 trials out of 3 | nothing |
-| **Bulldozer**: top speed over the ground | 1.7 to 2.4 m/s | 0.21 to 1.7 m/s | 0.09 m/s |
+| **Bulldozer**: top speed over the ground | 1.7 to 2.4 m/s | 0.21 to 1.7 m/s | 0.06, 0.63 and 0.22 m/s |
 | Time with no wheel on the ground | 8 to 14 % | 3 to 11 % | 0 |
-| How far it turned in 30 s | — | 10°, −118°, 6.5° | −0.2° to 0.8° |
-| Speed over the last 10 s | — | up to 0.07 mm/s, 1.7 m/s and 0.03 mm/s | up to 2.7 mm/s |
+| How far it turned in 30 s | — | 10°, −118°, 6.5° | −0.9° to 0.2° |
+| Speed over the last 10 s | — | up to 0.07 mm/s, 1.7 m/s and 0.03 mm/s | up to 1.2 mm/s |
 | `KSP.log` | `Hit Eve … at 48.0 to 123.3 m.s and damaged wheel`, at 2 trials out of 3 | `Hit Eve … at 50.0 to 116.7 m.s and damaged wheel.`, 3 trials out of 3 | nothing |

@@ -38,9 +38,10 @@ each one. VPP is written for a car made of one rigid body; KSP makes each wheel 
 
 Each case has its page: the save or craft it starts from, how to play it by hand, the script that plays it, and what
 it shows without and with this mod. With this mod, they were played with its default settings, then again with Fixed
-Tuning alone (`damperBounce = false` and `endStopSlide = false` in its `settings.cfg`), and, for the rover on a slope
-and the lander, with Fixed Tuning and this fix (`damperBounce = false`). This mod hides the game's sliders: where a
-case needs soft springs, they are set from its suspension window, *Auto* with a typed mass of 0.01 t.
+Tuning alone (`damperBounce = false` and `endStopSlide = false` in its `settings.cfg`), and with Fixed Tuning and this
+fix (`damperBounce = false`). This mod hides the game's sliders: where a case needs soft springs, its save or craft
+holds them twice, the game's sliders at their lowest for the game without this mod, and the setting this mod's
+suspension window makes (*Auto* with a typed mass of 0.01 t) for this mod.
 
 ### A rover on its end-stops
 
@@ -55,16 +56,25 @@ this mod, the tyres read the whole weight, and it holds.
 
 A lander on four LT-1 legs, its springs set soft, dropped from its launch clamps onto the runway: it comes to rest on
 its end-stops. Without this mod, its feet read none of its weight, and it slowly turns and slides; with it, it stays
-still. With Fixed Tuning alone, it bounces back up from the fall much faster than with this mod: this fix and Damper
-Bounce each take part of that bounce away.
+still. With Fixed Tuning alone, it bounces back up from the fall at 5 m/s, its legs leaving the ground; with this fix,
+the legs catch it on their end-stops, and it comes back up at a quarter of a metre per second.
 
 **→ Full chapter: [A lander dropped onto its end-stops](checked/a-lander-dropped-onto-its-end-stops.md)**
+
+### A rover on its end-stops after a time warp
+
+The rover of the slope, its time warped on rails for a minute, as a player does near a rover at rest: not a culprit,
+a check that this fix still holds it once the game is back to normal time: its tyres read the whole weight of the
+rover, as before the warp.
+
+**→ Full chapter: [A rover on its end-stops after a time warp](checked/a-rover-on-its-end-stops-after-a-time-warp.md)**
 
 ### A rover driving in a straight line
 
 A rover set off from standstill on flat ground, throttle held, its steering let go: not a culprit, a check that this
 mod does not make a rover turn on its own. Set off from the same place, it keeps its line within a degree in 30 s,
-with or without this mod, and with Fixed Tuning alone.
+with or without this mod. With Fixed Tuning and this fix but without Damper Bounce, it fell on its side as it loaded,
+before it was set off, in two trials out of eight.
 
 **→ Full chapter: [A rover driving in a straight line](checked/a-rover-driving-in-a-straight-line.md)**
 
@@ -93,6 +103,40 @@ has nothing left to correct, and no longer beats. The axis matters at speed: mea
 instead, a normal tilted for a single step, by a bump or a seam between two pieces of terrain, would turn part of the
 forward speed into a speed towards the end-stop, and call for a force many times the weight.
 
+### Where the wheel is now
+
+The contact the game reports for a wheel is the one found at the start of the last step: the wheel has moved since,
+by its speed over that step. For a wheel at rest, it makes no difference. For a wheel coming fast, it does: a lander
+falling at 9 m/s onto its LT-1 legs closes a fifth of their travel at each step. Read as reported, a leg seems a step
+short of its end-stop when it is already past it; PhysX's end-stop then pushes the whole overshoot back out within
+that step, whatever force the mod adds, and the lander bounces back up. So the mod moves each wheel coming towards
+its end-stop on by its speed over a step before it measures the travel it has left; a wheel at rest on its end-stop,
+or leaving it, is measured as reported.
+
+The travel is measured along the axis of the suspension, down to the ground. A leg that leans out, as the LT-1 does,
+closes its travel faster than the lander comes down, and the lander comes down faster than the leg moves along its
+axis: the speed along the axis is divided by the square of the axis's share along the normal of the ground. Only that
+share comes from the ground, not the direction of its normal, for the reason above.
+
+### A part of the way at a time, when slow
+
+The vessel answers a force at a wheel more than the rigid body the mod takes it for: a force found in full makes it
+overshoot, and the next step swings back. On a vessel at rest on its end-stops, that rocking keeps going: one long
+side of a rover held at a step, the other at the next, the whole rover tilting back and forth, and creeping down its
+slope. So, while the vessel is slower than 2 m/s, each force moves only 30 % of the way from the one of the step
+before to the one found: the rocking dies out. Faster, the forces move in full at every step, so that the tyres keep
+reading the weight over the bumps.
+
+The forces that stop a hard landing are many times the vessel's weight: kept at 70 % a step once the vessel is slow,
+they would throw it back up. They are let go at once: the forces move only part of the way while those of the step
+before add up to no more than twice the weight.
+
+### After a time warp
+
+A vessel put on rails, by a time warp or when it is moved, gets new wheels from VPP when it comes back, on the same
+parts. The mod forgets a wheel that VPP has not updated for more than two and a half steps: the old one would
+otherwise be held as a wheel of its own, and take its share of the load away from the tyres that remain.
+
 ### Sharing between the wheels
 
 Four wheels for three equations (one force, two torques): there are endless ways to carry the same vessel. The mod
@@ -120,6 +164,16 @@ The `endStopSlide` setting of the mod's `settings.cfg` file turns this fix off. 
 
 Everything is in [Src/EndStopSlide/EndStopSlide.cs](../Src/EndStopSlide/EndStopSlide.cs).
 
+Each step starts by forgetting the wheels VPP no longer updates ([After a time warp](#after-a-time-warp)):
+
+```csharp
+if (p.lastTime >= 0f && now - p.lastTime > 2.5f * dt)
+{
+    probes.Remove(p.state);
+    Probes.RemoveAt(i);
+}
+```
+
 What KSP gives each part for the coming step is recorded in a prefix of `FlightIntegrator.Integrate(Part)`
 (`IntegratePrefix`): the vessel's acceleration (`vessel.precalc.integrationAccel`, gravity included), and the forces
 and torques its modules gathered (`part.force`, `part.forces`, `part.torque`). The force VPP has just applied to each
@@ -127,12 +181,20 @@ tyre is recorded in a postfix of `VehicleBase.ApplyTireForce` (`ApplyTireForcePo
 
 The work is done in a postfix of `VehicleBase.CalculateSuspensionForces`, which VPP calls at each step for each wheel,
 once the spring force is read and before the tyre's load is drawn from it; only once per vessel and per step, at its
-first wheel (`Solve`). It first reads the contact of each wheel, and follows the vessel only if one of them could reach
-its end-stop during the step:
+first wheel (`Solve`). It first reads the contact of each wheel: how fast it closes its travel, along the axis of its
+suspension over the square of the axis's share along the ground normal (`p.rate`), and the travel it has left, moved on
+by a step for a wheel coming towards its end-stop ([Where the wheel is now](#where-the-wheel-is-now)). It follows the
+vessel only if one of them could reach its end-stop during the step:
 
 ```csharp
-float closing = -Vector3.Dot(p.body.GetPointVelocity(p.hit.point), p.axis);
-near = (1f - p.compression) * travel <= Mathf.Max(0f, closing + fall) * dt;
+float upright = Mathf.Max(0.5f, Vector3.Dot(p.hit.normal, p.axis));
+p.rate = p.axis / (upright * upright);
+float closing = -Vector3.Dot(p.body.GetPointVelocity(p.hit.point), p.rate);
+p.gap = (1f - p.compression) * travel;
+...
+p.gap -= Mathf.Max(0f, closing) * dt;
+...
+near |= p.gap <= Mathf.Max(0f, closing + fall) * dt;
 ```
 
 The vessel's rigidbodies come from [Vessel Bodies](../vessel-bodies/README.md), read once per vessel and per step for
@@ -160,14 +222,14 @@ Vector3 acceleration = known / mass;
 Vector3 angularAcceleration = inverse.Times(knownTorque);
 ```
 
-For each wheel on the ground, along the axis of its suspension (`normal` is that axis, read with the contact), the
-speed at which its contact would move away from its end-stop at the end of the step without the mod's force, plus the
-speed that would just close the travel it has left; the mod's forces must not bring it below zero:
+For each wheel on the ground, measured along `p.rate`, the speed at which its contact would open its travel at the end
+of the step without the mod's force, plus the speed that would just close the travel it has left; the mod's forces,
+along the axis, must not bring it below zero:
 
 ```csharp
-float gap = Mathf.Max(0f, (1f - p.compression) * travel);
-float separating = Vector3.Dot(normal, velocity + Vector3.Cross(spin, arm));
-rhs[k] = separating + dt * (Vector3.Dot(normal, acceleration) + Vector3.Dot(holdArm[k], angularAcceleration)) +
+float gap = p.gap;
+float separating = Vector3.Dot(p.rate, velocity + Vector3.Cross(spin, arm));
+rhs[k] = separating + dt * (Vector3.Dot(p.rate, acceleration) + Vector3.Dot(holdRow[k], angularAcceleration)) +
     gap / dt;
 ```
 
@@ -186,6 +248,22 @@ for (int j = 0; j < n; j++)
 }
 float value = s / (a[k * n + k] + lambda);
 value = float.IsNaN(value) || value < 0f ? 0f : value;
+```
+
+While the vessel is slow, and the forces of the step before add up to no more than twice its weight, each force moves
+only a part of the way from the one of the step before ([A part of the way at a time, when
+slow](#a-part-of-the-way-at-a-time-when-slow)):
+
+```csharp
+if ((RelaxBelowSpeed < 0f || balance.vessel.srfSpeed < RelaxBelowSpeed) && before <= RelaxBelowWeights * weight)
+{
+    for (int k = 0; k < n; k++)
+    {
+        Probe p = groundedProbes[k];
+        float previous = Mathf.Abs(now - p.heldTime - dt) < dt * 0.25f ? p.held : 0f;
+        f[k] = previous + Relaxation * (f[k] - previous);
+    }
+}
 ```
 
 Each force is applied to its wheel's part, at the contact point:
@@ -217,12 +295,12 @@ prefix and a postfix of `ModuleWheelDamage.FixedUpdate` show it to the damage mo
 
 ## Work in progress
 
-- **A rover lurching as this fix takes hold on a slope.** The rover of
-  [A rover on its end-stops](checked/a-rover-on-its-end-stops.md), loaded on its slope, its springs then set soft from
-  the suspension window (*Auto*, a typed mass of 0.01 t): with this fix, it lurches at the start, at up to 0.7 m/s,
-  and turns by a few degrees before it holds; with `endStopSlide = false`, it does not lurch, but slides down. Why it
-  lurches is not known yet.
-- **A lander bouncing off its end-stops.** The lander of
-  [A lander dropped onto its end-stops](checked/a-lander-dropped-onto-its-end-stops.md), its springs set soft, dropped
-  onto the runway: how high it bounces back, with this fix and without it. Watch it fall and bounce from its launch
-  clamps, with the mod as installed, then with `endStopSlide = false`.
+- **A rover falling on its side as it loads, without Damper Bounce.** The rover of
+  [A rover driving in a straight line](checked/a-rover-driving-in-a-straight-line.md), with Fixed Tuning and this fix
+  (`damperBounce = false`), fell on its side as the save loaded in two trials out of eight; not with the mod's default
+  settings, nor with Fixed Tuning alone. Why is not known yet.
+- **A rover on its end-stops driving slowly.** Below 2 m/s, each force moves only a part of the way at each step
+  ([A part of the way at a time, when slow](#a-part-of-the-way-at-a-time-when-slow)): how much of the weight the tyres
+  read over bumps at that speed is not checked yet.
+- **Why the vessel answers a force more than the rigid body taken for it.** It is what makes the relaxation
+  necessary; where the difference comes from is not known yet.

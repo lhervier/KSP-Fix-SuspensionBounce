@@ -31,27 +31,51 @@ Cases, and the save or craft each one loads, in the saves folder of the fix whos
     crane-mun        vessel-bodies: SuspensionBounceCraneMun: a crane of 33 t on the Mun, brakes on, its springs set by
                      hand
     crane-mun-auto   vessel-bodies: SuspensionBounceCraneMunAuto: the same, its springs left to the game
-    end-stops-flat   end-stop-slide: SuspensionBounceEndStopsFlat: a rover whose springs are at their lowest, driven at
-                     24 m/s
-    end-stops-slope  end-stop-slide: SuspensionBounceEndStopsSlope: a rover with soft springs, braked across a slope of
-                     about 20 deg
+    end-stops-flat   end-stop-slide: SuspensionBounceEndStopsFlat: a rover on soft springs, resting on its end-stops,
+                     driven at 24 m/s
+    end-stops-slope  end-stop-slide: SuspensionBounceEndStopsSlope: the same rover, braked across a slope of about
+                     20 deg
+    end-stops-warp   end-stop-slide: SuspensionBounceEndStopsSlope: the same rover on its slope, the time warped on rails
+                     for a minute, as a player does near a rover at rest, before it is recorded
     straight-line    end-stop-slide: SuspensionBounceRoverFlat: a rover driven from standstill on flat ground, wheel
                      throttle held, steering, brakes and SAS let go
 
-The saves (but the probe's craft) were made with Parking Brake on: with Parking Brake installed, it may hold the
-vessel still as it loads, wherever the game puts it, and let it go once it has nothing left to cancel, brakes kept as
-saved; but it lets go of a vessel that leaves the ground as it loads, which then settles on its own, as it does without
-Parking Brake.
+The soft springs of end-stops-flat, end-stops-slope and lander-drop are in their save or craft, twice: this mod's
+setting, the one its suspension window makes (toolbar button Suspensions: Auto for Kerbin, a mass of 0.01 t typed,
+shared by the centre of mass, compression 33 %, damping ratio 0.7), which it uses, and the game's own sliders, at
+their lowest (0.05; 0.3 on the slope), which the game uses without this mod. The rovers were saved once settled on
+their end-stops.
 
-For each trial it loads the save, lets the parking brake go, does what the case asks a player to do, records KSP
-Diag - Suspension (its button Record CSV) for --seconds seconds or for the whole drive, and takes a screenshot at the
-end. It then prints one line per trial from the recording: the speed over the ground, how many wheels touch the ground
-and are bottomed out, the share of the weight the suspensions carry, how far the vessel turned, and, with --ksp, the
-lines KSP.log gained ("damaged wheel", "Exploded").
+A configuration of this mod is chosen in its settings.cfg (GameData/KSPFixSuspensionBounce/PluginData), read when KSP
+starts: fixedTuning, damperBounce and endStopSlide, each true or false (Fixed Tuning alone: damperBounce = false and
+endStopSlide = false). Change it with KSP closed, then start KSP again; to play a case without this mod, remove its
+folder from GameData.
+
+The saves (but the crafts) were made with Parking Brake on: with Parking Brake installed, it may hold the vessel still
+as it loads, wherever the game puts it, and let it go once it has nothing left to cancel, brakes kept as saved; but it
+lets go of a vessel that leaves the ground as it loads, which then settles on its own, as it does without Parking Brake.
+
+For each trial it loads the save (or launches the craft), lets the parking brake go, does what the case asks a player
+to do, records KSP Diag - Suspension (its button Record CSV) for --seconds seconds or for the whole drive, and takes a
+screenshot at the end. --brakes and --friction are set beforehand on each wheel's window, as the player does: its
+Brakes slider; its friction button (automatic friction off) and Friction Control slider. It then prints one line per
+trial, read from the recording, one line per wheel at each physics step: the speed over the ground (speed_mm_s), how
+many wheels touch the ground and are bottomed out, on their end-stops (grounded, bottomed), the share of the weight
+the suspensions carry (supported_pct), how far the vessel turned (yaw_rate_deg_s summed), and, while it drives, its
+speed across its heading (lateral_m_s), the angle between its speed and its heading (drift_deg) and the share of wheel
+readings where the tyre skids (regime); with --ksp, the lines KSP.log gained ("damaged wheel", "Exploded"); and the
+vessel's parts before and after.
 The lone leg is not the active vessel, which KSP Diag - Suspension reads: for it, only the log lines and a
-screenshot every 4 s. The dropped lander is followed at every physics step from the moment it is let go, its legs read
-from the game itself (KSP Diag - Suspension reads an LT-1 short of its end-stop): see drop(). Everything goes to --out: lines.json, the CSV files, the screenshots. It never saves the game, and quits
-KSP at the end (unless --keep-running is given).
+screenshot every 4 s. The dropped lander hangs from its clamps for 2 s, then is let go by the next stage, KSP Diag -
+Suspension recording from just before: from that recording come how fast it touched the ground (vertical_m_s, the
+game's vertical speed, as the gauge shows it, at the first step with a leg on the ground) and, over the 3 s after,
+how deep its legs went (compression, 1 on the end-stop), the share of the steps with a leg on its end-stop
+(is_bottomed), how fast it bounced back up and how many steps it spent with no leg on the ground; see fall(). Then it
+is recorded at rest, as the other cases. A vessel with legs then folds them by the gear button and deploys them again,
+each phase recorded; how far the legs went is read in their windows (their state line and their deploy or retract
+button), compared with what the same windows showed before, whatever the game's language. Everything goes to --out:
+lines.json, the CSV files, the screenshots. It never saves the game, and quits KSP at the end (unless --keep-running
+is given).
 """
 import argparse
 import csv
@@ -79,6 +103,7 @@ CASES = {
     "crane-mun-auto": dict(save="SuspensionBounceCraneMunAuto", seconds=60, legs=True),
     "end-stops-flat": dict(save="SuspensionBounceEndStopsFlat", drive=dict(heading=201, speed=24, distance=800)),
     "end-stops-slope": dict(save="SuspensionBounceEndStopsSlope", seconds=30),
+    "end-stops-warp": dict(save="SuspensionBounceEndStopsSlope", seconds=30, warp=60),
     "straight-line": dict(save="SuspensionBounceRoverFlat", seconds=30, coast=0.3),
 }
 
@@ -87,10 +112,10 @@ DEPLOYABLE = ("landingLeg1", "landingLeg1-2", "miniLandingLeg", "GearSmall", "Ge
               "roverWheelM1-F")
 # How long each phase of the legs lasts: folded, then deployed again.
 LEG_SECONDS = 12
-FIXED_TUNING = "com.github.lhervier.ksp.fix.suspensions.fixedtuning.FixedTuning"
-TUNING_API = "com.github.lhervier.ksp.fix.suspensions.fixedtuning.SuspensionTuningApi"
-# The longest a levelling may take, in seconds: five passes of a second's measure and two seconds' settling.
-LEVEL_SECONDS = 40
+# How long the dropped lander is followed from the moment its legs touch the ground, in seconds; and how long it is
+# recorded from the moment it is let go: its fall of 4.6 m, a second at most, and those seconds after the touch.
+TOUCH_SECONDS = 3
+DROP_SECONDS = 4.5
 
 # The landing leg the engineer picks up on the lander, by its persistent id in the save.
 LEG = 1627742187
@@ -179,23 +204,47 @@ def lower_hinges():
     click_until(kal, "sequencePlayingIndex", 0)  # the first state: playing
 
 
+def when_unlocked(tool, **args):
+    """Calls a tool that works a part's window, again every half second for 20 s at most while the game ignores the
+    windows' controls: just after a save is loaded, it locks them while the physics eases in."""
+    for attempt in range(40):
+        try:
+            return call(tool, **args)
+        except RuntimeError as e:
+            if attempt == 39 or "now: input locked by" not in str(e):
+                raise
+            call("wait", seconds=0.5)
+
+
 def set_brakes(percent):
-    """Sets the brake force of every wheel of the active vessel, as its slider in the wheel's window does."""
+    """Sets the brake force of every wheel of the active vessel, as its slider in the wheel's window does (a landing
+    leg has none)."""
     for part in call("list_parts"):
         if "wheel" in part and item_named(open_menu(part["id"]), "brakeTweakable"):
-            call("set_part_menu_value", part=part["id"], field="brakeTweakable", value=percent)
+            when_unlocked("set_part_menu_value", part=part["id"], field="brakeTweakable", value=percent)
     call("part_menu", action="close")
 
 
 def set_friction(value):
-    """Sets the friction of every wheel of the active vessel by hand, as its Friction Control does with the advanced
-    tweakables: automatic friction off, multiplier at value; the game applies it again at every step."""
+    """Sets the friction of every wheel of the active vessel by hand, from its window: the friction button turns
+    automatic friction off (the window then shows the friction slider, which it hides while automatic friction is on),
+    and the slider is set to value; the game applies it again at every step."""
     for part in call("list_parts"):
-        if "wheel" in part:
-            match = "part.persistentId=%d" % part["id"]
-            call("set_member", type="ModuleWheelBase", match=match, member="autoFriction", value=False)
-            call("set_member", type="ModuleWheelBase", match=match, member="frictionMultiplier",
-                 value=value)
+        if "wheel" not in part:
+            continue
+        items = open_menu(part["id"])
+        if not item_named(items, "EvtAutoFrictionToggle"):
+            continue  # a wheel whose friction the game does not let the player set
+        if not item_named(items, "frictionMultiplier"):
+            when_unlocked("press_part_button", part=part["id"], button="EvtAutoFrictionToggle")
+            # The window shows the slider from its next update.
+            for attempt in range(8):
+                items = next((m["items"] for m in call("read_part_menus") if m["part"] == part["id"]), [])
+                if item_named(items, "frictionMultiplier"):
+                    break
+                call("wait", seconds=0.25)
+        when_unlocked("set_part_menu_value", part=part["id"], field="frictionMultiplier", value=value)
+    call("part_menu", action="close")
 
 
 # Parking Brake's button in the window of a command part: the name of its event, and its label while the brake holds,
@@ -265,9 +314,35 @@ def place_leg(case):
     mouse("mouse_click", x=gx, y=gy)
 
 
-def leg_state(part):
-    return call("get_member", type="ModuleWheelDeployment", match="part.persistentId=%d" % part,
-                member="stateString")["value"]
+def pin_menus(parts):
+    """Opens and pins the window of each part, so that one reading shows them all."""
+    for part in parts:
+        open_menu(part)
+        call("part_menu", action="pin", part=part)
+
+
+def unpin_menus(parts):
+    """Unpins the windows of the parts and closes them."""
+    for part in parts:
+        try:
+            call("part_menu", action="unpin", part=part)
+        except RuntimeError:
+            pass  # a window the game closed meanwhile
+    call("part_menu", action="close")
+
+
+def leg_states(legs):
+    """What the pinned window of each leg shows of its deployment, as read_part_menus reads it, by leg: the line of
+    its state (field stateDisplayString) and the label of its deploy or retract button (event EventToggle). Both are
+    in the game's language: they are only compared with what the same window showed before. The button reads the same
+    while the leg moves and once it is retracted, and changes once it is fully deployed."""
+    menus = {m["part"]: m["items"] for m in call("read_part_menus")}
+    states = {}
+    for leg in legs:
+        items = menus.get(leg, [])
+        state, button = item_named(items, "stateDisplayString"), item_named(items, "EventToggle")
+        states[leg] = (state and state.get("text"), button and button.get("label"))
+    return states
 
 
 def focus_ksp():
@@ -284,35 +359,53 @@ def focus_ksp():
     log(kspwindow.focus_window())
 
 
+def gear_pressed(legs, down, before):
+    """Presses the landing gear button by the altimeter, as the player does: down sends the legs out, up folds them.
+    Returns the legs' states once one of them moved, None when none did within 2 s: the legs were already that way."""
+    call("set_controls", gear=down)
+    for attempt in range(8):
+        states = leg_states(legs)
+        if any(states[leg] != before[leg] for leg in legs):
+            return states
+        call("wait", seconds=0.25)
+    return None
+
+
 def toggle_legs():
-    """Folds every leg of the active vessel if the first one is out, deploys them all otherwise, by the landing gear
-    button by the altimeter, as the player does, and waits until they are all at the end of their travel (30 s at
-    most). Returns the state they were sent to, or why they did not move: the button does nothing on a vessel that
-    cannot be controlled."""
+    """Folds the legs of the active vessel if they are out, deploys them otherwise, by the landing gear button by the
+    altimeter, as the player does, and waits until they are all at the end of their travel (30 s at most), as the
+    window of each tells. Returns the state they were sent to, Retracted or Deployed, or why they did not move: the
+    button does nothing on a vessel that cannot be controlled."""
     legs = [p["id"] for p in call("list_parts") if p["name"] in DEPLOYABLE]
     if not legs:
         return None
-    target = "Retracted" if leg_state(legs[0]).startswith("Deploy") else "Deployed"
-    down = target == "Deployed"
-    focus_ksp()
-    call("set_controls", gear=down)
-    call("wait", seconds=1)
-    if all(leg_state(leg) in ("Retracted", "Deployed") and leg_state(leg) != target for leg in legs):
-        # The gear group was already in that state (legs moved by hand): the button pressed twice, as a player would.
-        call("set_controls", gear=not down)
-        call("wait", seconds=1)
-        call("set_controls", gear=down)
-        call("wait", seconds=1)
-    for attempt in range(60):
-        states = [leg_state(leg) for leg in legs]
-        if all(state == target for state in states):
-            return target
-        # On their way, the states read "Retracting..." and "Deploying...".
-        moving = ("Retracting", "Deploying")
-        if attempt == 4 and not any(state.startswith(moving) or state == target for state in states):
+    pin_menus(legs)
+    try:
+        before = leg_states(legs)
+        focus_ksp()
+        # The button sends the gear group the other way from where the game holds it. A group already that way (legs
+        # moved by hand) moves nothing: the button pressed again, as a player would, sends them the other way.
+        down = not call("get_state")["vessel"]["gear"]
+        states = gear_pressed(legs, down, before)
+        if states is None:
+            down = not down
+            states = gear_pressed(legs, down, before)
+        if states is None:
             return "no effect (vessel not controllable?)"
-        call("wait", seconds=0.5)
-    return target + " (not all after 30 s)"
+        target = "Deployed" if down else "Retracted"
+        # Each leg's state line changes twice, to the move, then to its end; once fully out, its button changes too.
+        lines = {leg: [before[leg][0]] for leg in legs}
+        for attempt in range(120):
+            for leg in legs:
+                if states[leg][0] != lines[leg][-1]:
+                    lines[leg].append(states[leg][0])
+            if all(len(lines[leg]) >= 3 or (down and states[leg][1] != before[leg][1]) for leg in legs):
+                return target
+            call("wait", seconds=0.25)
+            states = leg_states(legs)
+        return target + " (not all after 30 s)"
+    finally:
+        unpin_menus(legs)
 
 
 def log_size(ksp):
@@ -408,58 +501,43 @@ def record(seconds=None, drive=None):
     return path
 
 
-def drop(path, seconds=3):
-    """Lets the active vessel go off its launch clamps (its next stage) and follows it at every physics step for the
-    given seconds, from before it touches the ground; writes what it read to path (JSON) and returns how fast it
-    touched, the deepest its legs went, the share of steps from the touch on with a leg on its end-stop, how fast it
-    bounced back up, and how many steps it spent in the air after the touch."""
-    module = "ModuleWheels.ModuleWheelSuspension"
-    legs = [p["id"] for p in call("list_parts") if "wheel" in p]
-    # The game leaves the centre of a wheel's collider out of its compression: an LT-1 (centre 0.119 m below its
-    # transform) would seem 0.127 of its travel short of its end-stop. Read once per leg, added back below.
-    offsets = []
-    for leg in legs:
-        got = call("get_member", type=module, match="part.persistentId=%d" % leg,
-                   members=["wheel.wheelCollider.center", "wheel.wheelCollider.lastRuntimeSuspensionTravel"])["values"]
-        offsets.append(-got["wheel.wheelCollider.center"]["y"] / got["wheel.wheelCollider.lastRuntimeSuspensionTravel"])
-    reads = [dict(type=module, match="part.persistentId=%d" % leg, member="wheel.currentState.suspensionCompression",
-                  label="c%d" % i) for i, leg in enumerate(legs)]
-    reads.append(dict(type="FlightGlobals", member="ActiveVessel.verticalSpeed", label="vz"))
-    call("stage")
-    table = call("sample_members", reads=reads, every="physics", frames=int(seconds * 50), seconds=seconds + 10)
-    with open(path, "w") as f:
-        json.dump(dict(table, offsets=offsets), f)
-    rows = [dict(zip(table["columns"], r)) for r in table["rows"]]
-    depth = [[(r["c%d" % i] + offsets[i]) if r["c%d" % i] > 0 else 0.0 for i in range(len(legs))] for r in rows]
-    touch = next((k for k, d in enumerate(depth) if max(d) > 0), None)
+def drop(seconds=DROP_SECONDS):
+    """Lets the active vessel go off its launch clamps (its next stage), KSP Diag - Suspension recording from just
+    before until the given seconds after, and returns the CSV's path."""
+    call("suspension_record_start")
+    try:
+        call("stage")
+        call("wait", seconds=seconds)
+    finally:
+        path = call("suspension_record_stop")["returned"]["csv"]
+    return path
+
+
+def is_set(text):
+    return text in ("1", "True", "true")
+
+
+def fall(path, seconds=TOUCH_SECONDS):
+    """Reads the fall and the touch from a recording of drop(), one entry per physics step: how fast the vessel came
+    down at the touch (the game's vertical speed at the start of the first step with a leg on the ground: the speed
+    the step before left it with, the step in which the leg met the ground), and, over the given seconds from the
+    touch on, the deepest a leg went (its compression, 1 on its end-stop), the share of the steps with a leg on its
+    end-stop (bottomed), how fast the vessel went back up at most, and how many steps it spent with no leg on the
+    ground, out of the steps followed (steps_after_touch: 150 at 50 steps a second)."""
+    rows = steps(path)
+    touch = next((k for k, r in enumerate(rows) if any(is_set(w["is_grounded"]) for w in r)), None)
     if touch is None:
         return dict(touched=False)
-    after = depth[touch:]
+    start = float(rows[touch][0]["time_s"])
+    after = [r for r in rows[touch:] if float(r[0]["time_s"]) - start < seconds]
+    vertical = [number(r[0]["vertical_m_s"]) for r in after]
     return dict(
-        touch_speed_m_s=round(-rows[max(touch - 1, 0)]["vz"], 2),
-        peak_compression=round(max(max(d) for d in after), 3),
-        share_on_end_stop=round(sum(1 for d in after if max(d) >= 0.99) / len(after), 3),
-        rebound_m_s=round(max(r["vz"] for r in rows[touch:]), 2),
-        steps_in_air=sum(1 for d in after if max(d) == 0))
-
-
-def tune(options):
-    """Sets the vessel's suspensions as the suspension window would: Auto predicts them for a body, Level measures
-    them on the ground, until levelled. Returns what the mod answered."""
-    if options.tune == "auto":
-        return call("call_method", type=TUNING_API, method="Auto",
-                    arguments=[options.tune_body, options.tune_mass, True, options.compression,
-                               options.damping])["returned"]
-    started = call("call_method", type=TUNING_API, method="Level",
-                   arguments=[options.compression, options.damping])["returned"]
-    if started != "started":
-        return started
-    deadline = time.time() + LEVEL_SECONDS
-    while True:
-        call("wait", seconds=2)
-        status = call("call_method", type=TUNING_API, method="LevelStatus")["returned"]
-        if not status.startswith("running:") or time.time() > deadline:
-            return status
+        touch_speed_m_s=round(-number(rows[touch][0]["vertical_m_s"]), 2),
+        peak_compression=round(max(number(w["compression"]) or 0 for r in after for w in r), 3),
+        share_on_end_stop=round(sum(1 for r in after if any(is_set(w["is_bottomed"]) for w in r)) / len(after), 3),
+        rebound_m_s=round(max(v for v in vertical if v is not None), 2),
+        steps_in_air=sum(1 for r in after if not any(is_set(w["is_grounded"]) for w in r)),
+        steps_after_touch=len(after))
 
 
 def trial(n, name, case, options, out):
@@ -476,23 +554,19 @@ def trial(n, name, case, options, out):
         switch(case["vessel"])
     # Brakes and friction set while Parking Brake still holds the vessel, before it lets it go.
     if options.brakes is not None:
-        # The sliders are locked while the physics eases in after loading: the field the slider sets, instead.
-        for part in call("list_parts"):
-            if "wheel" in part:
-                try:
-                    call("set_member", type="ModuleWheelBrakes", match="part.persistentId=%d" % part["id"],
-                         member="brakeTweakable", value=options.brakes)
-                except RuntimeError:
-                    pass  # a landing leg has no brakes
+        set_brakes(options.brakes)
     if options.friction is not None:
         set_friction(options.friction)
     brake_part, held = parking_brake()
     if held:
         row["parked_still"] = release_parking_brake(brake_part)
-    if options.tune != "none":
-        row["tune"] = tune(options)
     if case.get("hinges"):
         lower_hinges()
+    if "warp" in case:
+        # The vessel left to settle, then the time warped on rails, as a player does near a vessel at rest: the
+        # recording starts once the game is back to normal time.
+        call("wait", seconds=3)
+        call("warp_to", seconds=case["warp"])
     if "coast" in case:
         # Steering let go, and SAS off: nothing steers the rover but its own wheels.
         call("set_flight", sas=False)
@@ -509,10 +583,12 @@ def trial(n, name, case, options, out):
             call("wait", seconds=3)
         parts = len(call("list_parts"))
         if case.get("drop"):
-            # Hanging still from its clamps first; then the fall and the touch, read at every physics step; then the
-            # recording below, the vessel at rest.
+            # Hanging still from its clamps first; then the fall and the touch, recorded at every physics step; then
+            # the recording below, the vessel at rest.
             call("wait", seconds=2)
-            row.update(drop(os.path.join(out, "%s-%s-%02d-drop.json" % (name, options.label, n))))
+            kept = os.path.join(out, "%s-%s-%02d-drop.csv" % (name, options.label, n))
+            shutil.copyfile(drop(), kept)
+            row.update(fall(kept))
             # Its clamps are vessels of their own from then on.
             parts = len(call("list_parts"))
         path = record(seconds=case.get("seconds"), drive=case.get("drive"))
@@ -568,21 +644,6 @@ def main():
                         "each phase recorded for %d s (default: on)" % LEG_SECONDS)
     parser.add_argument("--fold-seconds", type=float, default=LEG_SECONDS,
                         help="how long the legs stay folded before they are deployed again (default %d)" % LEG_SECONDS)
-    parser.add_argument("--fixed", choices=("on", "off"),
-                        help="switch the player's setting of the suspensions on (the mod sets them) or off (the game "
-                             "does, as in stock) before the trials")
-    parser.add_argument("--tune", choices=("none", "auto", "level"), default="none",
-                        help="once the vessel is let go, set its suspensions as the suspension window would: auto "
-                             "predicts them for --tune-body, level measures them on the ground (default: none, the "
-                             "setting predicted at the first physics step, the mass shared equally)")
-    parser.add_argument("--tune-body", default="",
-                        help="the body auto predicts for (default: the one the vessel stands on)")
-    parser.add_argument("--tune-mass", type=float, default=0,
-                        help="the mass auto predicts for, in t, as typed in the suspension window: a small mass gives "
-                             "soft springs (default: 0, the vessel's)")
-    parser.add_argument("--compression", type=float, default=0.33,
-                        help="the compression --tune aims at, as a fraction of the travel")
-    parser.add_argument("--damping", type=float, default=0.7, help="the damping ratio --tune gives")
     options = parser.parse_args()
     sys.stdout.reconfigure(encoding="utf-8")
     URL = "http://127.0.0.1:%d/mcp/" % options.port
@@ -600,8 +661,6 @@ def main():
         call("open_game", folder=options.folder)
     # The recording goes on with the window hidden; hidden, it leaves the scene to whoever watches.
     call("suspension_show_window", visible=False)
-    if options.fixed:
-        call("set_member", type=FIXED_TUNING, member="Active", value=options.fixed == "on")
     rows = []
     for n in range(1, options.trials + 1):
         row = trial(n, options.case, case, options, out)
