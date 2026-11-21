@@ -9,9 +9,14 @@ KSPProfiler that KSP-Util-MCPServer can drive (or both), wait for the main menu,
 
     python run-cost.py --folder <your sandbox game> --ksp <your KSP folder> --out out
 
-For each scenario it does what performance.md asks a player to do: load the save, let the parking brake go
-(the saves were made with Parking Brake on: installed, it holds the vessel still as it loads), set the camera, hold
-the wheel throttle for a scenario that drives, then let the game run --settle seconds. It then measures for --seconds
+The saves were made with Parking Brake on, for the runs without this mod: installed, it holds the vessel still as it
+loads. Install it only to play without this mod, or with fixedTuning = false: it sets the vessel's speed back to zero at
+every physics step, and under Fixed Tuning's springs that makes the vessel rock a little harder at each step, as it
+loads, until it leaves the ground. The script refuses to start when Parking Brake is installed with Fixed Tuning on.
+
+For each scenario it does what performance.md asks a player to do: load the save, let the parking brake go if it
+holds the vessel, set the camera, hold the wheel throttle for a scenario that drives, then let the game run --settle
+seconds. It then measures for --seconds
 seconds without asking anything of the game: the script sleeps. With the profiler, the measure is a capture of its
 window (Start capture, Stop capture, Export to CSV); with this mod's measure, the lines it writes to KSP.log every
 10 s, of which those whose 10 s lie entirely inside the measure are kept.
@@ -192,6 +197,30 @@ def parking_brake():
     return None, False
 
 
+FIXED_TUNING = "com.github.lhervier.ksp.fix.suspensions.fixedtuning.FixedTuning"
+
+
+def fixed_tuning_active():
+    """Whether this mod is installed with Fixed Tuning on, as the game reads it."""
+    try:
+        return call("get_member", type=FIXED_TUNING, member="IsActive")["value"] is True
+    except RuntimeError as error:
+        if "Unknown type" in str(error):
+            # This mod is not installed.
+            return False
+        raise
+
+
+def parking_brake_installed():
+    """Whether Parking Brake is installed, from any scene: KSP-Util-MCPServer knows its vessel module's type, loaded
+    on a vessel or not."""
+    try:
+        call("get_member", type="ParkingBrake.ParkingBrake", member="enabled")
+        return True
+    except RuntimeError as error:
+        return "Unknown type" not in str(error)
+
+
 def release_parking_brake(part):
     """Waits until Parking Brake has nothing left to cancel, the vessel still, then lets it go by its button in the
     window of the command part, as the player does; the brakes stay as they are. A vessel that never looks still is
@@ -319,6 +348,9 @@ def main():
     URL = "http://127.0.0.1:%d/mcp/" % options.port
     out = os.path.abspath(options.out)
     os.makedirs(out, exist_ok=True)
+    if parking_brake_installed() and fixed_tuning_active():
+        sys.exit("Parking Brake is installed with Fixed Tuning on: remove it from GameData (see the first lines of "
+                 "this script)")
 
     profiler = has_profiler()
     # KSP-Util-MCPServer loads a save from the space centre or in flight only, as a player does: from the main

@@ -51,20 +51,23 @@ starts: fixedTuning, damperBounce and endStopSlide, each true or false (Fixed Tu
 endStopSlide = false). Change it with KSP closed, then start KSP again; to play a case without this mod, remove its
 folder from GameData.
 
-The saves (but the crafts) were made with Parking Brake on: with Parking Brake installed, it may hold the vessel still
-as it loads, wherever the game puts it, and let it go once it has nothing left to cancel, brakes kept as saved; but it
-lets go of a vessel that leaves the ground as it loads, which then settles on its own, as it does without Parking Brake.
+The saves (but the crafts) were made with Parking Brake on, for the trials without this mod: installed, it may hold the
+vessel still as it loads, wherever the game puts it, and let it go once it has nothing left to cancel, brakes kept as
+saved; but it lets go of a vessel that leaves the ground as it loads, which then settles on its own. Install Parking
+Brake only to play without this mod, or with fixedTuning = false: it sets the vessel's speed back to zero at every
+physics step, and under Fixed Tuning's springs that makes the vessel rock a little harder at each step, as it loads,
+until it leaves the ground. The script refuses to start when Parking Brake is installed with Fixed Tuning on.
 
-For each trial it loads the save (or launches the craft), lets the parking brake go, does what the case asks a player
-to do, records KSP Diag - Suspension (its button Record CSV) for --seconds seconds or for the whole drive, and takes a
-screenshot at the end. --brakes and --friction are set beforehand on each wheel's window, as the player does: its
-Brakes slider; its friction button (automatic friction off) and Friction Control slider. It then prints one line per
-trial, read from the recording, one line per wheel at each physics step: the speed over the ground (speed_mm_s), how
-many wheels touch the ground and are bottomed out, on their end-stops (grounded, bottomed), the share of the weight
-the suspensions carry (supported_pct), how far the vessel turned (yaw_rate_deg_s summed), and, while it drives, its
-speed across its heading (lateral_m_s), the angle between its speed and its heading (drift_deg) and the share of wheel
-readings where the tyre skids (regime); with --ksp, the lines KSP.log gained ("damaged wheel", "Exploded"); and the
-vessel's parts before and after.
+For each trial it loads the save (or launches the craft), lets the parking brake go if it holds the vessel, does what
+the case asks a player to do, records KSP Diag - Suspension (its button Record CSV) for --seconds seconds or for the
+whole drive, and takes a screenshot at the end. --brakes and --friction are set beforehand on each wheel's window, as
+the player does: its Brakes slider; its friction button (automatic friction off) and Friction Control slider. It then
+prints one line per trial, read from the recording, one line per wheel at each physics step: the speed over the ground
+(speed_mm_s), how many wheels touch the ground and are bottomed out, on their end-stops (grounded, bottomed), the share
+of the weight the suspensions carry (supported_pct), how far the vessel turned (yaw_rate_deg_s summed), and, while it
+drives, its speed across its heading (lateral_m_s), the angle between its speed and its heading (drift_deg) and the
+share of wheel readings where the tyre skids (regime); with --ksp, the lines KSP.log gained ("damaged wheel",
+"Exploded"); and the vessel's parts before and after.
 The lone leg is not the active vessel, which KSP Diag - Suspension reads: for it, only the log lines and a
 screenshot every 4 s. The dropped lander hangs from its clamps for 2 s, then is let go by the next stage, KSP Diag -
 Suspension recording from just before: from that recording come how fast it touched the ground (vertical_m_s, the
@@ -263,6 +266,30 @@ def parking_brake():
             return part["id"], button["label"] in PARKING_BRAKE_HELD
     call("part_menu", action="close")
     return None, False
+
+
+FIXED_TUNING = "com.github.lhervier.ksp.fix.suspensions.fixedtuning.FixedTuning"
+
+
+def fixed_tuning_active():
+    """Whether this mod is installed with Fixed Tuning on, as the game reads it."""
+    try:
+        return call("get_member", type=FIXED_TUNING, member="IsActive")["value"] is True
+    except RuntimeError as error:
+        if "Unknown type" in str(error):
+            # This mod is not installed.
+            return False
+        raise
+
+
+def parking_brake_installed():
+    """Whether Parking Brake is installed, from any scene: KSP-Util-MCPServer knows its vessel module's type, loaded
+    on a vessel or not."""
+    try:
+        call("get_member", type="ParkingBrake.ParkingBrake", member="enabled")
+        return True
+    except RuntimeError as error:
+        return "Unknown type" not in str(error)
 
 
 def release_parking_brake(part):
@@ -654,6 +681,9 @@ def main():
         case["seconds"] = options.seconds
     if options.ground and "ground" in case:
         case["ground"] = tuple(options.ground)
+    if parking_brake_installed() and fixed_tuning_active():
+        sys.exit("Parking Brake is installed with Fixed Tuning on: remove it from GameData (see the first lines of "
+                 "this script)")
 
     # KSP-Util-MCPServer loads a save from the space centre or in flight only, as a player does: from the main
     # menu, the game is opened at the space centre first.

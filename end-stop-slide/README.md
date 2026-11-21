@@ -216,10 +216,6 @@ prefix and a postfix of `ModuleWheelDamage.FixedUpdate` show it to the damage mo
 
 ## Work in progress
 
-- **A rover falling on its side as it loads, without Damper Bounce.** The rover of
-  [A rover driving in a straight line](checked/a-rover-driving-in-a-straight-line.md), with Fixed Tuning and this fix
-  (`damperBounce = false`), fell on its side as the save loaded in two trials out of eight; not with the mod's default
-  settings, nor with Fixed Tuning alone. Why is not known yet.
 - **A rover on its end-stops driving slowly.** Below 2 m/s, each force moves only a part of the way at each step
   ([A part of the way at a time, when slow](../vessel-bodies/README.md#a-part-of-the-way-at-a-time-when-slow)): how
   much of the weight the tyres read over bumps at that speed is not checked yet.
