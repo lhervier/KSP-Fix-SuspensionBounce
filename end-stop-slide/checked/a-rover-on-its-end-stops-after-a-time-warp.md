@@ -36,12 +36,12 @@ default settings, and with this fix off, `endStopSlide = false` in the mod's `se
 
 | | `endStopSlide = false` | This mod |
 |---|---|---|
-| Share of the weight the tyres read (median) | 40 % | 99 % |
-| Top speed over the ground | 1.03 m/s | 0.05 m/s |
-| How far it turned in 30 s | 0.06° to 0.17° | 0.3° to 0.35° |
-| Speed over the last 10 s | 1.03 m/s | up to 0.55 mm/s |
+| Share of the weight the tyres read (median) | 39 % | 99 % |
+| Top speed over the ground | 0.88 m/s | 0.06 m/s |
+| How far it turned in 30 s | −0.27° to −0.40° | 0.24° to 0.25° |
+| Speed over the last 10 s | 0.88 m/s | up to 0.67 mm/s |
 | Parts at the end, `KSP.log` | 19 of 19, nothing | 19 of 19, nothing |
 
 After the warp, this fix still gives the tyres the whole weight of the rover, as before it, and the rover holds. With
 this fix off, the tyres read two fifths of its weight, and the rover slides down the slope, brakes on, at a steady
-1.03 m/s.
+0.88 m/s.

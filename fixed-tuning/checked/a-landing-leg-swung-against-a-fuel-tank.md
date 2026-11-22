@@ -66,7 +66,6 @@ row with its default settings, and twenty times with Fixed Tuning alone, `damper
 |---|---|---|
 | Broke apart | 0 of 20 | 0 of 20 |
 | Top speed over the ground: median | 2.3 m/s | 2.3 m/s |
-| Top speed over the ground: lowest to highest | 2.1 to 5.4 m/s | 2.0 to 3.2 m/s |
+| Top speed over the ground: lowest to highest | 2.1 to 3.3 m/s | 2.0 to 3.5 m/s |
 
-Fixed Tuning alone gives the same as the whole mod, but for one trial at 5.4 m/s, the vessel still whole: the mod's
-other fixes change nothing that matters here.
+Fixed Tuning alone gives the same as the whole mod: the mod's other fixes change nothing here.

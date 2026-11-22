@@ -66,11 +66,14 @@ without and with this mod. With this mod, they were played without Parking Brake
 (`damperBounce = false` and `endStopSlide = false` in its `settings.cfg`), which shows that this fix does the work. The
 cases that the player's setting cures on its own are in [Fixed Tuning](../fixed-tuning/README.md#checking-the-culprit).
 
+The saves were made, and the cases played, with KSP's terrain detail on *High* (*Settings*, *Graphics*): loaded at
+another detail, a save puts its vessel on a ground a little off.
+
 ### A landing leg placed alone
 
 An LT-1 landing leg taken off a lander and set down alone, foot down, in EVA construction on Kerbin, with Terrain
-Precision Fix: without this mod, it is thrown into the air; with Fixed Tuning alone, it still is, once in three
-trials; with this mod, it tips over onto its side and comes to rest.
+Precision Fix: without this mod, it is thrown into the air; with Fixed Tuning alone, it still is; with this mod, it
+tips over onto its side and comes to rest.
 
 **→ Full chapter: [A landing leg placed alone](checked/a-landing-leg-placed-alone.md)**
 

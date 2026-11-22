@@ -37,8 +37,9 @@ Cases, and the save or craft each one loads, in the saves folder of the fix whos
                      Brake installed): the same rover, braked across a slope of about 20 deg
     end-stops-warp   end-stop-slide: the same saves: the same rover on its slope, the time warped on rails for a minute,
                      as a player does near a rover at rest, before it is recorded
-    straight-line    end-stop-slide: SuspensionBounceRoverFlat: a rover driven from standstill on flat ground, wheel
-                     throttle held, steering, brakes and SAS let go
+    straight-line    end-stop-slide: SuspensionBounceRoverFlat (SuspensionBounceRoverFlatStock with Parking Brake
+                     installed): a rover driven from standstill on flat ground, wheel throttle held, steering, brakes
+                     and SAS let go
 
 The soft springs of end-stops-flat, end-stops-slope and lander-drop are in their save or craft, twice: this mod's
 setting, the one its suspension window makes (toolbar button Suspensions: Auto for Kerbin, a mass of 0.01 t typed,
@@ -53,10 +54,14 @@ folder from GameData.
 
 The saves (but the crafts) were made with Parking Brake on, for the trials without this mod: installed, it may hold the
 vessel still as it loads, wherever the game puts it, and let it go once it has nothing left to cancel, brakes kept as
-saved; but it lets go of a vessel that leaves the ground as it loads, which then settles on its own. The rover on its
-slope has two saves: SuspensionBounceEndStopsSlopeStock, made with Parking Brake on, which the script loads when
-Parking Brake is installed, and SuspensionBounceEndStopsSlope, made without it, for the trials with this mod: the rover
-saved under Parking Brake sinks past its end-stops, and is thrown off them as it loads when nothing holds it.
+saved; but it lets go of a vessel that leaves the ground as it loads, which then settles on its own. Two of them have
+a second save, made without Parking Brake, for the trials with this mod: the rover on its slope
+(SuspensionBounceEndStopsSlope; SuspensionBounceEndStopsSlopeStock with Parking Brake), which, saved under Parking
+Brake, sinks past its end-stops and is thrown off them as it loads when nothing holds it; and the rover of
+straight-line (SuspensionBounceRoverFlat; SuspensionBounceRoverFlatStock with Parking Brake), which, saved under
+Parking Brake, the game puts 6 m lower as it loads. The script loads the Stock one when Parking Brake is installed. The
+saves were made with the terrain detail High (settings.cfg, TERRAIN preset): a save loaded at another detail puts its
+vessel on a ground a little off.
 Install Parking Brake only to play without this mod, or with fixedTuning = false: it sets the vessel's speed back to
 zero at every physics step, and under Fixed Tuning's springs that makes the vessel rock a little harder at each step,
 as it loads, until it leaves the ground. The script refuses to start when Parking Brake is installed with Fixed Tuning
@@ -113,7 +118,8 @@ CASES = {
                             seconds=30),
     "end-stops-warp": dict(save="SuspensionBounceEndStopsSlope", stock_save="SuspensionBounceEndStopsSlopeStock",
                            seconds=30, warp=60),
-    "straight-line": dict(save="SuspensionBounceRoverFlat", seconds=30, coast=0.3),
+    "straight-line": dict(save="SuspensionBounceRoverFlat", stock_save="SuspensionBounceRoverFlatStock", seconds=30,
+                          coast=0.3),
 }
 
 # The parts whose legs or gear deploy, by name.
@@ -199,7 +205,7 @@ def click_until(part, field, value):
         items = next((m["items"] for m in items if m["part"] == part), [])
         if item_named(items, field)["value"] == value:
             return
-        call("click_part_menu_field", part=part, field=field)
+        when_unlocked("click_part_menu_field", part=part, field=field)
     raise RuntimeError("%s never got to %s" % (field, value))
 
 
@@ -208,7 +214,7 @@ def lower_hinges():
     direction reversed, play. Its hinges lower the rover onto its wheels."""
     kal = next(p["id"] for p in call("list_parts") if p["name"] == "controller1000")
     open_menu(kal)
-    call("set_part_menu_value", part=kal, field="sequencePlaySpeed", value=100)
+    when_unlocked("set_part_menu_value", part=kal, field="sequencePlaySpeed", value=100)
     click_until(kal, "sequenceDirectionIndex", 1)  # the second state: backwards
     click_until(kal, "sequencePlayingIndex", 0)  # the first state: playing
 

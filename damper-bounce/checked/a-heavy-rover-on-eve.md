@@ -13,8 +13,7 @@ the save loads, from the rover's mass shared equally among its wheels
 sandbox game, under `saves`.
 
 - [saves/SuspensionBounceHeavyRoverEve.sfs](../saves/SuspensionBounceHeavyRoverEve.sfs): `SuspensionBounce Heavy
-  Rover`, 14.05 t, stock parts only: 4.9 t of parts, and 9 t of ore in three Small Holding Tanks. Its brakes are on,
-  at 100 %: it stands on a slope of 5.5°, and at 50 % they let it roll down once it moves.
+  Rover`, 14.05 t, stock parts only: 4.9 t of parts, and 9 t of ore in three Small Holding Tanks.
 - [saves/SuspensionBounceBulldozerEve.sfs](../saves/SuspensionBounceBulldozerEve.sfs): `SuspensionBounce
   Bulldozer`, the same rover with a blade of 3.5 t in front in place of one of its ore tanks, 13.96 t in all. The
   blade is a part of [KSP-Mod-Bulldozer](https://github.com/lhervier/KSP-Mod-Bulldozer), which must be installed.
@@ -50,9 +49,8 @@ Without this mod, each save was played three times: the bulldozer with KSP 1.12.
 KSP-Mod-Bulldozer; the heavy rover with KSP 1.12.5, KSP Community Fixes,
 [Terrain Precision Fix](https://github.com/lhervier/KSP-Fix-TerrainPrecision),
 [KSP-Fix-AutoStrut](https://github.com/lhervier/KSP-Fix-AutoStrut) and
-[Parking Brake](https://github.com/jarosm/KSP-ParkingBrake), which its save was made with. Its wheels break as it
-loads, before the script, which waits for Parking Brake to let it go, starts recording: the table gives what
-`KSP.log` and the end of the trial show. With this mod, KSP 1.12.5, KSP Community Fixes, Terrain Precision Fix and
+[Parking Brake](https://github.com/jarosm/KSP-ParkingBrake), which its save was made with. With this mod, KSP 1.12.5,
+KSP Community Fixes, Terrain Precision Fix and
 KSP-Fix-AutoStrut, without Parking Brake, which this mod is not compatible with (for the bulldozer, the blade's part
 from KSP-Mod-Bulldozer, its plugin left out: it clears ground scatters, nothing this case uses), each save was played
 three times with its default settings, and three times with Fixed Tuning alone, `damperBounce = false` and
@@ -60,14 +58,13 @@ three times with its default settings, and three times with Fixed Tuning alone, 
 
 | | Without this mod | Fixed Tuning alone | This mod |
 |---|---|---|---|
-| **Heavy rover**: top speed over the ground | — | 1.4 to 2.0 m/s | 0.27 m/s |
-| Time with no wheel on the ground | — | 5 to 10 % | 0 |
-| How far it turned in 30 s | — | −10°, 39°, 173° | −0.07° to 0.12° |
-| Speed over the last 10 s | — | up to 9.6 mm/s, 0.1 mm/s and 1.0 m/s | up to 1.8 mm/s |
-| At the end | on its wheels once, on its back twice; 2 parts lost once | on its wheels, 26 parts | on its wheels, 26 parts |
-| `KSP.log` | `Hit Eve … at 61.2 to 265.9 m.s and damaged wheel.`, 2 trials out of 3 | `Hit Eve … at 52.9 to 94.0 m.s and damaged wheel.`, 3 trials out of 3 | nothing |
-| **Bulldozer**: top speed over the ground | 1.7 to 2.4 m/s | 1.5 to 2.0 m/s | 0.30 m/s |
-| Time with no wheel on the ground | 8 to 14 % | 6 to 17 % | 0 |
-| How far it turned in 30 s | — | −28°, 12°, −8.2° | 0.6° to 0.9° |
-| Speed over the last 10 s | — | up to 1.3 m/s, 17 mm/s and 1.6 m/s | up to 0.45 mm/s |
-| `KSP.log` | `Hit Eve … at 48.0 to 123.3 m.s and damaged wheel`, at 2 trials out of 3 | `Hit Eve … at 72.3 to 103.4 m.s and damaged wheel.`, 2 trials out of 3 | nothing |
+| **Heavy rover**: top speed over the ground | 0.17 to 3.7 m/s | 1.0 to 2.9 m/s | 0.02 m/s |
+| Time with no wheel on the ground | 0 to 14 % | 5 to 23 % | 0 |
+| How far it turned in 30 s | −1.3°, −12°, −233° | 6.7°, −75°, −22° | 0.15° to 0.21° |
+| Speed over the last 10 s | up to 2.8 mm/s, 3.0 m/s and 6.5 mm/s | up to 0.12 mm/s, 1.2 m/s and 80 mm/s | up to 1.8 mm/s |
+| `KSP.log` | `Hit Eve … at 56.2 to 71.4 m.s and damaged wheel.`, 2 trials out of 3 | `Hit Eve … at 78.6 to 111.3 m.s and damaged wheel.`, 3 trials out of 3 | nothing |
+| **Bulldozer**: top speed over the ground | 1.7 to 2.4 m/s | 1.8 to 3.1 m/s | 0.07 to 0.12 m/s |
+| Time with no wheel on the ground | 8 to 14 % | 6 to 8 % | 0 |
+| How far it turned in 30 s | — | −130°, 41°, −123° | −0.4° to 0.3° |
+| Speed over the last 10 s | — | up to 0.46, 0.21 and 1.4 mm/s | up to 0.45 mm/s |
+| `KSP.log` | `Hit Eve … at 48.0 to 123.3 m.s and damaged wheel`, at 2 trials out of 3 | `Hit Eve … at 64.7 to 108.0 m.s and damaged wheel.`, 2 trials out of 3 | nothing |

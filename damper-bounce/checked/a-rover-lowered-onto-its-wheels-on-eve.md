@@ -46,9 +46,9 @@ descent.
 
 | | Without this mod, springs left to the game | Without this mod, springs set by hand | Fixed Tuning alone | This mod |
 |---|---|---|---|---|
-| Top speed over the ground | 3.5 to 12 m/s | 0.24 to 0.31 m/s | 0.59 to 0.76 m/s | 0.25 to 0.27 m/s |
+| Top speed over the ground | 3.5 to 12 m/s | 0.24 to 0.31 m/s | 0.48 to 0.63 m/s | 0.24 to 0.26 m/s |
 | Time with no wheel on the ground | 13 to 49 % | 6 % | 6 % | 6 % |
-| Speed over the last 15 s | up to 0.3 mm/s, 1.7 m/s and 12 m/s | up to 0.13 mm/s | up to 0.70, 0.57 and 0.62 m/s | up to 0.05, 0.02 and 0.01 mm/s |
+| Speed over the last 15 s | up to 0.3 mm/s, 1.7 m/s and 12 m/s | up to 0.13 mm/s | up to 0.46, 0.24 and 0.47 m/s | up to 0.07, 0.03 and 0.03 mm/s |
 | Parts | 63, none lost | 63, none lost | 63, none lost | 63, none lost |
 
 With Fixed Tuning alone, the rover is still moving at the end of every trial: it never comes to rest.

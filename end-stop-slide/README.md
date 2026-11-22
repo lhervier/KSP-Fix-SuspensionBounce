@@ -44,12 +44,15 @@ shows without and with this mod. With this mod, they were played without Parking
 them twice, the game's sliders at their lowest for the game without this mod, and the setting this mod's suspension
 window makes (*Auto* with a typed mass of 0.01 t) for this mod.
 
+The saves were made, and the cases played, with KSP's terrain detail on *High* (*Settings*, *Graphics*): loaded at
+another detail, a save puts its vessel on a ground a little off.
+
 ### A rover on its end-stops
 
 A rover whose springs are set soft, on Kerbin: its wheels rest on their end-stops. Without this mod, its tyres read a
 fraction of its weight: it slides sideways on flat ground, and slides down a slope, brakes on. With Fixed Tuning
 alone, they read a little over a third of it: the rover already keeps its line on flat ground, but slides down the
-slope at 1 m/s. With
+slope at about 0.9 m/s. With
 this mod, the tyres read the whole weight, and it holds.
 
 **→ Full chapter: [A rover on its end-stops](checked/a-rover-on-its-end-stops.md)**
@@ -76,7 +79,7 @@ rover, as before the warp.
 
 A rover set off from standstill on flat ground, throttle held, its steering let go: not a culprit, a check that this
 mod does not make a rover turn on its own. Set off from the same place, it turns by about half a degree in 30 s
-without this mod, and by less than a tenth of a degree with it, in each of its configurations.
+without this mod, and by about a tenth of a degree with it, in each of its configurations.
 
 **→ Full chapter: [A rover driving in a straight line](checked/a-rover-driving-in-a-straight-line.md)**
 

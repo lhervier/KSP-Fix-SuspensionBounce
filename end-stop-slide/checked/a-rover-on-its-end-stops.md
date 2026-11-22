@@ -60,20 +60,20 @@ the springs as saved: with its default settings; with Fixed Tuning alone, `dampe
 
 | | Without this mod | Fixed Tuning alone | Fixed Tuning and this fix | This mod |
 |---|---|---|---|---|
-| **Flat ground, above 20 m/s**: share of the weight the tyres read (5th percentile, median, 95th) | -1 %, 0 %, 1 % | 37 %, 37 %, 37 % | 98 %, 99 %, 100 % | 98 %, 99 %, 100 % |
-| Speed across the heading, 95th percentile | 0.15 m/s | 0.03 m/s | 0.03 to 0.04 m/s | 0.03 to 0.05 m/s |
-| Angle between the speed and the heading, 95th percentile | 0.36° | 0.06° to 0.08° | 0.08° to 0.10° | 0.08° to 0.11° |
-| Wheel readings where the tyre skids | 64 % | 7 % | 1.6 to 1.7 % | 1.6 to 1.8 % |
+| **Flat ground, above 20 m/s**: share of the weight the tyres read (5th percentile, median, 95th) | -1 %, 0 %, 1 % | 37 %, 37 %, 37 % | 97 to 98 %, 99 %, 100 % | 97 to 98 %, 99 %, 100 % |
+| Speed across the heading, 95th percentile | 0.15 m/s | 0.02 to 0.05 m/s | 0.04 m/s | 0.04 to 0.05 m/s |
+| Angle between the speed and the heading, 95th percentile | 0.36° | 0.06° to 0.11° | 0.09° to 0.10° | 0.09° to 0.11° |
+| Wheel readings where the tyre skids | 64 % | 7 % | 1.6 % | 1.6 % |
 
 On flat ground, Fixed Tuning alone already keeps the rover in a straight line: its soft springs still carry a little
 over a third of its weight. This fix gives the tyres the whole weight back, and they skid four times less.
 
 | | Without this mod | Fixed Tuning alone | Fixed Tuning and this fix | This mod |
 |---|---|---|---|---|
-| **Slope**: share of the weight the tyres read (median) | 31 % | 40 % | 99 % | 99 % |
-| Top speed over the ground | — | 1.06 m/s | 0.06 m/s | 0.06 m/s |
-| How far it turned in 30 s | — | 0.2° to 0.3° | 0.6° to 0.7° | 0.7° to 0.9° |
-| Speed over the last 10 s | up to 1.1 m/s | 1.06 m/s | up to 0.63 mm/s | up to 0.59 mm/s |
+| **Slope**: share of the weight the tyres read (median) | 31 % | 39 % | 99 % | 99 % |
+| Top speed over the ground | — | 1.2 m/s | 0.07 m/s | 0.07 to 0.09 m/s |
+| How far it turned in 30 s | — | −7.4° to −7.5° | 1.0° to 1.1° | 1.1° to 1.2° |
+| Speed over the last 10 s | up to 1.1 m/s | 0.88 m/s | up to 0.37 mm/s | up to 0.41 mm/s |
 
-On the slope, this fix is what holds the rover. With Fixed Tuning alone, it slides down, brakes on, at a steady
-1.06 m/s. With this fix, it settles on its end-stops as it loads, which turns it by less than a degree, then holds.
+On the slope, this fix is what holds the rover. With Fixed Tuning alone, it slides down, brakes on, at about 0.9 m/s,
+turning as it goes. With this fix, it turns by about a degree in the first second after the save loads, then holds.

@@ -84,6 +84,9 @@ shows without and with this mod. With this mod, they were played without Parking
 (`damperBounce = false` and `endStopSlide = false` in its `settings.cfg`): the player's setting cures them on its own.
 The bench of a rover docked to a base standing on the ground is in [Work in progress](#work-in-progress).
 
+The saves were made, and the cases played, with KSP's terrain detail on *High* (*Settings*, *Graphics*): loaded at
+another detail, a save puts its vessel on a ground a little off.
+
 ### A light probe on the runway
 
 A probe of 100 kg on three LT-05 legs, launched on the runway: without this mod, it leaves the runway the moment

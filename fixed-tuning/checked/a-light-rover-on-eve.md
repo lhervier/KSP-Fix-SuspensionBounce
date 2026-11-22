@@ -48,9 +48,9 @@ mod's `settings.cfg`. The rover settles on its own as it loads.
 
 | | Without this mod | Fixed Tuning alone | This mod |
 |---|---|---|---|
-| Top speed over the ground | 24 m/s | 0.10 m/s | 0.10 m/s |
-| Time with no wheel on the ground | 47 % | 0.1 % at most | 0.1 % at most |
-| Speed over the last 10 s | up to 0.40 m/s | up to 0.09 mm/s | up to 0.03 mm/s |
+| Top speed over the ground | 24 m/s | 0.05 m/s | 0.05 m/s |
+| Time with no wheel on the ground | 47 % | 0 | 0 |
+| Speed over the last 10 s | up to 0.40 m/s | up to 0.11 mm/s | up to 0.06 mm/s |
 | `KSP.log` | `roverWheel2 Exploded!!` | nothing | nothing |
 
 Fixed Tuning alone keeps the rover on its wheels: the mod's other fixes change nothing here.

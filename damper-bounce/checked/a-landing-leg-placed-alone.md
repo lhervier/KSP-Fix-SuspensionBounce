@@ -69,7 +69,7 @@ its default settings, and with Fixed Tuning alone, `damperBounce = false` and `e
 
 | | Without this mod | Fixed Tuning alone | This mod |
 |---|---|---|---|
-| Kerbin | out of sight 4 s after it is placed, 3 times out of 3; `landingLeg1 (…) Exploded!!` 2 times | out of sight 4 s after it is placed once, no `Exploded` line within 20 s; the other 2 times, 20 s after, on its side near the lander | 20 s after, on its side next to where it was placed, 3 times out of 3; no `Exploded` line |
+| Kerbin | out of sight 4 s after it is placed, 3 times out of 3; `landingLeg1 (…) Exploded!!` 2 times | out of sight 4 s after it is placed, 3 times out of 3; `landingLeg1 (…) Exploded!!` once | 20 s after, on its side next to where it was placed, 3 times out of 3; no `Exploded` line |
 
 With Fixed Tuning alone, the leg keeps the setting it had on the lander, sized for its share of a lander of 3.9 t on
 eight legs; this fix bounds its damper for the leg alone.

@@ -56,11 +56,11 @@ a leg touches the ground on; the rest from the second, the lander at rest.
 | | Without this mod | Fixed Tuning alone | Fixed Tuning and this fix | This mod |
 |---|---|---|---|---|
 | **The fall**: speed at the touch | 9.3 m/s | 9.3 m/s | 9.3 m/s | 9.3 m/s |
-| Speed it bounces back up at | 3.0 to 3.4 m/s | 5.6 and 5.9 m/s; 0.28 m/s | 0.12 to 0.28 m/s | 0.12 to 0.34 m/s |
-| Time with a leg on its end-stop over the first 3 s | 82 to 84 % | 35 and 47 %; 90 % | 91 to 97 % | 92 to 97 % |
+| Speed it bounces back up at | 3.0 to 3.4 m/s | 5.7 and 5.9 m/s; 0.29 m/s | 0.11 to 0.30 m/s | 0.12 to 0.33 m/s |
+| Time with a leg on its end-stop over the first 3 s | 82 to 84 % | 23 and 28 %; 91 % | 91 to 97 % | 93 to 97 % |
 | Time with no leg on the ground over the first 3 s | 0 | 28 and 29 %; 0 | 0 | 0 |
 | **At rest**: share of the weight the tyres read (median) | 0 % | 73 to 80 % | 93 % | 93 % |
-| Turn over 8 s | 0.2° to 0.7° | 0.0° | 0.0° | 0.0° |
+| Turn over 8 s | 0.2° to 0.7° | 0.0° to 0.08° | 0.0° | 0.0° |
 | Speed over the last third | 4.5 to 4.6 mm/s | 0.6 to 0.9 mm/s | 0.2 to 0.3 mm/s | 0.3 mm/s |
 | Parts at the end, `KSP.log` | 12 of 12, nothing | 12 of 12, nothing | 12 of 12, nothing | 12 of 12, nothing |
 
