@@ -1,0 +1,115 @@
+[
+ {
+  "scenario": "crane-rest",
+  "save": "SuspensionBounceCraneMunAuto",
+  "windowInFront": [
+   true,
+   true,
+   true
+  ],
+  "parkedStill": true,
+  "measure": [
+   1795362830.1179018,
+   1795362865.118193
+  ],
+  "cost": [],
+  "speed": 0.0021066709441120344,
+  "heading": [
+   177.772816011762,
+   177.76325914875054
+  ]
+ },
+ {
+  "scenario": "crane-end-stops",
+  "save": "SuspensionBounceCraneMunAuto",
+  "windowInFront": [
+   true,
+   true,
+   true
+  ],
+  "parkedStill": true,
+  "measure": [
+   1795362947.5324664,
+   1795362982.5333855
+  ],
+  "cost": [
+   {
+    "steps": 499.0,
+    "suspensions": 10.0,
+    "total": 760.5,
+    "wheels": 755.3,
+    "mod": 5.1,
+    "dampers": 0.5,
+    "endStops": 4.7,
+    "records": 3.2,
+    "solver": 0.0,
+    "solverRuns": 0.0
+   }
+  ],
+  "speed": 1.0630606597040575,
+  "heading": [
+   177.5808925928913,
+   180.2274160410188
+  ]
+ },
+ {
+  "scenario": "rover-driving",
+  "save": "SuspensionBounceRoverFlat",
+  "windowInFront": [
+   true,
+   true,
+   true
+  ],
+  "parkedStill": true,
+  "measure": [
+   1795363020.4368193,
+   1795363055.437434
+  ],
+  "cost": [],
+  "speed": 30.3159708928453,
+  "heading": [
+   201.0961236300706,
+   200.98765039311084
+  ]
+ },
+ {
+  "scenario": "rover-end-stops-driving",
+  "save": "SuspensionBounceEndStopsFlat",
+  "windowInFront": [
+   true,
+   true,
+   true
+  ],
+  "parkedStill": true,
+  "measure": [
+   1795363102.1515415,
+   1795363137.1523523
+  ],
+  "cost": [],
+  "speed": 29.53792516849169,
+  "heading": [
+   201.9987149605244,
+   202.1389810286816
+  ]
+ },
+ {
+  "scenario": "light-rover-eve",
+  "save": "SuspensionBounceLightRoverEve",
+  "windowInFront": [
+   true,
+   true,
+   true
+  ],
+  "parkedStill": null,
+  "measure": [
+   1795363170.9332078,
+   1795363205.9340427
+  ],
+  "cost": [],
+  "speed": 8.661558809514764,
+  "heading": [
+   67.77786890811666,
+   97.955710522095
+  ]
+ }
+]

@@ -1,0 +1,127 @@
+[
+ {
+  "scenario": "crane-rest",
+  "save": "SuspensionBounceCraneMunAuto",
+  "windowInFront": [
+   true,
+   true,
+   true
+  ],
+  "parkedStill": null,
+  "measure": [
+   1795361500.1846523,
+   1795361535.1851523
+  ],
+  "cost": [],
+  "speed": 0.0004714136822599254,
+  "heading": [
+   177.91535516996953,
+   177.9352697370829
+  ]
+ },
+ {
+  "scenario": "crane-end-stops",
+  "save": "SuspensionBounceCraneMunAuto",
+  "windowInFront": [
+   true,
+   true,
+   true
+  ],
+  "parkedStill": null,
+  "measure": [
+   1795361605.8870568,
+   1795361640.8881187
+  ],
+  "cost": [],
+  "speed": 1.0521534468977385,
+  "heading": [
+   177.48794834331792,
+   178.6492215509454
+  ]
+ },
+ {
+  "scenario": "rover-driving",
+  "save": "SuspensionBounceRoverFlat",
+  "windowInFront": [
+   true,
+   true,
+   true
+  ],
+  "parkedStill": null,
+  "measure": [
+   1795361674.9358299,
+   1795361709.9364247
+  ],
+  "cost": [],
+  "speed": 30.35934504671447,
+  "heading": [
+   201.08072990128858,
+   200.9004745861119
+  ]
+ },
+ {
+  "scenario": "rover-end-stops-driving",
+  "save": "SuspensionBounceEndStopsFlat",
+  "windowInFront": [
+   true,
+   true,
+   true
+  ],
+  "parkedStill": null,
+  "measure": [
+   1795361743.7818525,
+   1795361778.7830546
+  ],
+  "cost": [
+   {
+    "steps": 500.0,
+    "suspensions": 4.0,
+    "total": 83.3,
+    "wheels": 81.5,
+    "mod": 1.8,
+    "dampers": 0.2,
+    "endStops": 1.6,
+    "records": 0.7,
+    "solver": 0.0,
+    "solverRuns": 0.0
+   },
+   {
+    "steps": 501.0,
+    "suspensions": 4.0,
+    "total": 87.5,
+    "wheels": 85.7,
+    "mod": 1.8,
+    "dampers": 0.2,
+    "endStops": 1.6,
+    "records": 0.7,
+    "solver": 0.0,
+    "solverRuns": 0.0
+   }
+  ],
+  "speed": 29.2366453155479,
+  "heading": [
+   201.03952850453743,
+   201.10758957883786
+  ]
+ },
+ {
+  "scenario": "light-rover-eve",
+  "save": "SuspensionBounceLightRoverEve",
+  "windowInFront": [
+   true,
+   true,
+   true
+  ],
+  "parkedStill": null,
+  "measure": [
+   1795361794.2389238,
+   1795361829.2393708
+  ],
+  "cost": [],
+  "speed": 7.340109300154545e-05,
+  "heading": [
+   71.5164919262106,
+   71.51141925818649
+  ]
+ }
+]

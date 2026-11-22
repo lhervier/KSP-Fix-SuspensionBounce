@@ -19,14 +19,18 @@ holds the vessel, set the camera, hold the wheel throttle for a scenario that dr
 seconds. It then measures for --seconds
 seconds without asking anything of the game: the script sleeps. With the profiler, the measure is a capture of its
 window (Start capture, Stop capture, Export to CSV); with this mod's measure, the lines it writes to KSP.log every
-10 s, of which those whose 10 s lie entirely inside the measure are kept.
+10 s, of which those whose 10 s lie entirely inside the measure are kept. The game writes its log to the disk in
+batches: the lines it has not written 20 s after the measure are missing from what the script prints, and are to be
+read again from KSP.log once KSP has quit, by the times of the measure that lines.json keeps. The crane on its
+end-stops needs Advanced Tweakables (ADVANCED_TWEAKABLES = True in settings.cfg) with fixedTuning = false, whose
+springs it sets with the game's sliders; with Fixed Tuning on, it sets them with this mod's suspension window.
 
 On Windows it also brings KSP's window in front of every other window before each measure, and moves the mouse
 pointer off it; it checks again at the start and at the stop. Play the profiler runs full screen (FULLSCREEN = True
 in settings.cfg), and do not use the computer during a run.
 
-It writes lines.json (one entry per scenario: the mod's lines, the profiler's frames and CSV), prints one line per
-scenario, and quits KSP (unless --keep-running is given).
+It writes lines.json (one entry per scenario: the times of the measure, the mod's lines, the profiler's frames and
+CSV), prints one line per scenario, and quits KSP (unless --keep-running is given).
 """
 import argparse
 import ctypes
@@ -150,13 +154,43 @@ def log_size(ksp):
     return os.path.getsize(path) if os.path.exists(path) else 0
 
 
-def cost_lines(ksp, start, end):
-    """The cost lines KSP.log gained between the two sizes, but the first: its 10 s began before the measure."""
-    with open(os.path.join(ksp, "KSP.log"), "rb") as f:
-        f.seek(start)
-        text = f.read(end - start).decode("utf-8", "replace")
-    found = [dict(zip(COST_FIELDS, [float(v) for v in m.groups()])) for m in COST_LINE.finditer(text)]
-    return found[1:]
+# The time a line of KSP.log was written at, local time of day, and the length of the window of a cost line.
+LOG_TIME = re.compile(r"^\[\w+ (\d\d):(\d\d):(\d\d\.\d+)\]")
+COST_WINDOW = re.compile(r"physics steps \((\d+) s\)")
+
+
+def day_seconds(moment):
+    """A time.time() value as seconds since the local midnight, the clock KSP.log's lines are stamped with."""
+    local = time.localtime(moment)
+    return local.tm_hour * 3600 + local.tm_min * 60 + local.tm_sec + moment % 1
+
+
+def cost_lines(ksp, offset, start, end):
+    """The cost lines of KSP.log, from the byte offset on, whose whole window lies between the two time.time() values.
+    The game writes its log to the disk in batches, a quiet minute sometimes not at all: waits, for up to 20 s, until
+    the log shows a cost line written after the end, and returns what it found then. The measure's times are kept in
+    lines.json, for the lines to be read again from KSP.log once the game has quit."""
+    first, last = day_seconds(start), day_seconds(end)
+    found = []
+    deadline = time.time() + 20
+    while True:
+        with open(os.path.join(ksp, "KSP.log"), "rb") as f:
+            f.seek(offset)
+            text = f.read().decode("utf-8", "replace")
+        found, after = [], False
+        for line in text.splitlines():
+            match, stamp = COST_LINE.search(line), LOG_TIME.match(line)
+            if not match or not stamp:
+                continue
+            written = int(stamp.group(1)) * 3600 + int(stamp.group(2)) * 60 + float(stamp.group(3))
+            window = float(COST_WINDOW.search(line).group(1))
+            if written > last:
+                after = True
+            elif written - window >= first - 0.5:
+                found.append(dict(zip(COST_FIELDS, [float(v) for v in match.groups()])))
+        if after or time.time() > deadline:
+            return found
+        time.sleep(2)
 
 
 def log(*parts):
@@ -275,20 +309,39 @@ def set_springs(strength):
     call("part_menu", action="close")
 
 
+TUNING_API = "com.github.lhervier.ksp.fix.suspensions.fixedtuning.SuspensionTuningApi"
+
+
+def tune(mass, compression):
+    """Sets every suspension of the active vessel as the Auto button of this mod's suspension window does: predicted
+    for the body the vessel is on and mass t (0: the vessel's), shared by the centre of mass, at that compression of
+    the travel, with a damping ratio of 0.7."""
+    log("tune:", call("call_method", type=TUNING_API, method="Auto", arguments=["", mass, True, compression, 0.7]))
+
+
 def scenario(name, options, profiler, out):
     """Plays one scenario and returns what it measured."""
     case = SCENARIOS[name]
+    # Where KSP.log ends on the disk before the load: every cost line of the measure comes after it.
+    offset = log_size(options.ksp)
     call("load_save", folder=options.folder, save=case["save"])
-    brake_part, held = parking_brake()
+    brake_part, held = parking_brake() if parking_brake_installed() else (None, False)
     parked_still = release_parking_brake(brake_part) if held else None
     call("set_camera", distance=options.camera[0], heading=options.camera[1], pitch=options.camera[2])
     if "springs" in case:
         # Lowered once the vessel has settled on its wheels, and in two steps: dropped at once from a fresh load, the
         # crane can lose a wheel through the terrain.
         time.sleep(10)
-        set_springs(0.5)
-        time.sleep(5)
-        set_springs(case["springs"])
+        if fixed_tuning_active():
+            # The game's sliders are hidden: the suspension window sets every suspension, the tanker's legs too, first
+            # at two thirds of their travel, then for a vessel of 10 kg, which leaves them on their end-stops.
+            tune(0, 0.66)
+            time.sleep(5)
+            tune(0.01, 0.33)
+        else:
+            set_springs(0.5)
+            time.sleep(5)
+            set_springs(case["springs"])
     if "throttle" in case:
         # The rovers' saves have SAS on: steering let go, it is the SAS that would hold or lose the heading.
         call("set_flight", sas=False)
@@ -301,18 +354,17 @@ def scenario(name, options, profiler, out):
 
     # The measure: nothing is asked of the game between its start and its stop.
     front_at_start = in_front(options.window_title)
-    start = log_size(options.ksp)
+    start = time.time()
     if profiler:
         call("profiler_start_capture", frames=PROFILER_FRAMES)
     time.sleep(options.seconds)
     if profiler:
         call("profiler_stop_capture")
+    end = time.time()
     front_at_stop = in_front(options.window_title)
-    # The game writes its log a moment late.
-    time.sleep(1)
     row = dict(scenario=name, save=case["save"], windowInFront=[front, front_at_start, front_at_stop],
-               parkedStill=parked_still)
-    row["cost"] = cost_lines(options.ksp, start, log_size(options.ksp))
+               parkedStill=parked_still, measure=[start, end])
+    row["cost"] = cost_lines(options.ksp, offset, start, end)
     if profiler:
         row["profiler"] = call("profiler_state")
         call("profiler_export", directory=out, fileName=name + ".csv")

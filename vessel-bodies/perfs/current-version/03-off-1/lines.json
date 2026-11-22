@@ -1,0 +1,59 @@
+[
+ {
+  "scenario": "crane-rest",
+  "save": "SuspensionBounceCraneMunAuto",
+  "windowInFront": [
+   true,
+   true,
+   true
+  ],
+  "parkedStill": true,
+  "measure": [
+   1795361100.2199383,
+   1795361135.2211154
+  ],
+  "cost": [
+   {
+    "steps": 501.0,
+    "suspensions": 10.0,
+    "total": 1017.1,
+    "wheels": 1011.9,
+    "mod": 5.2,
+    "dampers": 0.5,
+    "endStops": 4.7,
+    "records": 3.3,
+    "solver": 0.0,
+    "solverRuns": 0.0
+   },
+   {
+    "steps": 500.0,
+    "suspensions": 10.0,
+    "total": 1016.1,
+    "wheels": 1010.8,
+    "mod": 5.3,
+    "dampers": 0.5,
+    "endStops": 4.8,
+    "records": 3.3,
+    "solver": 0.0,
+    "solverRuns": 0.0
+   },
+   {
+    "steps": 501.0,
+    "suspensions": 10.0,
+    "total": 1019.2,
+    "wheels": 1014.1,
+    "mod": 5.2,
+    "dampers": 0.5,
+    "endStops": 4.7,
+    "records": 3.3,
+    "solver": 0.0,
+    "solverRuns": 0.0
+   }
+  ],
+  "speed": 0.0010079743518447105,
+  "heading": [
+   177.78486578067194,
+   177.80981738458448
+  ]
+ }
+]

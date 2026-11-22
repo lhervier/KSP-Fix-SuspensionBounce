@@ -3,19 +3,20 @@
 Part of [Suspension Bounce Fix](../README.md), [Vessel Bodies](README.md): what the mod costs, measured against the
 game's own wheels.
 
-The mod works at every physics step, on every wheel of every vessel in flight: it sizes each damper, reads each
-wheel's contact, and, while a wheel nears the end of its travel, holds the end-stops of its vessel. **On a rover driving
-on flat ground, it adds about 0.02 ms per physics step, which no frame shows.** The dearest case found is a crane of
-112 parts resting on its end-stops: **about 0.14 ms more per physics step, or about 0.05 ms per frame** (269 frames
-per second instead of 273 in the runs below).
+The mod works at every physics step, on every wheel of every vessel in flight: it bounds each damper, reads each
+wheel's contact, and, while a wheel nears the end of its travel, holds the end-stops of its vessel. **The current
+version, measured on an older desktop, adds about 0.045 ms per physics step to a rover driving on flat ground, about
+0.19 ms to a crane of 112 parts at rest, and about 0.3 ms to the same crane resting on its end-stops**
+([The current version](#the-current-version)). Fixed Tuning costs nothing measurable: the cost is that of Damper
+Bounce and End-Stop Slide.
 
-Those figures are those of the campaign below. The mod has since read each vessel once per physics step for all its
-fixes, and kept from step to step what does not change: the crane on its end-stops costs 0.02 to 0.03 ms less per
-physics step, a rover a few microseconds less ([Keeping the cost low](#keeping-the-cost-low)).
-
-All the figures on this page were measured with an earlier build of the mod, the game setting the springs (as
-`fixedTuning = false` does today). Its cost line read *dampers and springs* where the line quoted below reads
-*dampers*: that build also timed there a fix of the spring below 1 g, since removed.
+The rest of the page, from [The campaign](#the-campaign) on, was measured on a faster desktop with an earlier build of
+the mod, the game setting the springs (as `fixedTuning = false` does today). There, a rover driving on flat ground
+paid about 0.02 ms per physics step, which no frame showed, and the crane on its end-stops about 0.14 ms per physics
+step, or about 0.05 ms per frame (269 frames per second instead of 273); reading each vessel once per physics step for
+all the fixes then took 0.02 to 0.03 ms off the crane ([Keeping the cost low](#keeping-the-cost-low)). That build's
+cost line read *dampers and springs* where the line quoted below reads *dampers*: it also timed there a fix of the
+spring below 1 g, since removed.
 
 ## Two instruments
 
@@ -65,7 +66,9 @@ Each loads a save, copied into a sandbox game, and waits 10 s before measuring. 
 [`SuspensionBounceEndStopsFlat`](../end-stop-slide/saves/SuspensionBounceEndStopsFlat.sfs) in End-Stop Slide,
 [`SuspensionBounceLightRoverEve`](../fixed-tuning/saves/SuspensionBounceLightRoverEve.sfs) in Fixed Tuning. The crane
 on its end-stops is lowered onto them with the game's *Spring Strength* slider, which this mod hides unless
-`fixedTuning = false`.
+`fixedTuning = false`; with Fixed Tuning on, with this mod's suspension window instead, which sets every suspension
+of the vessel, the tanker's legs too: *Auto* at two thirds of the travel, then 5 s later *Auto* for a mass of
+0.01 t, which leaves them on their end-stops.
 
 | Scenario | Save | What is done after the load |
 |---|---|---|
@@ -85,16 +88,69 @@ By hand:
 
 1. Install the mod with `measureCost = true` in `GameData/KSPFixSuspensionBounce/PluginData/settings.cfg`.
 2. Load the scenario's save, do what the table says, wait 10 s, then let the game run 35 s without touching it.
-3. Read the lines `KSP.log` gained meanwhile, the first excepted: its 10 s began before the measure.
+3. Keep the lines of `KSP.log` whose 10 s lie within the measure: the first written during it began before. The game
+   writes its log to the disk in batches, and a quiet minute can stay in memory for minutes: read the log once KSP
+   has quit.
 4. Quit KSP, set `damperBounce` and `endStopSlide` to `false`, start KSP again and play the same
    scenarios. Take the two configurations in turn, several times each: one run against one tells little.
 
 By script: [`run-cost.py`](run-cost.py) plays the scenarios one after the other in
 one KSP, through [KSP-Util-MCPServer](https://github.com/lhervier/KSP-Util-MCPServer), a mod that answers HTTP
-requests on 127.0.0.1, and Python 3, nothing else. It asks nothing of the game during a measure: it sleeps. Its first
-lines say how to run it. Whether KSP-Util-MCPServer, installed and not called, changes what a frame costs was checked
+requests on 127.0.0.1, and Python 3, nothing else. It asks nothing of the game during a measure: it sleeps. It keeps
+the times of each measure in its `lines.json`, with the cost lines it could read before the next scenario; those it
+could not are read again from the `KSP.log` of the run, once KSP has quit, by those times. Its first lines say how
+to run it. Whether KSP-Util-MCPServer, installed and not called, changes what a frame costs was checked
 on [its own page](https://github.com/lhervier/KSP-Util-MCPServer/blob/main/docs/performance.md#installed-and-nobody-calls-it):
 nothing measurable.
+
+## The current version
+
+The five scenarios played by `run-cost.py` with the mod's own measure, the mod as it is now. The desktop is an older
+one than that of the campaigns below: Intel Core i7-4790K, NVIDIA GeForce GTX 1060 6 GB, KSP 1.12.5 bought on GOG, in
+French. The game's wheels alone cost there about four times what they did on the other desktop (about 1 000 µs per
+physics step on the crane at rest, against 250): no figure of this section compares with those below. `GameData`
+holding Harmony, ModuleManager, KSP Community Fixes 1.41.1, KSP-Util-MCPServer,
+[Terrain Precision Fix](https://github.com/lhervier/KSP-Fix-TerrainPrecision),
+[KSP-Fix-AutoStrut](https://github.com/lhervier/KSP-Fix-AutoStrut) and this mod, `measureCost = true`, in three
+configurations:
+
+- **This mod**: its default settings.
+- **Fixed Tuning alone**: `damperBounce = false` and `endStopSlide = false`.
+- **Fixed Tuning off**: `fixedTuning = false`, which turns the other two off as well: the game sets the springs, and
+  the measure is all the mod adds. With [Parking Brake](https://github.com/jarosm/KSP-ParkingBrake) 0.4.4, as for the
+  game without this mod, the saves having been made with it (the script lets it go); the two others without, this mod
+  being incompatible with it.
+
+KSP full screen at 1280×720, vertical sync off, no frame limit, *Advanced Tweakables* on, its window in front at every
+check. Three runs per configuration, a fresh KSP each, the order turning from one round to the next; the first run
+with Fixed Tuning off stopped at the crane on its end-stops (*Advanced Tweakables* was off) and was played again at
+the end. The data are in [`perfs/current-version/`](perfs/current-version/): `lines.json` of each run, and the cost
+lines of its `KSP.log`.
+
+Microseconds per physics step, range over the three runs of each run's mean:
+
+| Scenario | This mod | Fixed Tuning alone | Fixed Tuning off | The mod's own time, this mod |
+|---|---|---|---|---|
+| A crane at rest | 1 189 – 1 256 | 1 007 – 1 034 | 1 018 – 1 033 | 173 – 211: dampers 115 – 146, end-stops 58 – 65 |
+| A crane on its end-stops | 1 284 – 1 347 | 991 – 1 025 | 753 – 760 | 1 164 – 1 221: dampers 40 – 44, end-stops 1 123 – 1 177 (solver 950 – 978) |
+| A rover driving | 126 – 133 | 82 – 84 | 84 – 85 | 45 – 48: dampers 20 – 22, end-stops 25 – 27 |
+| A rover driving on its end-stops | 166 – 193 | 85 – 86 | 79 – 80 | 89 – 103: dampers 13 – 17, end-stops 76 – 86 (solver 31 – 35) |
+| A light rover on Eve | 942 – 955 | 906 – 914 | 499 – 603 | 44: dampers 17 – 18, end-stops 26 – 27 |
+
+- **Fixed Tuning** costs nothing measurable: alone, the mod's own time is that of the measure, 5 µs on the crane, 2 µs
+  on a rover, as with Fixed Tuning off.
+- **Damper Bounce and End-Stop Slide** add about 190 µs per physics step to the crane at rest, about 45 µs to the
+  rover driving, and about 85 µs to the rover on its end-stops, against Fixed Tuning alone.
+- **On the crane on its end-stops**, they add about 300 µs: the solver runs at every step, and pays the sync of the
+  scene's transforms that Vehicle Physics Pro pays otherwise ([What the measure times](#what-the-measure-times)): the
+  game's wheels fall to 121 – 125 µs. The crane does not do the same thing in the three columns: with this mod, it
+  holds still; with Fixed Tuning alone, and with Fixed Tuning off, it slides on its end-stops at about 1 m/s, the
+  fault End-Stop Slide fixes. With Fixed Tuning off, its springs are set by the game's slider, which leaves the wheels
+  in another state: the game's wheels cost less there.
+- **The light rover on Eve** cannot be compared with Fixed Tuning off: without it, the rover never comes to rest (in
+  one run, it was moving at 8.7 m/s during the measure).
+- **The rovers** reach about 30 m/s at 30 % throttle in these runs, against about 26 m/s in the campaign below.
+- No frame was timed with KSPProfiler on this desktop.
 
 ## The campaign
 
