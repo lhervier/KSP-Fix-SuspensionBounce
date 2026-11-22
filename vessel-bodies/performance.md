@@ -5,8 +5,8 @@ game's own wheels.
 
 The mod works at every physics step, on every wheel of every vessel in flight: it bounds each damper, reads each
 wheel's contact, and, while a wheel nears the end of its travel, holds the end-stops of its vessel. **The current
-version, measured on an older desktop, adds about 0.045 ms per physics step to a rover driving on flat ground, about
-0.19 ms to a crane of 112 parts at rest, and about 0.3 ms to the same crane resting on its end-stops**
+version, measured on an older desktop, adds about 0.05 ms per physics step to a rover driving on flat ground, about
+0.2 ms to a crane of 112 parts at rest, and about 0.3 ms to the same crane resting on its end-stops**
 ([The current version](#the-current-version)). Fixed Tuning costs nothing measurable: the cost is that of Damper
 Bounce and End-Stop Slide.
 
@@ -66,9 +66,8 @@ Each loads a save, copied into a sandbox game, and waits 10 s before measuring. 
 [`SuspensionBounceEndStopsFlat`](../end-stop-slide/saves/SuspensionBounceEndStopsFlat.sfs) in End-Stop Slide,
 [`SuspensionBounceLightRoverEve`](../fixed-tuning/saves/SuspensionBounceLightRoverEve.sfs) in Fixed Tuning. The crane
 on its end-stops is lowered onto them with the game's *Spring Strength* slider, which this mod hides unless
-`fixedTuning = false`; with Fixed Tuning on, with this mod's suspension window instead, which sets every suspension
-of the vessel, the tanker's legs too: *Auto* at two thirds of the travel, then 5 s later *Auto* for a mass of
-0.01 t, which leaves them on their end-stops.
+`fixedTuning = false`. The table is that of the campaigns of the earlier build;
+[The current version](#the-current-version) says what its campaign does otherwise.
 
 | Scenario | Save | What is done after the load |
 |---|---|---|
@@ -121,34 +120,47 @@ configurations:
   game without this mod, the saves having been made with it (the script lets it go); the two others without, this mod
   being incompatible with it.
 
-KSP full screen at 1280×720, vertical sync off, no frame limit, *Advanced Tweakables* on, its window in front at every
-check. Three runs per configuration, a fresh KSP each, the order turning from one round to the next; the first run
-with Fixed Tuning off stopped at the crane on its end-stops (*Advanced Tweakables* was off) and was played again at
-the end. The data are in [`perfs/current-version/`](perfs/current-version/): `lines.json` of each run, and the cost
+KSP full screen at 1280×720, vertical sync off, no frame limit, terrain detail *High*, *Advanced Tweakables* on, its
+window in front at every check. Three runs per configuration, a fresh KSP each, the order turning from one round to
+the next. The data are in [`perfs/current-version/`](perfs/current-version/): `lines.json` of each run, and the cost
 lines of its `KSP.log`.
+
+What this campaign does otherwise than the table of [The scenarios](#the-scenarios):
+
+- **The crane's and the rover's saves**: `SuspensionBounceCraneMunAuto` and `SuspensionBounceRoverFlat` were made
+  again without Parking Brake, for the two configurations without it; Fixed Tuning off loads the ones made with it,
+  `SuspensionBounceCraneMunAutoStock` and `SuspensionBounceRoverFlatStock`. The crane loads with its wheels a little
+  past their end-stops, whatever its save, and takes about a minute and a half to settle: the crane at rest waits 90 s
+  before measuring.
+- **The crane on its end-stops** is lowered onto them, 10 s after the load, to springs that leave its wheels on their
+  end-stops but still carry over half its weight, which the tyres read: it holds still in the three configurations,
+  End-Stop Slide off included. With Fixed Tuning on, this mod's suspension window sets every suspension of the vessel,
+  the tanker's legs too: *Auto* at two thirds of the travel, then 5 s later *Auto* for a mass of 8 t at a third of the
+  travel; with Fixed Tuning off, each TR-2L wheel's *Spring Strength* to 0.5, then 5 s later to 1.0. Either way, the
+  tyres read 54 to 55 % of the crane's weight with End-Stop Slide off. 60 s more before measuring.
 
 Microseconds per physics step, range over the three runs of each run's mean:
 
 | Scenario | This mod | Fixed Tuning alone | Fixed Tuning off | The mod's own time, this mod |
 |---|---|---|---|---|
-| A crane at rest | 1 189 – 1 256 | 1 007 – 1 034 | 1 018 – 1 033 | 173 – 211: dampers 115 – 146, end-stops 58 – 65 |
-| A crane on its end-stops | 1 284 – 1 347 | 991 – 1 025 | 753 – 760 | 1 164 – 1 221: dampers 40 – 44, end-stops 1 123 – 1 177 (solver 950 – 978) |
-| A rover driving | 126 – 133 | 82 – 84 | 84 – 85 | 45 – 48: dampers 20 – 22, end-stops 25 – 27 |
-| A rover driving on its end-stops | 166 – 193 | 85 – 86 | 79 – 80 | 89 – 103: dampers 13 – 17, end-stops 76 – 86 (solver 31 – 35) |
-| A light rover on Eve | 942 – 955 | 906 – 914 | 499 – 603 | 44: dampers 17 – 18, end-stops 26 – 27 |
+| A crane at rest | 1 296 – 1 360 | 1 102 – 1 113 | 1 107 – 1 132 | 193 – 203: dampers 122 – 130, end-stops 69 – 73 |
+| A crane on its end-stops | 1 334 – 1 414 | 1 096 – 1 108 | 1 098 – 1 109 | 996 – 1 262: dampers 41 – 46, end-stops 950 – 1 221 (solver 760 – 1 005) |
+| A rover driving | 136 – 142 | 86 – 87 | 85 – 90 | 49 – 52: dampers 22 – 24, end-stops 27 – 29 |
+| A rover driving on its end-stops | 174 – 187 | 90 – 91 | 81 – 86 | 91 – 99: dampers 15 – 16, end-stops 76 – 83 (solver 30 – 34) |
+| A light rover on Eve | 1 036 – 1 056 | 999 – 1 019 | — | 49 – 51: dampers 19 – 20, end-stops 30 – 31 |
 
 - **Fixed Tuning** costs nothing measurable: alone, the mod's own time is that of the measure, 5 µs on the crane, 2 µs
-  on a rover, as with Fixed Tuning off.
-- **Damper Bounce and End-Stop Slide** add about 190 µs per physics step to the crane at rest, about 45 µs to the
-  rover driving, and about 85 µs to the rover on its end-stops, against Fixed Tuning alone.
-- **On the crane on its end-stops**, they add about 300 µs: the solver runs at every step, and pays the sync of the
+  on a rover, as with Fixed Tuning off, and the totals fall within each other's range.
+- **Damper Bounce and End-Stop Slide** add about 0.2 ms per physics step to the crane at rest, about 0.05 ms to the
+  rover driving, about 0.09 ms to the rover on its end-stops, and about 0.04 ms to the light rover, against Fixed
+  Tuning alone.
+- **On the crane on its end-stops**, they add about 0.3 ms: the solver runs at every step, and pays the sync of the
   scene's transforms that Vehicle Physics Pro pays otherwise ([What the measure times](#what-the-measure-times)): the
-  game's wheels fall to 121 – 125 µs. The crane does not do the same thing in the three columns: with this mod, it
-  holds still; with Fixed Tuning alone, and with Fixed Tuning off, it slides on its end-stops at about 1 m/s, the
-  fault End-Stop Slide fixes. With Fixed Tuning off, its springs are set by the game's slider, which leaves the wheels
-  in another state: the game's wheels cost less there.
-- **The light rover on Eve** cannot be compared with Fixed Tuning off: without it, the rover never comes to rest (in
-  one run, it was moving at 8.7 m/s during the measure).
+  game's wheels fall from about 1 100 µs to 151 – 338 µs. In one of the three runs with this mod, the crane moved at
+  0.10 m/s during the measure, and the solver ran at 467 steps out of 501: that run reads the lowest figures.
+- **The light rover on Eve** cannot be compared with Fixed Tuning off: without it, the rover never quite comes to rest
+  (in one run, it was moving at 3.1 m/s during the measure), and its wheels cost from 340 to 1 000 µs from one run to
+  the next.
 - **The rovers** reach about 30 m/s at 30 % throttle in these runs, against about 26 m/s in the campaign below.
 - No frame was timed with KSPProfiler on this desktop.
 

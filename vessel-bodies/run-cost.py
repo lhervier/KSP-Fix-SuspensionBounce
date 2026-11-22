@@ -10,7 +10,11 @@ KSPProfiler that KSP-Util-MCPServer can drive (or both), wait for the main menu,
     python run-cost.py --folder <your sandbox game> --ksp <your KSP folder> --out out
 
 The saves were made with Parking Brake on, for the runs without this mod: installed, it holds the vessel still as it
-loads. Install it only to play without this mod, or with fixedTuning = false: it sets the vessel's speed back to zero at
+loads. The crane's and the rover's have a second save, made without it, for the runs with this mod
+(SuspensionBounceCraneMunAuto and SuspensionBounceRoverFlat; their Stock one, with Parking Brake, is loaded when
+Parking Brake is installed): saved under Parking Brake, the game puts them back on the ground as they load, and the
+crane sinks past its end-stops. All were made with the terrain detail High (settings.cfg, TERRAIN preset). Install
+Parking Brake only to play without this mod, or with fixedTuning = false: it sets the vessel's speed back to zero at
 every physics step, and under Fixed Tuning's springs that makes the vessel rock a little harder at each step, as it
 loads, until it leaves the ground. The script refuses to start when Parking Brake is installed with Fixed Tuning on.
 
@@ -53,12 +57,19 @@ THROTTLE = 0.3
 WHEELS = ("wheelMed",)
 
 # Each scenario: the save, and what is done after the load. throttle holds the wheel throttle, brakes off, SAS off;
-# springs sets the springs of every wheel of the vessel by hand to that strength, and settle overrides --settle.
+# springs sets the springs of every wheel of the vessel by hand to that strength, with the game's slider, or, with
+# Fixed Tuning on, sets every suspension for that mass in t (tunedMass) with this mod's suspension window; settle
+# overrides --settle.
 SCENARIOS = {
-    "crane-rest": dict(save="SuspensionBounceCraneMunAuto"),
-    # A save of the crane on its end-stops breaks it as it loads: lowered onto them after the load, it holds.
-    "crane-end-stops": dict(save="SuspensionBounceCraneMunAuto", springs=0.05, settle=30),
-    "rover-driving": dict(save="SuspensionBounceRoverFlat", throttle=THROTTLE),
+    # The crane loads with its wheels a little past their end-stops, and takes about a minute and a half to settle.
+    "crane-rest": dict(save="SuspensionBounceCraneMunAuto", stock_save="SuspensionBounceCraneMunAutoStock", settle=90),
+    # A save of the crane on its end-stops breaks it as it loads: lowered onto them after the load, it holds. Its
+    # wheels rest on their end-stops, and their springs still carry over half its weight, which the tyres read: it
+    # holds still with End-Stop Slide off too.
+    "crane-end-stops": dict(save="SuspensionBounceCraneMunAuto", stock_save="SuspensionBounceCraneMunAutoStock",
+                            springs=1.0, tunedMass=8, settle=60),
+    "rover-driving": dict(save="SuspensionBounceRoverFlat", stock_save="SuspensionBounceRoverFlatStock",
+                          throttle=THROTTLE),
     "rover-end-stops-driving": dict(save="SuspensionBounceEndStopsFlat", throttle=THROTTLE),
     "light-rover-eve": dict(save="SuspensionBounceLightRoverEve"),
 }
@@ -324,7 +335,9 @@ def scenario(name, options, profiler, out):
     case = SCENARIOS[name]
     # Where KSP.log ends on the disk before the load: every cost line of the measure comes after it.
     offset = log_size(options.ksp)
-    call("load_save", folder=options.folder, save=case["save"])
+    # The Stock save, made under Parking Brake, when Parking Brake is installed (see the first lines).
+    stock = "stock_save" in case and parking_brake_installed()
+    call("load_save", folder=options.folder, save=case["stock_save"] if stock else case["save"])
     brake_part, held = parking_brake() if parking_brake_installed() else (None, False)
     parked_still = release_parking_brake(brake_part) if held else None
     call("set_camera", distance=options.camera[0], heading=options.camera[1], pitch=options.camera[2])
@@ -334,10 +347,10 @@ def scenario(name, options, profiler, out):
         time.sleep(10)
         if fixed_tuning_active():
             # The game's sliders are hidden: the suspension window sets every suspension, the tanker's legs too, first
-            # at two thirds of their travel, then for a vessel of 10 kg, which leaves them on their end-stops.
+            # at two thirds of their travel, then for the scenario's mass.
             tune(0, 0.66)
             time.sleep(5)
-            tune(0.01, 0.33)
+            tune(case["tunedMass"], 0.33)
         else:
             set_springs(0.5)
             time.sleep(5)

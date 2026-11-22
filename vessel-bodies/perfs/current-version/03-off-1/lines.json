@@ -3,57 +3,113 @@
   "scenario": "crane-rest",
   "save": "SuspensionBounceCraneMunAuto",
   "windowInFront": [
-   true,
-   true,
-   true
+   false,
+   false,
+   false
   ],
   "parkedStill": true,
   "measure": [
-   1795361100.2199383,
-   1795361135.2211154
+   1795378382.4348679,
+   1795378417.4353087
   ],
   "cost": [
    {
     "steps": 501.0,
     "suspensions": 10.0,
-    "total": 1017.1,
-    "wheels": 1011.9,
-    "mod": 5.2,
+    "total": 1117.0,
+    "wheels": 1111.6,
+    "mod": 5.4,
     "dampers": 0.5,
-    "endStops": 4.7,
-    "records": 3.3,
-    "solver": 0.0,
-    "solverRuns": 0.0
-   },
-   {
-    "steps": 500.0,
-    "suspensions": 10.0,
-    "total": 1016.1,
-    "wheels": 1010.8,
-    "mod": 5.3,
-    "dampers": 0.5,
-    "endStops": 4.8,
-    "records": 3.3,
-    "solver": 0.0,
-    "solverRuns": 0.0
-   },
-   {
-    "steps": 501.0,
-    "suspensions": 10.0,
-    "total": 1019.2,
-    "wheels": 1014.1,
-    "mod": 5.2,
-    "dampers": 0.5,
-    "endStops": 4.7,
+    "endStops": 4.9,
     "records": 3.3,
     "solver": 0.0,
     "solverRuns": 0.0
    }
   ],
-  "speed": 0.0010079743518447105,
+  "speed": 0.03312647675864585,
   "heading": [
-   177.78486578067194,
-   177.80981738458448
+   177.51698224705643,
+   177.3780085618943
+  ]
+ },
+ {
+  "scenario": "crane-end-stops",
+  "save": "SuspensionBounceCraneMunAuto",
+  "windowInFront": [
+   false,
+   false,
+   false
+  ],
+  "parkedStill": true,
+  "measure": [
+   1795378528.678639,
+   1795378563.6787748
+  ],
+  "cost": [],
+  "speed": 0.001680392884492403,
+  "heading": [
+   177.87209069098972,
+   177.9627115229342
+  ]
+ },
+ {
+  "scenario": "rover-driving",
+  "save": "SuspensionBounceRoverFlat",
+  "windowInFront": [
+   false,
+   false,
+   false
+  ],
+  "parkedStill": true,
+  "measure": [
+   1795378603.1582122,
+   1795378638.1587079
+  ],
+  "cost": [],
+  "speed": 30.153759085153236,
+  "heading": [
+   201.09584383049668,
+   200.7500525257189
+  ]
+ },
+ {
+  "scenario": "rover-end-stops-driving",
+  "save": "SuspensionBounceEndStopsFlat",
+  "windowInFront": [
+   false,
+   false,
+   false
+  ],
+  "parkedStill": false,
+  "measure": [
+   1795378689.4954457,
+   1795378724.4956522
+  ],
+  "cost": [],
+  "speed": 28.90604802624207,
+  "heading": [
+   201.42834103055196,
+   195.19525295997798
+  ]
+ },
+ {
+  "scenario": "light-rover-eve",
+  "save": "SuspensionBounceLightRoverEve",
+  "windowInFront": [
+   false,
+   false,
+   false
+  ],
+  "parkedStill": null,
+  "measure": [
+   1795378758.9079094,
+   1795378793.908513
+  ],
+  "cost": [],
+  "speed": 3.1246624053494685,
+  "heading": [
+   68.83908101513919,
+   293.1507265272013
   ]
  }
 ]
