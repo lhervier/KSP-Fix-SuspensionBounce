@@ -17,21 +17,23 @@ Copy it into the folder of a sandbox game, under `saves`, and load it from the q
   four TR-2L wheels, on flat ground near the space centre, brakes on, its suspensions never set: without this mod,
   the game sets them; with it, the mod sets them as the save loads, from the rover's mass shared equally among its
   wheels ([Suspensions never set](../../fixed-tuning/README.md#suspensions-never-set)). It was saved with
-  [Parking Brake](https://github.com/jarosm/KSP-ParkingBrake) on, so that, when Parking Brake holds the rover as it
-  loads, every run starts from the same place and the same heading.
+  [Parking Brake](https://github.com/jarosm/KSP-ParkingBrake) on, for the trials without this mod: when Parking Brake
+  holds the rover as it loads, every run starts from the same place and the same heading. This mod is not compatible
+  with Parking Brake: without it, the rover settles on its own as it loads.
 
 ## By hand
 
-Load the save, wait until the rover is still, then, if Parking Brake still holds it, let the parking brake go from
-the window of its cabin (*Disengage parking brake*), brakes still on. Turn SAS off, release the brakes, and hold the wheel throttle at 30 % without
-touching the steering, for 30 s: the rover reaches about 26 m/s. Watch the heading on the navball.
+Load the save, wait until the rover is still, then, if Parking Brake is installed and still holds it, let the parking
+brake go from the window of its cabin (*Disengage parking brake*), brakes still on. Turn SAS off, release the brakes,
+and hold the wheel throttle at 30 % without touching the steering, for 30 s: the rover reaches about 26 m/s. Watch the
+heading on the navball.
 
 ## By script
 
 [diag/automation/check.py](../../diag/automation/check.py) loads the save through
-[KSP-Util-MCPServer](https://github.com/lhervier/KSP-Util-MCPServer), lets the parking brake go once the rover is
-still, if it still holds it, and records KSP Diag - Suspension for 30 s from the moment it holds the throttle. Its
-first lines say how to run it:
+[KSP-Util-MCPServer](https://github.com/lhervier/KSP-Util-MCPServer), lets the parking brake go once the rover is still,
+if Parking Brake is installed and still holds it, and records KSP Diag - Suspension for 30 s from the moment it holds
+the throttle. Its first lines say how to run it:
 
     python check.py straight-line --folder <your sandbox game> --trials 5 --label stock
 
@@ -42,18 +44,16 @@ Played five times without this mod: KSP 1.12.5 with KSP Community Fixes 1.41.1,
 [Terrain Precision Fix](https://github.com/lhervier/KSP-Fix-TerrainPrecision),
 [KSP-Fix-AutoStrut](https://github.com/lhervier/KSP-Fix-AutoStrut) and Parking Brake; every run was still under the
 parking brake before it was let go, and reached 25.8 m/s. With this mod, KSP 1.12.5, KSP Community Fixes, Terrain
-Precision Fix, KSP-Fix-AutoStrut and Parking Brake, three times in each configuration: with its default settings; with
-Fixed Tuning alone, `damperBounce = false` and `endStopSlide = false` in the mod's `settings.cfg`; and with Fixed
-Tuning and this fix, `damperBounce = false`. Parking Brake let the rover go as it loaded, and it settled on its own;
-every run that kept its wheels reached 25.8 to 25.9 m/s.
+Precision Fix and KSP-Fix-AutoStrut, without Parking Brake, three times in each configuration: with its default
+settings; with Fixed Tuning alone, `damperBounce = false` and `endStopSlide = false` in the mod's `settings.cfg`; and
+with Fixed Tuning and this fix, `damperBounce = false`. The rover settled on its own as it loaded; every run reached
+25.9 m/s.
 
 | | Without this mod | Fixed Tuning alone | Fixed Tuning and this fix | This mod |
 |---|---|---|---|---|
-| How far the rover turned in 30 s, each trial | −0.53°, −0.32°, −0.48°, −0.53°, −0.35° | −0.66°, −1.85°, 0.25° | on its side, −0.66°, −0.46° | −0.71°, −0.46°, −0.22° |
-| Fastest turn, each trial | 0.03 to 0.05°/s | 1.7°/s, 32°/s, 9.0°/s | on its side, 1.5°/s, 0.79°/s | 0.18°/s, 0.14°/s, 0.33°/s |
-| Time with no wheel on the ground | — | 0 | on its side, 0, 0 | 0 |
+| How far the rover turned in 30 s, each trial | −0.53°, −0.32°, −0.48°, −0.53°, −0.35° | −0.02°, 0.01°, 0.05° | −0.03°, −0.01°, −0.05° | −0.05°, 0.03°, −0.02° |
+| Fastest turn, each trial | 0.03 to 0.05°/s | 0.30°/s, 0.33°/s, 0.34°/s | 0.39°/s, 0.35°/s, 0.33°/s | 0.30°/s, 0.34°/s, 0.32°/s |
+| Time with no wheel on the ground | — | 0 | 0 | 0 |
 
-Set off from the same place, the rover keeps its line within a degree, with or without this mod; once within two with
-Fixed Tuning alone. With Fixed Tuning and
-this fix but without Damper Bounce, the rover fell on its side as it loaded, before it was set off, in one trial out
-of three (two out of eight in all); not with the mod's default settings.
+Set off from the same place, the rover keeps its line within half a degree without this mod, and within a twentieth
+of a degree with it, in each of its configurations.

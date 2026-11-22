@@ -55,13 +55,18 @@ It prints, for each trial, the top speed of the light vessel over the ground, as
 before and after.
 
 Played ten times in a row without this mod, KSP 1.12.5, KSP Community Fixes and Breaking Ground: the light vessel
-broke apart seven times. With this mod, twenty times in a row with its default settings, and twenty times with Fixed
-Tuning alone, `damperBounce = false` and `endStopSlide = false` in the mod's `settings.cfg`:
+broke apart seven times. With this mod, KSP 1.12.5, KSP Community Fixes, Breaking Ground,
+[Terrain Precision Fix](https://github.com/lhervier/KSP-Fix-TerrainPrecision) and
+[KSP-Fix-AutoStrut](https://github.com/lhervier/KSP-Fix-AutoStrut), without
+[Parking Brake](https://github.com/jarosm/KSP-ParkingBrake), which this mod is not compatible with: twenty times in a
+row with its default settings, and twenty times with Fixed Tuning alone, `damperBounce = false` and
+`endStopSlide = false` in the mod's `settings.cfg`:
 
 | | Fixed Tuning alone | This mod |
 |---|---|---|
 | Broke apart | 0 of 20 | 0 of 20 |
-| Top speed over the ground: median | 2.4 m/s | 2.4 m/s |
-| Top speed over the ground: lowest to highest | 2.3 to 3.1 m/s | 2.2 to 2.7 m/s |
+| Top speed over the ground: median | 2.3 m/s | 2.3 m/s |
+| Top speed over the ground: lowest to highest | 2.1 to 5.4 m/s | 2.0 to 3.2 m/s |
 
-Fixed Tuning alone gives the same as the whole mod: the mod's other fixes change nothing here.
+Fixed Tuning alone gives the same as the whole mod, but for one trial at 5.4 m/s, the vessel still whole: the mod's
+other fixes change nothing that matters here.

@@ -41,9 +41,12 @@ them again (`--no-legs` leaves them be), which the table below leaves out. Its f
 
     python check.py probe --folder <your sandbox game> --trials 3 --label stock
 
-Played once without this mod, KSP 1.12.5 and KSP Community Fixes; with this mod, three times with its default
-settings, and three times with Fixed Tuning alone, `damperBounce = false` and `endStopSlide = false` in the mod's
-`settings.cfg`:
+Played once without this mod, KSP 1.12.5 and KSP Community Fixes. With this mod, KSP 1.12.5, KSP Community Fixes,
+[Terrain Precision Fix](https://github.com/lhervier/KSP-Fix-TerrainPrecision) and
+[KSP-Fix-AutoStrut](https://github.com/lhervier/KSP-Fix-AutoStrut), without
+[Parking Brake](https://github.com/jarosm/KSP-ParkingBrake), which this mod is not compatible with: three times with
+its default settings, and three times with Fixed Tuning alone, `damperBounce = false` and `endStopSlide = false` in the
+mod's `settings.cfg`:
 
 | | Without this mod | Fixed Tuning alone | This mod |
 |---|---|---|---|

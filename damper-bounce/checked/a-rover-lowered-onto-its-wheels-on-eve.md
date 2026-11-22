@@ -37,15 +37,18 @@ speed through [KSP-Util-MCPServer](https://github.com/lhervier/KSP-Util-MCPServe
     python check.py hinge-rover-eve-manual --folder <your sandbox game> --trials 3 --label stock
 
 Played three times in each configuration, KSP 1.12.5 and KSP Community Fixes: without this mod, its springs left to
-the game or set by hand; with this mod and its default settings; and with Fixed Tuning alone, `damperBounce = false`
-and `endStopSlide = false` in the mod's `settings.cfg`. The rover starts with its wheels off the ground: the time with
-no wheel on the ground counts the descent.
+the game or set by hand; and, with [Terrain Precision Fix](https://github.com/lhervier/KSP-Fix-TerrainPrecision) and
+[KSP-Fix-AutoStrut](https://github.com/lhervier/KSP-Fix-AutoStrut) as well, without
+[Parking Brake](https://github.com/jarosm/KSP-ParkingBrake), which this mod is not compatible with, with this mod and
+its default settings, and with Fixed Tuning alone, `damperBounce = false` and `endStopSlide = false` in the mod's
+`settings.cfg`. The rover starts with its wheels off the ground: the time with no wheel on the ground counts the
+descent.
 
 | | Without this mod, springs left to the game | Without this mod, springs set by hand | Fixed Tuning alone | This mod |
 |---|---|---|---|---|
-| Top speed over the ground | 3.5 to 12 m/s | 0.24 to 0.31 m/s | 0.58 to 0.81 m/s | 0.28 to 0.30 m/s |
+| Top speed over the ground | 3.5 to 12 m/s | 0.24 to 0.31 m/s | 0.59 to 0.76 m/s | 0.25 to 0.27 m/s |
 | Time with no wheel on the ground | 13 to 49 % | 6 % | 6 % | 6 % |
-| Speed over the last 15 s | up to 0.3 mm/s, 1.7 m/s and 12 m/s | up to 0.13 mm/s | up to 0.11, 0.22 and 0.30 m/s | up to 1.5, 0.08 and 0.08 mm/s |
+| Speed over the last 15 s | up to 0.3 mm/s, 1.7 m/s and 12 m/s | up to 0.13 mm/s | up to 0.70, 0.57 and 0.62 m/s | up to 0.05, 0.02 and 0.01 mm/s |
 | Parts | 63, none lost | 63, none lost | 63, none lost | 63, none lost |
 
 With Fixed Tuning alone, the rover is still moving at the end of every trial: it never comes to rest.

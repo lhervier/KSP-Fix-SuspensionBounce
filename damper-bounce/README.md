@@ -61,9 +61,10 @@ before the bound comes back.
 ## Checking the culprit
 
 Each case has its page: the save it starts from, how to play it by hand, the script that plays it, and what it shows
-without and with this mod. With this mod, they were played with its default settings, then again with Fixed Tuning
-alone (`damperBounce = false` and `endStopSlide = false` in its `settings.cfg`), which shows that this fix does the
-work. The cases that the player's setting cures on its own are in [Fixed Tuning](../fixed-tuning/README.md#checking-the-culprit).
+without and with this mod. With this mod, they were played without Parking Brake, which it is not compatible with
+([Installing](../README.md#installing)), with its default settings, then again with Fixed Tuning alone
+(`damperBounce = false` and `endStopSlide = false` in its `settings.cfg`), which shows that this fix does the work. The
+cases that the player's setting cures on its own are in [Fixed Tuning](../fixed-tuning/README.md#checking-the-culprit).
 
 ### A landing leg placed alone
 

@@ -54,26 +54,26 @@ and how to choose a configuration of this mod (its `settings.cfg`, KSP started a
     python check.py end-stops-slope --folder <your sandbox game> --trials 3 --label modded
 
 Played once without this mod, KSP 1.12.5 and KSP Community Fixes, the springs as saved. With this mod, KSP 1.12.5, KSP
-Community Fixes, Terrain Precision Fix, KSP-Fix-AutoStrut and Parking Brake, three times in each configuration, the
-springs as saved: with its default settings; with Fixed Tuning alone, `damperBounce = false` and
+Community Fixes, Terrain Precision Fix and KSP-Fix-AutoStrut, without Parking Brake, three times in each configuration,
+the springs as saved: with its default settings; with Fixed Tuning alone, `damperBounce = false` and
 `endStopSlide = false` in the mod's `settings.cfg`; and with Fixed Tuning and this fix, `damperBounce = false`.
 
 | | Without this mod | Fixed Tuning alone | Fixed Tuning and this fix | This mod |
 |---|---|---|---|---|
-| **Flat ground, above 20 m/s**: share of the weight the tyres read (5th percentile, median, 95th) | -1 %, 0 %, 1 % | 34 %, 34 %, 34 % | 98 %, 99 %, 100 % | 98 %, 99 %, 100 % |
-| Speed across the heading, 95th percentile | 0.15 m/s | 0.02 m/s | 0.03 m/s | 0.03 m/s |
-| Angle between the speed and the heading, 95th percentile | 0.36° | 0.05° | 0.07° to 0.08° | 0.07° to 0.08° |
-| Wheel readings where the tyre skids | 64 % | 7 % | 1.3 to 1.6 % | 1.4 to 1.6 % |
+| **Flat ground, above 20 m/s**: share of the weight the tyres read (5th percentile, median, 95th) | -1 %, 0 %, 1 % | 37 %, 37 %, 37 % | 98 %, 99 %, 100 % | 98 %, 99 %, 100 % |
+| Speed across the heading, 95th percentile | 0.15 m/s | 0.03 m/s | 0.03 to 0.04 m/s | 0.03 to 0.05 m/s |
+| Angle between the speed and the heading, 95th percentile | 0.36° | 0.06° to 0.08° | 0.08° to 0.10° | 0.08° to 0.11° |
+| Wheel readings where the tyre skids | 64 % | 7 % | 1.6 to 1.7 % | 1.6 to 1.8 % |
 
-On flat ground, Fixed Tuning alone already keeps the rover in a straight line: its soft springs still carry a third of
-its weight. This fix gives the tyres the whole weight back, and they skid five times less.
+On flat ground, Fixed Tuning alone already keeps the rover in a straight line: its soft springs still carry a little
+over a third of its weight. This fix gives the tyres the whole weight back, and they skid four times less.
 
 | | Without this mod | Fixed Tuning alone | Fixed Tuning and this fix | This mod |
 |---|---|---|---|---|
-| **Slope**: share of the weight the tyres read (median) | 31 % | 36 to 37 % | 99 % | 99 % |
-| Top speed over the ground | — | 0.04, 0.04 and 1.3 m/s | 0.007 m/s | 0.001 to 0.007 m/s |
-| How far it turned in 30 s | — | −6.5° to 0.2° | −0.2° to 0.2° | 0.0° to 0.03° |
-| Speed over the last 10 s | up to 1.1 m/s | up to 42, 42 and 974 mm/s | up to 0.16 mm/s | up to 0.57 mm/s |
+| **Slope**: share of the weight the tyres read (median) | 31 % | 40 % | 99 % | 99 % |
+| Top speed over the ground | — | 1.06 m/s | 0.06 m/s | 0.06 m/s |
+| How far it turned in 30 s | — | 0.2° to 0.3° | 0.6° to 0.7° | 0.7° to 0.9° |
+| Speed over the last 10 s | up to 1.1 m/s | 1.06 m/s | up to 0.63 mm/s | up to 0.59 mm/s |
 
-On the slope, this fix is what holds the rover. The trial at 974 mm/s with Fixed Tuning alone is the one where Parking
-Brake held the rover as it loaded and it never looked still: the script let it go after 15 s.
+On the slope, this fix is what holds the rover. With Fixed Tuning alone, it slides down, brakes on, at a steady
+1.06 m/s. With this fix, it settles on its end-stops as it loads, which turns it by less than a degree, then holds.

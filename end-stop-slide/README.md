@@ -36,18 +36,20 @@ each one. VPP is written for a car made of one rigid body; KSP makes each wheel 
 
 ## Checking the culprit
 
-Each case has its page: the save or craft it starts from, how to play it by hand, the script that plays it, and what
-it shows without and with this mod. With this mod, they were played with its default settings, then again with Fixed
-Tuning alone (`damperBounce = false` and `endStopSlide = false` in its `settings.cfg`), and with Fixed Tuning and this
-fix (`damperBounce = false`). This mod hides the game's sliders: where a case needs soft springs, its save or craft
-holds them twice, the game's sliders at their lowest for the game without this mod, and the setting this mod's
-suspension window makes (*Auto* with a typed mass of 0.01 t) for this mod.
+Each case has its page: the save or craft it starts from, how to play it by hand, the script that plays it, and what it
+shows without and with this mod. With this mod, they were played without Parking Brake, which it is not compatible with
+([Installing](../README.md#installing)), with its default settings, then again with Fixed Tuning alone
+(`damperBounce = false` and `endStopSlide = false` in its `settings.cfg`), and with Fixed Tuning and this fix
+(`damperBounce = false`). This mod hides the game's sliders: where a case needs soft springs, its save or craft holds
+them twice, the game's sliders at their lowest for the game without this mod, and the setting this mod's suspension
+window makes (*Auto* with a typed mass of 0.01 t) for this mod.
 
 ### A rover on its end-stops
 
 A rover whose springs are set soft, on Kerbin: its wheels rest on their end-stops. Without this mod, its tyres read a
 fraction of its weight: it slides sideways on flat ground, and slides down a slope, brakes on. With Fixed Tuning
-alone, they read about a third of it: the rover already keeps its line on flat ground, but slides down the slope. With
+alone, they read a little over a third of it: the rover already keeps its line on flat ground, but slides down the
+slope at 1 m/s. With
 this mod, the tyres read the whole weight, and it holds.
 
 **→ Full chapter: [A rover on its end-stops](checked/a-rover-on-its-end-stops.md)**
@@ -56,8 +58,9 @@ this mod, the tyres read the whole weight, and it holds.
 
 A lander on four LT-1 legs, its springs set soft, dropped from its launch clamps onto the runway: it comes to rest on
 its end-stops. Without this mod, its feet read none of its weight, and it slowly turns and slides; with it, it stays
-still. With Fixed Tuning alone, it bounces back up from the fall at 5 m/s, its legs leaving the ground; with this fix,
-the legs catch it on their end-stops, and it comes back up at a quarter of a metre per second.
+still. With Fixed Tuning alone, it bounces back up from the fall at up to 6 m/s, its legs leaving the ground, in two
+trials out of three; with this fix, the legs catch it on their end-stops, and it comes back up at a third of a metre
+per second at most.
 
 **→ Full chapter: [A lander dropped onto its end-stops](checked/a-lander-dropped-onto-its-end-stops.md)**
 
@@ -72,9 +75,8 @@ rover, as before the warp.
 ### A rover driving in a straight line
 
 A rover set off from standstill on flat ground, throttle held, its steering let go: not a culprit, a check that this
-mod does not make a rover turn on its own. Set off from the same place, it keeps its line within a degree in 30 s,
-with or without this mod. With Fixed Tuning and this fix but without Damper Bounce, it fell on its side as it loaded,
-before it was set off, in two trials out of eight.
+mod does not make a rover turn on its own. Set off from the same place, it turns by about half a degree in 30 s
+without this mod, and by less than a tenth of a degree with it, in each of its configurations.
 
 **→ Full chapter: [A rover driving in a straight line](checked/a-rover-driving-in-a-straight-line.md)**
 

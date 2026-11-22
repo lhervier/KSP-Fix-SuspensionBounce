@@ -1141,7 +1141,7 @@ GAME
 				{
 					name = ModuleWheelBrakes
 					isEnabled = True
-					brakeTweakable = 50
+					brakeTweakable = 100
 					brakeInput = 1
 					stagingEnabled = True
 					EVENTS
@@ -1438,7 +1438,7 @@ GAME
 				{
 					name = ModuleWheelBrakes
 					isEnabled = True
-					brakeTweakable = 50
+					brakeTweakable = 100
 					brakeInput = 1
 					stagingEnabled = True
 					EVENTS
@@ -1735,7 +1735,7 @@ GAME
 				{
 					name = ModuleWheelBrakes
 					isEnabled = True
-					brakeTweakable = 50
+					brakeTweakable = 100
 					brakeInput = 1
 					stagingEnabled = True
 					EVENTS
@@ -2823,7 +2823,7 @@ GAME
 				{
 					name = ModuleWheelBrakes
 					isEnabled = True
-					brakeTweakable = 50
+					brakeTweakable = 100
 					brakeInput = 1
 					stagingEnabled = True
 					EVENTS
@@ -3120,7 +3120,7 @@ GAME
 				{
 					name = ModuleWheelBrakes
 					isEnabled = True
-					brakeTweakable = 50
+					brakeTweakable = 100
 					brakeInput = 1
 					stagingEnabled = True
 					EVENTS
@@ -3417,7 +3417,7 @@ GAME
 				{
 					name = ModuleWheelBrakes
 					isEnabled = True
-					brakeTweakable = 50
+					brakeTweakable = 100
 					brakeInput = 1
 					stagingEnabled = True
 					EVENTS

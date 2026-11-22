@@ -61,12 +61,15 @@ lines of `KSP.log`.
     python check.py leg-kerbin --folder <your sandbox game> --ksp <your KSP folder> --trials 3 --label stock
 
 Played three times in each configuration, KSP 1.12.5, KSP Community Fixes and Terrain Precision Fix
-(`fixLonePartMass = true`): without this mod; with this mod and its default settings; and with Fixed Tuning alone,
-`damperBounce = false` and `endStopSlide = false` in the mod's `settings.cfg`.
+(`fixLonePartMass = true`): without this mod; and, with
+[KSP-Fix-AutoStrut](https://github.com/lhervier/KSP-Fix-AutoStrut) as well, without
+[Parking Brake](https://github.com/jarosm/KSP-ParkingBrake), which this mod is not compatible with, with this mod and
+its default settings, and with Fixed Tuning alone, `damperBounce = false` and `endStopSlide = false` in the mod's
+`settings.cfg`.
 
 | | Without this mod | Fixed Tuning alone | This mod |
 |---|---|---|---|
-| Kerbin | out of sight 4 s after it is placed, 3 times out of 3; `landingLeg1 (…) Exploded!!` 2 times | out of sight and `landingLeg1 (…) Exploded!!` once; the other 2 times, 20 s after, on its side near the lander | 20 s after, on its side next to where it was placed, 3 times out of 3; no `Exploded` line |
+| Kerbin | out of sight 4 s after it is placed, 3 times out of 3; `landingLeg1 (…) Exploded!!` 2 times | out of sight 4 s after it is placed once, no `Exploded` line within 20 s; the other 2 times, 20 s after, on its side near the lander | 20 s after, on its side next to where it was placed, 3 times out of 3; no `Exploded` line |
 
 With Fixed Tuning alone, the leg keeps the setting it had on the lander, sized for its share of a lander of 3.9 t on
 eight legs; this fix bounds its damper for the leg alone.

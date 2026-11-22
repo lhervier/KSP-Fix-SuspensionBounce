@@ -30,18 +30,18 @@ it, and how to choose a configuration of this mod (its `settings.cfg`, KSP start
 
     python check.py end-stops-warp --folder <your sandbox game> --trials 3 --label modded
 
-Played three times in each configuration, KSP 1.12.5, KSP Community Fixes, Terrain Precision Fix, KSP-Fix-AutoStrut
-and Parking Brake, the springs as saved: with this mod's default settings, and with this fix off, `endStopSlide =
-false` in the mod's `settings.cfg`.
+Played three times in each configuration, KSP 1.12.5, KSP Community Fixes, Terrain Precision Fix and
+KSP-Fix-AutoStrut, without Parking Brake, which this mod is not compatible with, the springs as saved: with this mod's
+default settings, and with this fix off, `endStopSlide = false` in the mod's `settings.cfg`.
 
 | | `endStopSlide = false` | This mod |
 |---|---|---|
-| Share of the weight the tyres read (median) | 37 % | 99 % |
-| Top speed over the ground | 0.04 m/s | 0.006, 0.006 and 0.10 m/s |
-| How far it turned in 30 s | −0.05° to 0.02° | −0.05° to 0.6° |
-| Speed over the last 10 s | up to 0, 0 and 43 mm/s | up to 0.19 mm/s |
+| Share of the weight the tyres read (median) | 40 % | 99 % |
+| Top speed over the ground | 1.03 m/s | 0.05 m/s |
+| How far it turned in 30 s | 0.06° to 0.17° | 0.3° to 0.35° |
+| Speed over the last 10 s | 1.03 m/s | up to 0.55 mm/s |
 | Parts at the end, `KSP.log` | 19 of 19, nothing | 19 of 19, nothing |
 
-After the warp, this fix still gives the tyres the whole weight of the rover, as before it. The trial at 0.10 m/s is
-the one where Parking Brake held the rover as it loaded: in the first second after the warp, its tyres read less than
-a third of its weight, then all of it within a third of a second; it moved meanwhile, then held.
+After the warp, this fix still gives the tyres the whole weight of the rover, as before it, and the rover holds. With
+this fix off, the tyres read two fifths of its weight, and the rover slides down the slope, brakes on, at a steady
+1.03 m/s.

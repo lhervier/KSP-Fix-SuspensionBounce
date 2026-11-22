@@ -39,15 +39,18 @@ rest. With this mod, it stays on its wheels.
 
     python check.py light-rover-eve --folder <your sandbox game> --ksp <your KSP folder> --label stock
 
-Played once without this mod, KSP 1.12.5 and KSP Community Fixes; with this mod, three times with its default
-settings, and three times with Fixed Tuning alone, `damperBounce = false` and `endStopSlide = false` in the mod's
-`settings.cfg`. The rover settles on its own as it loads.
+Played once without this mod, KSP 1.12.5 and KSP Community Fixes. With this mod, KSP 1.12.5, KSP Community Fixes,
+[Terrain Precision Fix](https://github.com/lhervier/KSP-Fix-TerrainPrecision) and
+[KSP-Fix-AutoStrut](https://github.com/lhervier/KSP-Fix-AutoStrut), without
+[Parking Brake](https://github.com/jarosm/KSP-ParkingBrake), which this mod is not compatible with: three times with
+its default settings, and three times with Fixed Tuning alone, `damperBounce = false` and `endStopSlide = false` in the
+mod's `settings.cfg`. The rover settles on its own as it loads.
 
 | | Without this mod | Fixed Tuning alone | This mod |
 |---|---|---|---|
-| Top speed over the ground | 24 m/s | 0.05 m/s | 0.05 m/s |
-| Time with no wheel on the ground | 47 % | 0 | 0 |
-| Speed over the last 10 s | up to 0.40 m/s | up to 0.08 mm/s | up to 0.04 mm/s |
+| Top speed over the ground | 24 m/s | 0.10 m/s | 0.10 m/s |
+| Time with no wheel on the ground | 47 % | 0.1 % at most | 0.1 % at most |
+| Speed over the last 10 s | up to 0.40 m/s | up to 0.09 mm/s | up to 0.03 mm/s |
 | `KSP.log` | `roverWheel2 Exploded!!` | nothing | nothing |
 
 Fixed Tuning alone keeps the rover on its wheels: the mod's other fixes change nothing here.

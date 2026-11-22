@@ -78,10 +78,11 @@ make, and its damper throws it sideways.
 
 ## Checking the culprit
 
-Each case has its page: the save or craft it starts from, how to play it by hand, the script that plays it, and what
-it shows without and with this mod. With this mod, they were played with its default settings, then again with Fixed
-Tuning alone (`damperBounce = false` and `endStopSlide = false` in its `settings.cfg`): the player's setting cures them
-on its own. The bench of a rover docked to a base standing on the ground is in [Work in progress](#work-in-progress).
+Each case has its page: the save or craft it starts from, how to play it by hand, the script that plays it, and what it
+shows without and with this mod. With this mod, they were played without Parking Brake, which it is not compatible with
+([Installing](../README.md#installing)), with its default settings, then again with Fixed Tuning alone
+(`damperBounce = false` and `endStopSlide = false` in its `settings.cfg`): the player's setting cures them on its own.
+The bench of a rover docked to a base standing on the ground is in [Work in progress](#work-in-progress).
 
 ### A light probe on the runway
 
