@@ -5,7 +5,7 @@ using System.Globalization;
 using ModuleWheels;
 using UnityEngine;
 using VehiclePhysics;
-using com.github.lhervier.ksp.fix.suspensions.endstopslide;
+using com.github.lhervier.ksp.fix.suspensions.vesselbodies;
 
 namespace com.github.lhervier.ksp.fix.suspensions.fixedtuning
 {
@@ -247,7 +247,7 @@ namespace com.github.lhervier.ksp.fix.suspensions.fixedtuning
         private static void Read(Measure m)
         {
             ModuleWheelSuspension s = m.Tuning.Suspension;
-            KSPWheelController wheel = s != null ? FixedTuning.Wheel(s) : null;
+            KSPWheelController wheel = s != null ? WheelContacts.Controller(s) : null;
             VehicleBase.WheelState state = wheel != null && wheel.enabled && wheel.wheelState != null &&
                 wheel.wheelState.Length > 0 ? wheel.wheelState[0] : null;
             VPWheelCollider col = state != null ? state.wheelCol : null;
@@ -256,14 +256,14 @@ namespace com.github.lhervier.ksp.fix.suspensions.fixedtuning
                 return;
             }
             WheelHit hit;
-            float travel = col.lastRuntimeSuspensionTravel;
-            if (!col.GetGroundHit(out hit) || travel <= 0f)
+            float travel, compression;
+            if (!WheelContacts.Read(col, out hit, out travel, out compression) || travel <= 0f)
             {
                 return;
             }
             m.Grounded++;
             m.Force += hit.force;
-            m.Compression += EndStopSlide.ContactDepth(col, hit.point, travel) / travel;
+            m.Compression += compression;
             m.Point = hit.point;
             m.Axis = col.cachedTransform.up;
             m.Spring = col.springRate;

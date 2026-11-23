@@ -31,10 +31,6 @@ namespace com.github.lhervier.ksp.fix.suspensions.damperbounce
         private static readonly MethodInfo FixedUpdate =
             AccessTools.DeclaredMethod(typeof(ModuleWheelSuspension), "FixedUpdate");
 
-        /// <summary>The wheel of a wheel submodule, internal to the game's assembly.</summary>
-        private static readonly AccessTools.FieldRef<ModuleWheelSubmodule, KSPWheelController> Wheel =
-            AccessTools.FieldRefAccess<ModuleWheelSubmodule, KSPWheelController>("wheel");
-
         /// <summary>The damper SuspensionSpringUpdate last computed, before it decides whether to set it.</summary>
         private static readonly AccessTools.FieldRef<ModuleWheelSuspension, float> StockDamper =
             AccessTools.FieldRefAccess<ModuleWheelSuspension, float>("damper");
@@ -59,7 +55,7 @@ namespace com.github.lhervier.ksp.fix.suspensions.damperbounce
 
         /// <summary>
         /// Patches the spring and damper update of the suspensions whose wheel is on the ground, and the physics step of
-        /// those whose wheel is off it.
+        /// those whose wheel is off it, and installs the <see cref="WheelContacts"/>, which read the wheels' contacts.
         /// </summary>
         /// <exception cref="MissingMemberException">A member the fix reads is missing from the game.</exception>
         public static void Install(Harmony harmony)
@@ -72,6 +68,7 @@ namespace com.github.lhervier.ksp.fix.suspensions.damperbounce
             {
                 throw new MissingMemberException("ModuleWheelSuspension.FixedUpdate");
             }
+            WheelContacts.Install(harmony);
             harmony.Patch(SuspensionSpringUpdate,
                 postfix: new HarmonyMethod(typeof(DamperBounce), nameof(SuspensionSpringUpdatePostfix)));
             harmony.Patch(FixedUpdate, postfix: new HarmonyMethod(typeof(DamperBounce), nameof(FixedUpdatePostfix)));
@@ -86,7 +83,7 @@ namespace com.github.lhervier.ksp.fix.suspensions.damperbounce
         /// </summary>
         private static void SuspensionSpringUpdatePostfix(ModuleWheelSuspension __instance)
         {
-            KSPWheelController wheel = Wheel(__instance);
+            KSPWheelController wheel = WheelContacts.Controller(__instance);
             Vessel vessel = __instance.vessel;
             if (wheel == null || wheel.wheelCollider == null || vessel == null)
             {
@@ -103,7 +100,7 @@ namespace com.github.lhervier.ksp.fix.suspensions.damperbounce
         /// </summary>
         private static void FixedUpdatePostfix(ModuleWheelSuspension __instance)
         {
-            KSPWheelController wheel = Wheel(__instance);
+            KSPWheelController wheel = WheelContacts.Controller(__instance);
             Vessel vessel = __instance.vessel;
             if (!HighLogic.LoadedSceneIsFlight || wheel == null || wheel.wheelCollider == null || vessel == null ||
                 __instance.part == null || __instance.part.packed || wheel.IsGrounded)
@@ -227,10 +224,28 @@ namespace com.github.lhervier.ksp.fix.suspensions.damperbounce
             // wheel will touch first.
             VehicleBase.WheelState state = wheel.wheelState != null && wheel.wheelState.Length > 0
                 ? wheel.wheelState[0] : null;
-            if (state != null && state.grounded && state.hit.normal != Vector3.zero)
+            bool grounded = false;
+            WheelHit hit = default(WheelHit);
+            if (state != null && state.wheelCol != null)
             {
-                normal = state.hit.normal;
-                point = state.hit.point;
+                // The contact as the vessel's wheels were read at this step; a wheel VPP had not updated yet when they
+                // were, read alone.
+                WheelContacts.Wheel read = WheelContacts.Of(suspension.vessel).Find(state);
+                if (read != null)
+                {
+                    grounded = read.grounded;
+                    hit = read.hit;
+                }
+                else
+                {
+                    float travel, compression;
+                    grounded = WheelContacts.Read(state.wheelCol, out hit, out travel, out compression);
+                }
+            }
+            if (grounded && hit.normal != Vector3.zero)
+            {
+                normal = hit.normal;
+                point = hit.point;
             }
             else
             {
@@ -261,14 +276,9 @@ namespace com.github.lhervier.ksp.fix.suspensions.damperbounce
                 suspensions = vessel.FindPartModulesImplementing<ModuleWheelSuspension>();
             }
             count.All = suspensions.Count;
-            for (int i = 0; i < suspensions.Count; i++)
-            {
-                KSPWheelController wheel = Wheel(suspensions[i]);
-                if (wheel != null && wheel.IsGrounded)
-                {
-                    count.Grounded++;
-                }
-            }
+            // The wheels on the ground as the vessel's wheels were read at this step: every stock wheel has a
+            // suspension.
+            count.Grounded = WheelContacts.Of(vessel).grounded;
             counts[vessel] = count;
             return count;
         }

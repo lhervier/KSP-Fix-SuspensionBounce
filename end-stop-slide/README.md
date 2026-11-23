@@ -120,7 +120,8 @@ falling at 9 m/s onto its LT-1 legs closes a fifth of their travel at each step.
 short of its end-stop when it is already past it; PhysX's end-stop then pushes the whole overshoot back out within
 that step, whatever force the mod adds, and the lander bounces back up. So the mod moves each wheel coming towards
 its end-stop on by its speed over a step before it measures the travel it has left; a wheel at rest on its end-stop,
-or leaving it, is measured as reported.
+or leaving it, is measured as reported. The contacts are read once per step for both fixes
+([Vessel Bodies](../vessel-bodies/README.md#one-read-of-the-wheels-contacts-per-vessel-and-per-step)).
 
 The travel is measured along the axis of the suspension, down to the ground. A leg that leans out, as the LT-1 does,
 closes its travel faster than the lander comes down, and the lander comes down faster than the leg moves along its
@@ -130,8 +131,9 @@ share comes from the ground, not the direction of its normal, for the reason abo
 ### After a time warp
 
 A vessel put on rails, by a time warp or when it is moved, gets new wheels from VPP when it comes back, on the same
-parts. The mod forgets a wheel that VPP has not updated for more than two and a half steps: the old one would
-otherwise be held as a wheel of its own, and take its share of the load away from the tyres that remain.
+parts. The read of the contacts forgets a wheel that VPP has not updated for more than two and a half steps, and the
+fix with it: the old one would otherwise be held as a wheel of its own, and take its share of the load away from the
+tyres that remain.
 
 ### What the tyres see
 
@@ -156,31 +158,20 @@ to, and how it finds and applies the forces, are in
 
 The work is done in a postfix of `VehicleBase.CalculateSuspensionForces`, which VPP calls at each step for each wheel,
 once the spring force is read and before the tyre's load is drawn from it; only once per vessel and per step, at its
-first wheel (`Solve`). Each wheel has a probe (`Probe`), which is also its contact for the solver. Each step starts by
-forgetting the wheels VPP no longer updates ([After a time warp](#after-a-time-warp)):
+first wheel (`Solve`). Each wheel has a probe (`Probe`), which is also its contact for the solver. Each step starts
+with the contacts of the vessel's wheels, read once per step for both fixes (`WheelContacts.Of`,
+[Vessel Bodies](../vessel-bodies/README.md#wheelcontacts)): the axis of each suspension (`w.axis`), how fast the wheel
+closes its travel, along that axis over the square of the axis's share along the ground normal (`w.rate`), and the
+travel it has left, moved on by a step for a wheel coming towards its end-stop
+([Where the wheel is now](#where-the-wheel-is-now)). The probes of the wheels that read has forgotten are dropped
+([After a time warp](#after-a-time-warp)). The fix follows the vessel only if a wheel could reach its end-stop during
+the step:
 
 ```csharp
-if (p.lastTime >= 0f && now - p.lastTime > 2.5f * dt)
-{
-    probes.Remove(p.state);
-    Probes.RemoveAt(i);
-}
-```
-
-It then reads the contact of each wheel: the axis of its suspension (`p.axis`), how fast it closes its travel, along
-that axis over the square of the axis's share along the ground normal (`p.rate`), and the travel it has left, moved on
-by a step for a wheel coming towards its end-stop ([Where the wheel is now](#where-the-wheel-is-now)). It follows the
-vessel only if one of them could reach its end-stop during the step:
-
-```csharp
-float upright = Mathf.Max(0.5f, Vector3.Dot(p.hit.normal, p.axis));
-p.rate = p.axis / (upright * upright);
-float closing = -Vector3.Dot(p.body.GetPointVelocity(p.hit.point), p.rate);
-p.gap = (1f - p.compression) * travel;
+WheelContacts read = WheelContacts.Of(vessel);
 ...
-p.gap -= Mathf.Max(0f, closing) * dt;
-...
-near |= p.gap <= Mathf.Max(0f, closing + fall) * dt;
+near |= w.gap <= Mathf.Max(0f, w.closing + fall) * dt;
+p.gap = Mathf.Max(0f, w.gap);
 ```
 
 When it does, it hands the solver every wheel of the vessel, those on the ground, and the forces it knows acted on them

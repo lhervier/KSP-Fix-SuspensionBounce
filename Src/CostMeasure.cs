@@ -5,6 +5,7 @@ using HarmonyLib;
 using ModuleWheels;
 using UnityEngine;
 using VehiclePhysics;
+using com.github.lhervier.ksp.fix.suspensions.endstopslide;
 using com.github.lhervier.ksp.fix.suspensions.vesselbodies;
 
 namespace com.github.lhervier.ksp.fix.suspensions
@@ -66,6 +67,10 @@ namespace com.github.lhervier.ksp.fix.suspensions
         private static readonly MethodInfo DamageFixedUpdate =
             AccessTools.DeclaredMethod(typeof(ModuleWheelDamage), "FixedUpdate");
 
+        /// <summary>Postfixed by the wheels' contacts that both fixes read, inside VehicleBase.FixedUpdate.</summary>
+        private static readonly MethodInfo CalculateSuspensionTravel =
+            AccessTools.DeclaredMethod(typeof(VehicleBase), "CalculateSuspensionTravel");
+
         /// <summary>
         /// Prefixed by EndStopSlide's contact solver, once per part and step: outside the game's wheel methods.
         /// </summary>
@@ -106,6 +111,11 @@ namespace com.github.lhervier.ksp.fix.suspensions
                     Patch(harmony, method, null, 0, nameof(StartFix), FixStart);
                     Patch(harmony, method, null, 0, nameof(StopEndStops), FixStop);
                 }
+                // The wheels' contacts are followed for both fixes: counted with End-Stop Slide when it runs, as it
+                // reads them first, else with Damper Bounce.
+                Patch(harmony, CalculateSuspensionTravel, null, 0, nameof(StartFix), FixStart);
+                Patch(harmony, CalculateSuspensionTravel, null, 0,
+                    EndStopSlide.Enabled ? nameof(StopEndStops) : nameof(StopSuspension), FixStop);
                 Patch(harmony, DamageFixedUpdate, nameof(StartFix), FixStart, null, 0);
                 Patch(harmony, DamageFixedUpdate, nameof(StopEndStops), FixStop, null, 0);
                 Patch(harmony, Integrate, nameof(StartFix), FixStart, null, 0);

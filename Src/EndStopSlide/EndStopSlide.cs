@@ -43,12 +43,6 @@ namespace com.github.lhervier.ksp.fix.suspensions.endstopslide
         public static bool Inject = true;
 
         /// <summary>
-        /// Whether the travel left is read where the wheel is at the start of the coming step, the contact PhysX reports
-        /// being a step old (true), or as PhysX reports it (false).
-        /// </summary>
-        public static bool PredictContact = true;
-
-        /// <summary>
         /// What the fix found for one wheel at the last physics step, kept for reading in game; the wheel's contact for
         /// the solver, its gap the travel left before its end-stop, its force the end-stop force
         /// (<see cref="ContactSolver.Contact.held"/>).
@@ -59,7 +53,7 @@ namespace com.github.lhervier.ksp.fix.suspensions.endstopslide
             public uint persistentId;
             /// <summary>
             /// Contact depth over the travel, where PhysX's suspension really is: 0 fully extended, 1 on its end-stop
-            /// (<see cref="ContactDepth"/>).
+            /// (<see cref="WheelContacts.ContactDepth"/>).
             /// </summary>
             public float compression;
             /// <summary>Force PhysX reports for the spring and damper (kN).</summary>
@@ -69,12 +63,14 @@ namespace com.github.lhervier.ksp.fix.suspensions.endstopslide
 
             internal VehicleBase.WheelState state;
             internal Part part;
+            /// <summary>The wheel as the contacts' read follows it (<see cref="WheelContacts"/>).</summary>
+            internal WheelContacts.Wheel wheel;
             /// <summary>Force added to the one VPP reads at this step (kN).</summary>
             internal float injected;
             internal float lastTime = -1f;
             internal Vector3 lastTyreForce;
             internal Vector3 lastTyrePoint;
-            /// <summary>The contact PhysX reports for the last step, read before VPP reads it.</summary>
+            /// <summary>The contact PhysX reports for the last step (<see cref="WheelContacts"/>).</summary>
             internal WheelHit hit;
             internal bool grounded;
         }
@@ -92,11 +88,6 @@ namespace com.github.lhervier.ksp.fix.suspensions.endstopslide
             AccessTools.DeclaredMethod(typeof(VehicleBase), "ApplyTireForce");
         private static readonly MethodInfo DamageFixedUpdate =
             AccessTools.DeclaredMethod(typeof(ModuleWheelDamage), "FixedUpdate");
-
-        private static readonly AccessTools.FieldRef<VehicleBase, Rigidbody> VehicleBody =
-            AccessTools.FieldRefAccess<VehicleBase, Rigidbody>("m_rigidbody");
-        private static readonly AccessTools.FieldRef<ModuleWheelSubmodule, KSPWheelController> Wheel =
-            AccessTools.FieldRefAccess<ModuleWheelSubmodule, KSPWheelController>("wheel");
 
         private static void CalculateSuspensionForcesPostfix(VehicleBase __instance, VehicleBase.WheelState wheel)
         {
@@ -125,7 +116,8 @@ namespace com.github.lhervier.ksp.fix.suspensions.endstopslide
 
         /// <summary>
         /// Patches VPP's suspension step and the wheel damage that reads the tyre load, and installs the
-        /// <see cref="ContactSolver"/>, which records KSP's forces while the fix is on.
+        /// <see cref="WheelContacts"/>, which follow the wheels, and the <see cref="ContactSolver"/>, which records KSP's
+        /// forces while the fix is on.
         /// </summary>
         /// <exception cref="MissingMemberException">A member the fix reads is missing from the game.</exception>
         public static void Install(Harmony harmony)
@@ -146,6 +138,7 @@ namespace com.github.lhervier.ksp.fix.suspensions.endstopslide
             {
                 throw new MissingMemberException("VehicleBase.ApplyTireForce");
             }
+            WheelContacts.Install(harmony);
             ContactSolver.Install(harmony, () => Enabled);
             harmony.Patch(CalculateSuspensionForces,
                 postfix: new HarmonyMethod(typeof(EndStopSlide), nameof(CalculateSuspensionForcesPostfix)));
@@ -177,7 +170,7 @@ namespace com.github.lhervier.ksp.fix.suspensions.endstopslide
             {
                 return;
             }
-            Probe probe = ProbeOf(vehicle, wheel);
+            Probe probe = ProbeOf(WheelContacts.Get(wheel));
             if (probe == null)
             {
                 return;
@@ -273,39 +266,40 @@ namespace com.github.lhervier.ksp.fix.suspensions.endstopslide
 
         private static VehicleBase.WheelState StateOf(ModuleWheelDamage damage)
         {
-            KSPWheelController controller = Wheel(damage);
+            KSPWheelController controller = WheelContacts.Controller(damage);
             return controller != null && controller.wheelState != null && controller.wheelState.Length > 0
                 ? controller.wheelState[0] : null;
         }
 
-        /// <summary>Returns the probe of a wheel, created at its first step; null when the wheel has no part.</summary>
-        private static Probe ProbeOf(VehicleBase vehicle, VehicleBase.WheelState wheel)
+        /// <summary>
+        /// Returns the probe of a wheel the contacts' read follows, created at its first step; null for no wheel.
+        /// </summary>
+        private static Probe ProbeOf(WheelContacts.Wheel wheel)
         {
-            Probe probe;
-            if (probes.TryGetValue(wheel, out probe))
-            {
-                if (probe.body != null && probe.part != null)
-                {
-                    return probe;
-                }
-                Probes.Remove(probe);
-                probes.Remove(wheel);
-            }
-            Rigidbody body = VehicleBody(vehicle);
-            Part part = body != null ? body.GetComponent<Part>() : null;
-            if (part == null)
+            if (wheel == null)
             {
                 return null;
             }
+            Probe probe;
+            if (probes.TryGetValue(wheel.state, out probe))
+            {
+                if (probe.wheel == wheel)
+                {
+                    return probe;
+                }
+                // The read follows the state anew, its body or part gone: so does the probe.
+                Probes.Remove(probe);
+            }
             probe = new Probe
             {
-                partName = part.name,
-                persistentId = part.persistentId,
-                state = wheel,
-                body = body,
-                part = part
+                partName = wheel.part.name,
+                persistentId = wheel.part.persistentId,
+                state = wheel.state,
+                wheel = wheel,
+                body = wheel.body,
+                part = wheel.part
             };
-            probes[wheel] = probe;
+            probes[wheel.state] = probe;
             Probes.Add(probe);
             return probe;
         }
@@ -318,21 +312,8 @@ namespace com.github.lhervier.ksp.fix.suspensions.endstopslide
         private static readonly List<ContactSolver.KnownForce> known = new List<ContactSolver.KnownForce>();
 
         /// <summary>
-        /// How deep (m) <paramref name="contactPoint"/> is into the travel of the wheel of <paramref name="col"/>, its
-        /// suspension at <paramref name="travel"/>, where PhysX's <c>WheelCollider</c> really is: 0 at full extension,
-        /// <paramref name="travel"/> on its end-stop.
-        /// </summary>
-        internal static float ContactDepth(VPWheelCollider col, Vector3 contactPoint, float travel)
-        {
-            // VPP's own depth leaves out the wheel's centre: VPP places Unity's collider at that centre, shifted along
-            // the travel by the anchor, but GetContactDepth counts the anchor's shift only. A wheel whose part sets a
-            // centre, such as the LT-1 leg (-0.119 m), would seem that much less compressed: short of its end-stop
-            // while PhysX's end-stop already carries it.
-            return col.GetContactDepth(contactPoint, travel) - col.center.y;
-        }
-
-        /// <summary>
-        /// Once per physics step and vessel, at its first wheel: reads the contact of every wheel of the vessel. While
+        /// Once per physics step and vessel, at its first wheel: reads the contact of every wheel of the vessel
+        /// (<see cref="WheelContacts"/>). While
         /// one of them could reach its end-stop during the coming step, hands the wheels on the ground to the
         /// <see cref="ContactSolver"/>, each a contact along the axis of its suspension whose gap is the travel it has
         /// left, with the forces known to act on them over the last step (the suspension springs, the tyre forces), for
@@ -349,72 +330,44 @@ namespace com.github.lhervier.ksp.fix.suspensions.endstopslide
             float now = Time.fixedTime;
             float dt = Time.fixedDeltaTime;
 
-            wheels.Clear();
+            // Every wheel's contact, as PhysX reports it for the last step, the travel each has left moved on to where
+            // the wheel is now (WheelContacts.Predict).
+            WheelContacts read = WheelContacts.Of(vessel);
             for (int i = Probes.Count - 1; i >= 0; i--)
             {
+                // The probe of a wheel the read no longer follows is dropped with it: a vessel packed and unpacked
+                // again gets new wheel states on the same parts, and the old ones would be held as wheels of their own,
+                // their share of the load given to tyres that no longer exist.
                 Probe p = Probes[i];
-                // A wheel state VPP no longer updates is dropped: a vessel packed and unpacked again (time warp on
-                // rails, a vessel moved) gets new wheel states on the same parts, and the old ones would be held as
-                // wheels of their own, their share of the load given to tyres that no longer exist. A wheel still in
-                // use gets a new probe at its next step.
-                if (p.lastTime >= 0f && now - p.lastTime > 2.5f * dt)
+                if (!p.wheel.alive)
                 {
                     probes.Remove(p.state);
                     Probes.RemoveAt(i);
                 }
             }
-            for (int i = 0; i < Probes.Count; i++)
-            {
-                Probe p = Probes[i];
-                if (p.part != null && p.part.vessel == vessel && p.state.wheelCol != null)
-                {
-                    wheels.Add(p);
-                }
-            }
 
-            // Every wheel's contact, as PhysX reports it for the last step: the other wheels' VPP state is still that
-            // of the step before. The vessel is followed when a wheel could reach its end-stop during the coming step:
-            // the travel it has left is no more than what its speed towards the end-stop, plus a step of free fall,
-            // would cover.
+            // The vessel is followed when a wheel could reach its end-stop during the coming step: the travel it has
+            // left is no more than what its speed towards the end-stop, plus a step of free fall, would cover.
+            wheels.Clear();
             bool near = false;
             float fall = (float)vessel.graviticAcceleration.magnitude * dt;
-            for (int i = 0; i < wheels.Count; i++)
+            for (int i = 0; i < read.wheels.Count; i++)
             {
-                Probe p = wheels[i];
-                VPWheelCollider col = p.state.wheelCol;
-                p.grounded = col.GetGroundHit(out p.hit);
-                float travel = col.lastRuntimeSuspensionTravel;
-                // The end-stop works along the axis of the suspension, as PhysX's does.
-                p.axis = col.cachedTransform.up;
-                p.compression = p.grounded && travel > 0f ? ContactDepth(col, p.hit.point, travel) / travel : 0f;
-                p.springForce = p.grounded ? p.hit.force : 0f;
+                WheelContacts.Wheel w = read.wheels[i];
+                Probe p = ProbeOf(w);
+                wheels.Add(p);
+                p.grounded = w.grounded;
+                p.hit = w.hit;
+                p.axis = w.axis;
+                p.compression = w.compression;
+                p.springForce = w.grounded ? w.hit.force : 0f;
                 p.gap = 0f;
-                if (p.grounded)
+                if (w.grounded)
                 {
-                    p.point = p.hit.point;
-                    // PhysX measures the travel along the axis, down to the ground: a leg that leans out closes it
-                    // faster than the vessel comes down, and the vessel comes down faster than the leg moves along its
-                    // axis. The rate at which the travel opens, for a vessel coming straight down onto the ground, is
-                    // the speed along the axis over the square of the axis's share along the ground normal. Only the
-                    // tilt of the axis to the ground is taken from the ground normal, not its direction: a normal
-                    // tilted for a single step, by a bump or a seam between two pieces of terrain, would turn part of
-                    // the forward speed into a speed towards the end-stop.
-                    float upright = Mathf.Max(0.5f, Vector3.Dot(p.hit.normal, p.axis));
-                    p.rate = p.axis / (upright * upright);
-                    float closing = -Vector3.Dot(p.body.GetPointVelocity(p.hit.point), p.rate);
-                    p.gap = (1f - p.compression) * travel;
-                    // The contact is the one PhysX found at the start of the last step, the wheel where it was a step
-                    // ago: the wheel has since moved by its speed over that step. Read as it is, a wheel coming fast is
-                    // a step short of its end-stop when it is already past it, and PhysX's limit then pushes the whole
-                    // overshoot out in one step: a lander bounces off its legs. Only a wheel coming towards its end-stop
-                    // is moved on: a wheel at rest on it, rocking by a few millimetres as a rover drives, is held as
-                    // before.
-                    if (PredictContact)
-                    {
-                        p.gap -= Mathf.Max(0f, closing) * dt;
-                    }
-                    near |= p.gap <= Mathf.Max(0f, closing + fall) * dt;
-                    p.gap = Mathf.Max(0f, p.gap);
+                    p.point = w.hit.point;
+                    p.rate = w.rate;
+                    near |= w.gap <= Mathf.Max(0f, w.closing + fall) * dt;
+                    p.gap = Mathf.Max(0f, w.gap);
                 }
             }
             if (!near || vessel.packed)

@@ -1,8 +1,9 @@
 # Vessel Bodies
 
 Part of [Suspension Bounce Fix](../README.md): a service the fixes share, not a fix of its own. It has no switch: it
-runs whenever a fix that needs it does. It reads a vessel as one rigid body, once per vessel and per physics step,
-and holds contacts of the vessel within their limits for the fixes that hand it some.
+runs whenever a fix that needs it does. It reads a vessel as one rigid body, and the contact of each of its wheels
+with the ground, once per vessel and per physics step, and holds contacts of the vessel within their limits for the
+fixes that hand it some.
 
 ## One read per vessel and per step
 
@@ -25,6 +26,28 @@ the step, which moves every part, has the vessel read again.
 
 From these, the vessel as one body: its mass, its centre of mass, and its inertia about that centre, the inertia of
 each rigidbody turned to world axes, plus its mass about the vessel's centre of mass.
+
+## One read of the wheels' contacts per vessel and per step
+
+Both fixes look at where each wheel touches the ground: Damper Bounce counts the wheels on the ground and takes the
+point and the normal of each contact, End-Stop Slide measures the travel each wheel has left before its end-stop. They
+read it once per vessel and per step, the same read, by whichever fix asks first.
+
+- **The contact is a step old.** PhysX finds each wheel's contact at the start of its step, before it moves the
+  vessel; the game reads it at the next step. Vehicle Physics Pro reads it in each wheel's own update, so that within a
+  step a wheel not updated yet still holds the contact of the step before: the read asks PhysX itself, for every wheel
+  of the vessel at once.
+- **Where the wheel is now.** For a wheel coming towards its end-stop, the travel it has left is moved on by its speed
+  over a step: that is what End-Stop Slide needs
+  ([Where the wheel is now](../end-stop-slide/README.md#where-the-wheel-is-now)). Damper Bounce takes the contact as
+  PhysX reports it. The only change a step brings that could be foreseen, a wheel leaving the ground, would change
+  nothing for it: the damper of a wheel off the ground pushes nothing. A wheel that touches the ground at the coming
+  step cannot be foreseen: PhysX reports no contact for a wheel in the air, and it is for that step that Damper Bounce
+  bounds the damper of every wheel in the air ([Damper Bounce](../damper-bounce/README.md#the-fix)).
+- **The wheels are those the game updates.** A vessel put on rails, by a time warp or when it is moved, gets new wheels
+  from the game when it comes back, on the same parts: a wheel the game has not updated for more than two and a half
+  steps is forgotten, or it would be read as a wheel of its own. At the first step of a vessel loaded or unpacked, the
+  read is made again as the game updates each new wheel, so that every fix sees all of them.
 
 ## The mass at a contact: inertia, not load
 
@@ -138,6 +161,27 @@ return 1.0 / inverseMass;
 
 `inverse` is the inverse of the inertia tensor about the centre of mass, in world axes; when the tensor cannot be
 inverted, the vessel only resists being pushed, not being turned.
+
+### `WheelContacts`
+
+The read of the wheels' contacts is `WheelContacts.Of`, in
+[Src/VesselBodies/WheelContacts.cs](../Src/VesselBodies/WheelContacts.cs), installed by whichever fix needs it. A postfix
+of `VehicleBase.CalculateSuspensionTravel`, where the game has just read a wheel's contact, follows every wheel the
+game updates (`WheelContacts.Wheel`). The read forgets the wheels the game no longer updates, then reads the contact of
+each wheel of the vessel from PhysX (`WheelContacts.Read`, which the suspension window and Level also use for the
+compression they show), and moves on the travel left for a wheel coming towards its end-stop (`Predict`):
+
+```csharp
+float upright = Mathf.Max(0.5f, Vector3.Dot(w.hit.normal, w.axis));
+w.rate = w.axis / (upright * upright);
+w.closing = -Vector3.Dot(w.body.GetPointVelocity(w.hit.point), w.rate);
+w.gap = (1f - w.compression) * w.travel;
+...
+w.gap -= Mathf.Max(0f, w.closing) * dt;
+```
+
+The compression is measured where PhysX's `WheelCollider` really is (`ContactDepth`): Vehicle Physics Pro's own depth
+leaves out the centre the part gives the wheel, which the LT-1 leg sets to −0.119 m.
 
 ### `ContactSolver`
 

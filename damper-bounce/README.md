@@ -129,7 +129,9 @@ The `damperBounce` setting of the mod's `settings.cfg` file turns this fix off. 
 Everything is in [Src/DamperBounce/DamperBounce.cs](../Src/DamperBounce/DamperBounce.cs). On the ground, a postfix of
 `ModuleWheelSuspension.SuspensionSpringUpdate`, which KSP calls at every step where the wheel touches something
 (`SuspensionSpringUpdatePostfix`): the share is the vessel's mass shared between the wheels on the ground, counted
-once per vessel and per step (`Count`); `Apply` starts from the damper in the module's `damper` field:
+once per vessel and per step (`Count`) in the read of the wheels' contacts that both fixes share
+([Vessel Bodies](../vessel-bodies/README.md#one-read-of-the-wheels-contacts-per-vessel-and-per-step)); `Apply` starts
+from the damper in the module's `damper` field:
 
 ```csharp
 float share = (float)vessel.totalMass / Mathf.Max(count.Grounded, 1);
@@ -172,8 +174,8 @@ if (aimed >= ImplicitCeiling * most)
 damper = aimed / (1.0 - aimed * dt / movedMass);
 ```
 
-In `Apply`, the share is capped by the mass the vessel answers with at the point of contact
-(`wheelState[0].hit.point`), along the normal of the surface (`wheelState[0].hit.normal`), or at the wheel along the
+In `Apply`, the share is capped by the mass the vessel answers with at the point of contact (`hit.point`), along the
+normal of the surface (`hit.normal`), the contact as the same read gives it (`Contact`), or at the wheel along the
 local vertical when it touches nothing, from the read of [Vessel Bodies](../vessel-bodies/README.md):
 
 ```csharp

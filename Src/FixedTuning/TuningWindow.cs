@@ -4,7 +4,7 @@ using KSP.UI.Screens;
 using ModuleWheels;
 using UnityEngine;
 using VehiclePhysics;
-using com.github.lhervier.ksp.fix.suspensions.endstopslide;
+using com.github.lhervier.ksp.fix.suspensions.vesselbodies;
 
 namespace com.github.lhervier.ksp.fix.suspensions.fixedtuning
 {
@@ -275,7 +275,7 @@ namespace com.github.lhervier.ksp.fix.suspensions.fixedtuning
         private static string Contact(ModuleSuspensionTuning t)
         {
             ModuleWheelSuspension s = t.Suspension;
-            KSPWheelController wheel = s != null ? FixedTuning.Wheel(s) : null;
+            KSPWheelController wheel = s != null ? WheelContacts.Controller(s) : null;
             if (wheel == null || !wheel.enabled || wheel.wheelState == null || wheel.wheelState.Length == 0 ||
                 wheel.wheelState[0].wheelCol == null)
             {
@@ -283,12 +283,11 @@ namespace com.github.lhervier.ksp.fix.suspensions.fixedtuning
             }
             VPWheelCollider col = wheel.wheelState[0].wheelCol;
             WheelHit hit;
-            float travel = col.lastRuntimeSuspensionTravel;
-            if (!col.GetGroundHit(out hit) || travel <= 0f)
+            float travel, compression;
+            if (!WheelContacts.Read(col, out hit, out travel, out compression) || travel <= 0f)
             {
                 return "in the air";
             }
-            float compression = EndStopSlide.ContactDepth(col, hit.point, travel) / travel;
             return $"{Format(100f * compression, "0")} %, {Format(hit.force, "0.##")} kN";
         }
 

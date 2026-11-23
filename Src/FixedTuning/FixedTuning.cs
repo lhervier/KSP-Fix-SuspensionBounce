@@ -6,6 +6,7 @@ using HarmonyLib;
 using ModuleWheels;
 using UnityEngine;
 using com.github.lhervier.ksp.fix.suspensions.damperbounce;
+using com.github.lhervier.ksp.fix.suspensions.vesselbodies;
 
 namespace com.github.lhervier.ksp.fix.suspensions.fixedtuning
 {
@@ -62,9 +63,6 @@ namespace com.github.lhervier.ksp.fix.suspensions.fixedtuning
 
         private static readonly MethodInfo FixedUpdate =
             AccessTools.DeclaredMethod(typeof(ModuleWheelSuspension), "FixedUpdate");
-
-        internal static readonly AccessTools.FieldRef<ModuleWheelSubmodule, KSPWheelController> Wheel =
-            AccessTools.FieldRefAccess<ModuleWheelSubmodule, KSPWheelController>("wheel");
 
         private static readonly AccessTools.FieldRef<ModuleWheelSuspension, float> StockSpring =
             AccessTools.FieldRefAccess<ModuleWheelSuspension, float>("spring");
@@ -153,7 +151,7 @@ namespace com.github.lhervier.ksp.fix.suspensions.fixedtuning
             {
                 return;
             }
-            KSPWheelController wheel = Wheel(__instance);
+            KSPWheelController wheel = WheelContacts.Controller(__instance);
             Vessel vessel = __instance.vessel;
             // A retracted leg's wheel is switched off: nothing to set, and a write would wake its body for nothing.
             if (wheel == null || !wheel.enabled || wheel.wheelCollider == null || vessel == null)
