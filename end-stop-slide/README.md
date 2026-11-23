@@ -36,13 +36,14 @@ each one. VPP is written for a car made of one rigid body; KSP makes each wheel 
 
 ## Checking the culprit
 
-Each case has its page: the save or craft it starts from, how to play it by hand, the script that plays it, and what it
-shows without and with this mod. With this mod, they were played without Parking Brake, which it is not compatible with
-([Installing](../README.md#installing)), with its default settings, then again with Fixed Tuning alone
-(`damperBounce = false` and `endStopSlide = false` in its `settings.cfg`), and with Fixed Tuning and this fix
-(`damperBounce = false`). This mod hides the game's sliders: where a case needs soft springs, its save or craft holds
-them twice, the game's sliders at their lowest for the game without this mod, and the setting this mod's suspension
-window makes (*Auto* with a typed mass of 0.01 t) for this mod.
+Each case has its page: the save or craft it starts from, how to play it by hand, the script that plays it, and what
+it shows without and with this mod. They were played with Terrain Precision Fix, KSP-Fix-AutoStrut and
+[Physics Easing Fix](https://github.com/lhervier/KSP-Fix-PhysicsEasing), without Parking Brake, which this mod is not
+compatible with ([Installing](../README.md#installing)): without this mod, then with its default settings, then again
+with Fixed Tuning alone (`damperBounce = false` and `endStopSlide = false` in its `settings.cfg`), and with Fixed
+Tuning and this fix (`damperBounce = false`). This mod hides the game's sliders: where a case needs soft springs, its
+save or craft holds them twice, the game's sliders at their lowest for the game without this mod, and the setting this
+mod's suspension window makes (*Auto* with a typed mass of 0.01 t) for this mod.
 
 The saves were made, and the cases played, with KSP's terrain detail on *High* (*Settings*, *Graphics*): loaded at
 another detail, a save puts its vessel on a ground a little off.
@@ -78,8 +79,8 @@ rover, as before the warp.
 ### A rover driving in a straight line
 
 A rover set off from standstill on flat ground, throttle held, its steering let go: not a culprit, a check that this
-mod does not make a rover turn on its own. Set off from the same place, it turns by about half a degree in 30 s
-without this mod, and by about a tenth of a degree with it, in each of its configurations.
+mod does not make a rover turn on its own. Set off from the same place, it turns by about a tenth of a degree in
+30 s, with this mod or without it, in each of its configurations.
 
 **→ Full chapter: [A rover driving in a straight line](checked/a-rover-driving-in-a-straight-line.md)**
 

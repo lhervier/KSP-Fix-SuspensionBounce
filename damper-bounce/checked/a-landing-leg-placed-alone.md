@@ -8,7 +8,10 @@ A landing leg put down alone in EVA construction is thrown as soon as it has its
 `ModuleCargoPart.MakePartSettle` makes a part placed alone weigh 4 t for its first 3 s on the ground, 20 t below
 0.8 g. [Terrain Precision Fix](https://github.com/lhervier/KSP-Fix-TerrainPrecision), which this mod requires, gives
 the part its own mass from the start, with its `fixLonePartMass` setting on: its foot is on the ground, and the damper
-throws it at once. Without this mod, the damper is the game's
+throws it. [Physics Easing Fix](https://github.com/lhervier/KSP-Fix-PhysicsEasing), which this mod also requires,
+holds the leg still for a few physics steps once it is placed, as it does any vessel on wheels or legs that leaves the
+rails on the ground, then lets it go with its full weight: the damper throws it about one time in two. Without this
+mod, the damper is the game's
 ([a damper too strong for a light vessel](../../fixed-tuning/a-damper-too-strong-for-a-light-vessel.md)); with the
 player's setting, the leg keeps the one it had on the lander.
 
@@ -41,7 +44,7 @@ springs: the same leg, set down the same way from the same save.</em></td>
 </tr>
 </table>
 
-Without this mod, the leg leaves the ground within a fraction of a second, spinning, rises a few metres and is
+Without this mod, the leg often leaves the ground as it is let go, spinning, rises a few metres and may be
 destroyed when it lands (`landingLeg1 (…) Exploded!!` in `KSP.log`). With this mod, the leg tips over onto its side,
 as a leg standing on its foot would, and may roll or stand up again before it comes to rest. With `logLevel = Debug`
 in the settings, an earlier build of this mod, the game setting the springs, wrote:
@@ -60,16 +63,16 @@ lines of `KSP.log`.
 
     python check.py leg-kerbin --folder <your sandbox game> --ksp <your KSP folder> --trials 3 --label stock
 
-Played three times in each configuration, KSP 1.12.5, KSP Community Fixes and Terrain Precision Fix
-(`fixLonePartMass = true`): without this mod; and, with
-[KSP-Fix-AutoStrut](https://github.com/lhervier/KSP-Fix-AutoStrut) as well, without
-[Parking Brake](https://github.com/jarosm/KSP-ParkingBrake), which this mod is not compatible with, with this mod and
-its default settings, and with Fixed Tuning alone, `damperBounce = false` and `endStopSlide = false` in the mod's
-`settings.cfg`.
+Played ten times in each configuration, KSP 1.12.5, KSP Community Fixes, Terrain Precision Fix
+(`fixLonePartMass = true`), [KSP-Fix-AutoStrut](https://github.com/lhervier/KSP-Fix-AutoStrut) and Physics Easing
+Fix, without [Parking Brake](https://github.com/jarosm/KSP-ParkingBrake), which this mod is not compatible with:
+without this mod; with it and its default settings; and with Fixed Tuning alone, `damperBounce = false` and
+`endStopSlide = false` in the mod's `settings.cfg`.
 
 | | Without this mod | Fixed Tuning alone | This mod |
 |---|---|---|---|
-| Kerbin | out of sight 4 s after it is placed, 3 times out of 3; `landingLeg1 (…) Exploded!!` 2 times | out of sight 4 s after it is placed, 3 times out of 3; `landingLeg1 (…) Exploded!!` once | 20 s after, on its side next to where it was placed, 3 times out of 3; no `Exploded` line |
+| Kerbin, 20 s after it is placed | out of sight or still in the air, 5 times out of 10 | out of sight, 6 times out of 10 | on its side next to where it was placed, 10 times out of 10 |
+| `landingLeg1 (…) Exploded!!` in `KSP.log` | 3 times | once | never |
 
 With Fixed Tuning alone, the leg keeps the setting it had on the lander, sized for its share of a lander of 3.9 t on
 eight legs; this fix bounds its damper for the leg alone.

@@ -36,19 +36,20 @@ speed through [KSP-Util-MCPServer](https://github.com/lhervier/KSP-Util-MCPServe
     python check.py hinge-rover-eve --folder <your sandbox game> --trials 3 --label stock
     python check.py hinge-rover-eve-manual --folder <your sandbox game> --trials 3 --label stock
 
-Played three times in each configuration, KSP 1.12.5 and KSP Community Fixes: without this mod, its springs left to
-the game or set by hand; and, with [Terrain Precision Fix](https://github.com/lhervier/KSP-Fix-TerrainPrecision) and
-[KSP-Fix-AutoStrut](https://github.com/lhervier/KSP-Fix-AutoStrut) as well, without
-[Parking Brake](https://github.com/jarosm/KSP-ParkingBrake), which this mod is not compatible with, with this mod and
-its default settings, and with Fixed Tuning alone, `damperBounce = false` and `endStopSlide = false` in the mod's
-`settings.cfg`. The rover starts with its wheels off the ground: the time with no wheel on the ground counts the
-descent.
+Played three times in each configuration, KSP 1.12.5, KSP Community Fixes,
+[Terrain Precision Fix](https://github.com/lhervier/KSP-Fix-TerrainPrecision),
+[KSP-Fix-AutoStrut](https://github.com/lhervier/KSP-Fix-AutoStrut) and
+[Physics Easing Fix](https://github.com/lhervier/KSP-Fix-PhysicsEasing), without
+[Parking Brake](https://github.com/jarosm/KSP-ParkingBrake), which this mod is not compatible with: without this mod,
+its springs left to the game or set by hand; with this mod and its default settings; and with Fixed Tuning alone,
+`damperBounce = false` and `endStopSlide = false` in the mod's `settings.cfg`. The rover starts with its wheels off
+the ground: the time with no wheel on the ground counts the descent.
 
 | | Without this mod, springs left to the game | Without this mod, springs set by hand | Fixed Tuning alone | This mod |
 |---|---|---|---|---|
-| Top speed over the ground | 3.5 to 12 m/s | 0.24 to 0.31 m/s | 0.48 to 0.63 m/s | 0.24 to 0.26 m/s |
-| Time with no wheel on the ground | 13 to 49 % | 6 % | 6 % | 6 % |
-| Speed over the last 15 s | up to 0.3 mm/s, 1.7 m/s and 12 m/s | up to 0.13 mm/s | up to 0.46, 0.24 and 0.47 m/s | up to 0.07, 0.03 and 0.03 mm/s |
+| Top speed over the ground | 2.7 to 3.1 m/s | 0.28 to 0.32 m/s | 0.56 to 0.71 m/s | 0.23 to 0.30 m/s |
+| Time with no wheel on the ground | 11 to 25 % | 5 to 6 % | 6 % | 6 % |
+| Speed over the last 15 s | up to 0.54 mm/s, 1.6 m/s and 2.2 m/s | up to 0.04 mm/s | up to 0.25 m/s, 0.69 m/s and 0.13 mm/s | up to 0.09, 0.02 and 0.02 mm/s |
 | Parts | 63, none lost | 63, none lost | 63, none lost | 63, none lost |
 
-With Fixed Tuning alone, the rover is still moving at the end of every trial: it never comes to rest.
+With Fixed Tuning alone, the rover is still moving at the end of two trials out of three.

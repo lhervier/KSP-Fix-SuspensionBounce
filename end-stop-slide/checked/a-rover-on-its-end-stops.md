@@ -16,12 +16,8 @@ default).
   2.4 t on four TR-2L wheels, on flat ground near the space centre, on soft springs: all four wheels rest on their
   end-stops.
 - [saves/SuspensionBounceEndStopsSlope.sfs](../saves/SuspensionBounceEndStopsSlope.sfs): the same rover, brakes on,
-  on a slope of about 20° west of the space centre, on soft springs, resting on its end-stops; for the trials with
-  this mod.
-- [saves/SuspensionBounceEndStopsSlopeStock.sfs](../saves/SuspensionBounceEndStopsSlopeStock.sfs): the same, saved
-  with [Parking Brake](https://github.com/jarosm/KSP-ParkingBrake) on, for the trials without this mod. Parking Brake
-  holds the rover still as it loads; this mod is not compatible with it, and without it the rover of this save is
-  thrown off its end-stops as it loads.
+  on a slope of about 20° west of the space centre, on soft springs, resting on its end-stops; saved without Parking
+  Brake.
 
 Each save holds the soft springs twice. Without this mod, the game uses its own sliders, set by hand at their lowest
 (0.05) on flat ground, at 0.3 on the slope. This mod hides those sliders and uses its own setting, saved with the rover:
@@ -32,7 +28,7 @@ end-stops and still.
 
 ## By hand
 
-Load the save (on the slope, the one of the configuration played): nothing to set, with this mod or without it.
+Load the save: nothing to set, with this mod or without it.
 
 - **On flat ground**: drive the rover at full speed, about 24 m/s, in a straight line. Without this mod, it slides
   sideways as it goes, as on ice: on the navball, the speed marker drifts away from the heading. With this mod, it
@@ -42,8 +38,7 @@ Load the save (on the slope, the one of the configuration played): nothing to se
 
 ## By script
 
-[diag/automation/check.py](../../diag/automation/check.py) loads the save (on the slope, the one with Parking Brake
-when Parking Brake is installed) through
+[diag/automation/check.py](../../diag/automation/check.py) loads the save through
 [KSP-Util-MCPServer](https://github.com/lhervier/KSP-Util-MCPServer), the springs as saved, and records KSP Diag -
 Suspension: during a drive of 800 m at 24 m/s on flat ground, for 30 s on the slope. Its first lines say how to run it,
 and how to choose a configuration of this mod (its `settings.cfg`, KSP started again):
@@ -53,17 +48,20 @@ and how to choose a configuration of this mod (its `settings.cfg`, KSP started a
     python check.py end-stops-flat --folder <your sandbox game> --trials 3 --label modded
     python check.py end-stops-slope --folder <your sandbox game> --trials 3 --label modded
 
-Played once without this mod, KSP 1.12.5 and KSP Community Fixes, the springs as saved. With this mod, KSP 1.12.5, KSP
-Community Fixes, Terrain Precision Fix and KSP-Fix-AutoStrut, without Parking Brake, three times in each configuration,
-the springs as saved: with its default settings; with Fixed Tuning alone, `damperBounce = false` and
+Played three times in each configuration, KSP 1.12.5, KSP Community Fixes,
+[Terrain Precision Fix](https://github.com/lhervier/KSP-Fix-TerrainPrecision),
+[KSP-Fix-AutoStrut](https://github.com/lhervier/KSP-Fix-AutoStrut) and
+[Physics Easing Fix](https://github.com/lhervier/KSP-Fix-PhysicsEasing), without Parking Brake, the springs as saved:
+without this mod; with this mod and its default settings; with Fixed Tuning alone, `damperBounce = false` and
 `endStopSlide = false` in the mod's `settings.cfg`; and with Fixed Tuning and this fix, `damperBounce = false`.
+Physics Easing Fix holds the rover still as it loads, and lets it go once its wheels hold it.
 
 | | Without this mod | Fixed Tuning alone | Fixed Tuning and this fix | This mod |
 |---|---|---|---|---|
-| **Flat ground, above 20 m/s**: share of the weight the tyres read (5th percentile, median, 95th) | -1 %, 0 %, 1 % | 37 %, 37 %, 37 % | 97 to 98 %, 99 %, 100 % | 97 to 98 %, 99 %, 100 % |
-| Speed across the heading, 95th percentile | 0.15 m/s | 0.02 to 0.05 m/s | 0.04 m/s | 0.04 to 0.05 m/s |
-| Angle between the speed and the heading, 95th percentile | 0.36° | 0.06° to 0.11° | 0.09° to 0.10° | 0.09° to 0.11° |
-| Wheel readings where the tyre skids | 64 % | 7 % | 1.6 % | 1.6 % |
+| **Flat ground, above 20 m/s**: share of the weight the tyres read (5th percentile, median, 95th) | -0.8 to -0.4 %, 0 %, 0.4 to 0.8 % | 37 %, 37 %, 37 % | 97 to 98 %, 99 %, 100 % | 97 to 98 %, 99 %, 100 % |
+| Speed across the heading, 95th percentile | 0.16 to 0.38 m/s | 0.03 to 0.04 m/s | 0.04 to 0.05 m/s | 0.04 to 0.05 m/s |
+| Angle between the speed and the heading, 95th percentile | 0.38° to 0.91° | 0.07° to 0.10° | 0.09° to 0.12° | 0.10° to 0.12° |
+| Wheel readings where the tyre skids | 64 to 66 % | 7 % | 1.6 % | 1.6 % |
 
 On flat ground, Fixed Tuning alone already keeps the rover in a straight line: its soft springs still carry a little
 over a third of its weight. This fix gives the tyres the whole weight back, and they skid four times less.
@@ -71,9 +69,10 @@ over a third of its weight. This fix gives the tyres the whole weight back, and 
 | | Without this mod | Fixed Tuning alone | Fixed Tuning and this fix | This mod |
 |---|---|---|---|---|
 | **Slope**: share of the weight the tyres read (median) | 31 % | 39 % | 99 % | 99 % |
-| Top speed over the ground | — | 1.2 m/s | 0.07 m/s | 0.07 to 0.09 m/s |
-| How far it turned in 30 s | — | −7.4° to −7.5° | 1.0° to 1.1° | 1.1° to 1.2° |
-| Speed over the last 10 s | up to 1.1 m/s | 0.88 m/s | up to 0.37 mm/s | up to 0.41 mm/s |
+| Top speed over the ground | 1.5 m/s | 1.2 m/s | 0.003 m/s | 0.003 to 0.005 m/s |
+| How far it turned in 30 s | −5.9° to −6.0° | −7.4° to −7.6° | −0.02° to −0.03° | 0.0° to −0.02° |
+| Speed over the last 10 s | 1.1 m/s | 0.88 m/s | up to 0.37 mm/s | up to 0.41 mm/s |
 
-On the slope, this fix is what holds the rover. With Fixed Tuning alone, it slides down, brakes on, at about 0.9 m/s,
-turning as it goes. With this fix, it turns by about a degree in the first second after the save loads, then holds.
+On the slope, this fix is what holds the rover. Without this mod, it slides down, brakes on, at about 1.1 m/s, and with
+Fixed Tuning alone at about 0.9 m/s, turning as it goes. With this fix, it holds from the moment Physics Easing Fix
+lets it go.

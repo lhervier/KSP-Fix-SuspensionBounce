@@ -45,26 +45,26 @@ With this mod, it stays on its wheels.
     python check.py heavy-rover-eve --folder <your sandbox game> --ksp <your KSP folder> --label stock
     python check.py bulldozer-eve --folder <your sandbox game> --ksp <your KSP folder> --trials 3 --label stock
 
-Without this mod, each save was played three times: the bulldozer with KSP 1.12.5, KSP Community Fixes and
-KSP-Mod-Bulldozer; the heavy rover with KSP 1.12.5, KSP Community Fixes,
+Played three times in each configuration, KSP 1.12.5, KSP Community Fixes,
 [Terrain Precision Fix](https://github.com/lhervier/KSP-Fix-TerrainPrecision),
 [KSP-Fix-AutoStrut](https://github.com/lhervier/KSP-Fix-AutoStrut) and
-[Parking Brake](https://github.com/jarosm/KSP-ParkingBrake), which its save was made with. With this mod, KSP 1.12.5,
-KSP Community Fixes, Terrain Precision Fix and
-KSP-Fix-AutoStrut, without Parking Brake, which this mod is not compatible with (for the bulldozer, the blade's part
-from KSP-Mod-Bulldozer, its plugin left out: it clears ground scatters, nothing this case uses), each save was played
-three times with its default settings, and three times with Fixed Tuning alone, `damperBounce = false` and
-`endStopSlide = false` in the mod's `settings.cfg`; the rover settles on its own as it loads.
+[Physics Easing Fix](https://github.com/lhervier/KSP-Fix-PhysicsEasing), without
+[Parking Brake](https://github.com/jarosm/KSP-ParkingBrake), which this mod is not compatible with, and, for the
+bulldozer, KSP-Mod-Bulldozer: without this mod; with it and its default settings; and with Fixed Tuning alone,
+`damperBounce = false` and `endStopSlide = false` in the mod's `settings.cfg`. Physics Easing Fix holds the rover still
+as it loads, and lets it go once its wheels hold it.
 
 | | Without this mod | Fixed Tuning alone | This mod |
 |---|---|---|---|
-| **Heavy rover**: top speed over the ground | 0.17 to 3.7 m/s | 1.0 to 2.9 m/s | 0.02 m/s |
-| Time with no wheel on the ground | 0 to 14 % | 5 to 23 % | 0 |
-| How far it turned in 30 s | −1.3°, −12°, −233° | 6.7°, −75°, −22° | 0.15° to 0.21° |
-| Speed over the last 10 s | up to 2.8 mm/s, 3.0 m/s and 6.5 mm/s | up to 0.12 mm/s, 1.2 m/s and 80 mm/s | up to 1.8 mm/s |
-| `KSP.log` | `Hit Eve … at 56.2 to 71.4 m.s and damaged wheel.`, 2 trials out of 3 | `Hit Eve … at 78.6 to 111.3 m.s and damaged wheel.`, 3 trials out of 3 | nothing |
-| **Bulldozer**: top speed over the ground | 1.7 to 2.4 m/s | 1.8 to 3.1 m/s | 0.07 to 0.12 m/s |
-| Time with no wheel on the ground | 8 to 14 % | 6 to 8 % | 0 |
-| How far it turned in 30 s | — | −130°, 41°, −123° | −0.4° to 0.3° |
-| Speed over the last 10 s | — | up to 0.46, 0.21 and 1.4 mm/s | up to 0.45 mm/s |
-| `KSP.log` | `Hit Eve … at 48.0 to 123.3 m.s and damaged wheel`, at 2 trials out of 3 | `Hit Eve … at 64.7 to 108.0 m.s and damaged wheel.`, 2 trials out of 3 | nothing |
+| **Heavy rover**: top speed over the ground | 2.6 to 4.5 m/s | 1.7 to 2.8 m/s | 0.01 m/s |
+| Time with no wheel on the ground | 14 to 17 % | 3 to 9 % | 0 |
+| How far it turned in 30 s | −508°, 1192°, −403° | 975°, −107°, 364° | 0.15° to 0.22° |
+| Speed over the last 10 s | up to 5.6 mm/s, 1.7 m/s and 11 mm/s | up to 2.8 m/s, 0.57 mm/s and 0.67 mm/s | up to 1.7 mm/s |
+| `KSP.log` | `Hit Eve … at 30.4 to 173.8 m.s and damaged wheel.`, 3 trials out of 3 | `Hit Eve … at 94.6 to 110.0 m.s and damaged wheel.`, 3 trials out of 3 | nothing |
+| **Bulldozer**: top speed over the ground | 2.9 to 6.8 m/s | 0.88 to 2.0 m/s | 0.07 m/s |
+| Time with no wheel on the ground | 79 to 94 % | 2 to 12 % | 0 |
+| How far it turned in 30 s | 202°, −200°, −121° | 203°, −16°, −41° | −0.7° to 0.3° |
+| Speed over the last 10 s | up to 0.15, 59 and 9.2 mm/s | up to 0.41, 2.0 and 1.8 m/s | up to 0.5 mm/s |
+| `KSP.log` | `Hit Eve … at 25.1 to 168.5 m.s and damaged wheel.`, 3 trials out of 3 | `Hit Eve … at 101.3 to 104.8 m.s and damaged wheel.`, 1 trial out of 3 | nothing |
+
+Without this mod, both are let go at rest on their wheels, and hop all the same.

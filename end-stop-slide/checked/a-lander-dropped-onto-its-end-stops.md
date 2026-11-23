@@ -46,22 +46,25 @@ KSP-Util-MCPServer refuses to launch a craft holding a part module the game does
 the sandbox game, under the same name, a copy of the craft without this mod's four `ModuleSuspensionTuning` modules,
 the rest unchanged.
 
-Played three times in each configuration, KSP 1.12.5, KSP Community Fixes, Terrain Precision Fix and
-KSP-Fix-AutoStrut, the springs as saved: without this mod, with Parking Brake; and, without Parking Brake, which this
-mod is not compatible with, with this mod and its default settings, with Fixed Tuning alone (`damperBounce = false`
-and `endStopSlide = false` in the mod's `settings.cfg`), and with Fixed Tuning and this fix (`damperBounce = false`).
+Played three times in each configuration, KSP 1.12.5, KSP Community Fixes,
+[Terrain Precision Fix](https://github.com/lhervier/KSP-Fix-TerrainPrecision),
+[KSP-Fix-AutoStrut](https://github.com/lhervier/KSP-Fix-AutoStrut) and
+[Physics Easing Fix](https://github.com/lhervier/KSP-Fix-PhysicsEasing), without
+[Parking Brake](https://github.com/jarosm/KSP-ParkingBrake), which this mod is not compatible with, the springs as
+saved: without this mod; with this mod and its default settings; with Fixed Tuning alone (`damperBounce = false` and
+`endStopSlide = false` in the mod's `settings.cfg`); and with Fixed Tuning and this fix (`damperBounce = false`).
 The table gives the range of the three trials. The fall is read from the first recording, from the first physics step
 a leg touches the ground on; the rest from the second, the lander at rest.
 
 | | Without this mod | Fixed Tuning alone | Fixed Tuning and this fix | This mod |
 |---|---|---|---|---|
 | **The fall**: speed at the touch | 9.3 m/s | 9.3 m/s | 9.3 m/s | 9.3 m/s |
-| Speed it bounces back up at | 3.0 to 3.4 m/s | 5.7 and 5.9 m/s; 0.29 m/s | 0.11 to 0.30 m/s | 0.12 to 0.33 m/s |
-| Time with a leg on its end-stop over the first 3 s | 82 to 84 % | 23 and 28 %; 91 % | 91 to 97 % | 93 to 97 % |
-| Time with no leg on the ground over the first 3 s | 0 | 28 and 29 %; 0 | 0 | 0 |
+| Speed it bounces back up at | 2.8 to 6.2 m/s | 5.6 and 5.8 m/s; 0.34 m/s | 0.12 to 0.34 m/s | 0.12 to 0.33 m/s |
+| Time with a leg on its end-stop over the first 3 s | 73 to 85 % | 35 and 41 %; 87 % | 91 to 97 % | 94 to 97 % |
+| Time with no leg on the ground over the first 3 s | 0 | 27 and 28 %; 0 | 0 | 0 |
 | **At rest**: share of the weight the tyres read (median) | 0 % | 73 to 80 % | 93 % | 93 % |
-| Turn over 8 s | 0.2° to 0.7° | 0.0° to 0.08° | 0.0° | 0.0° |
-| Speed over the last third | 4.5 to 4.6 mm/s | 0.6 to 0.9 mm/s | 0.2 to 0.3 mm/s | 0.3 mm/s |
+| Turn over 8 s | −2.1° to 0.4° | 0.0° to −0.08° | 0.0° | 0.0° |
+| Speed over the last third | 4.2 to 4.7 mm/s | 0.5 to 1.0 mm/s | 0.25 to 0.35 mm/s | 0.24 to 0.35 mm/s |
 | Parts at the end, `KSP.log` | 12 of 12, nothing | 12 of 12, nothing | 12 of 12, nothing | 12 of 12, nothing |
 
 With Fixed Tuning alone, the legs reach their end-stops within a step and the game's end-stop throws the lander back

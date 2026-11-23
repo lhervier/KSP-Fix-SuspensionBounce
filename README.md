@@ -74,7 +74,12 @@ Requires:
   suspension;
 - [Terrain Precision Fix](https://github.com/lhervier/KSP-Fix-TerrainPrecision): its `fixLonePartMass` removes the
   4 t, or 20 t below 0.8 g, that `ModuleCargoPart.MakePartSettle` gives a part placed alone for its first seconds on
-  the ground.
+  the ground;
+- [Physics Easing Fix](https://github.com/lhervier/KSP-Fix-PhysicsEasing): without it, the game takes the weight off
+  a vessel when physics starts and brings it back over a few physics steps, while its wheels are built and its tyres
+  take hold of the ground: a rover braked on a slope slips and turns as it loads. Physics Easing
+  Fix gives the vessel its full weight at once, and holds a vessel on wheels or landing legs still until they hold
+  it.
 
 Copy `GameData/KSPFixSuspensionBounce` into the `GameData` folder of KSP.
 
@@ -85,7 +90,8 @@ height then rocks a little harder at each step, until it leaves the ground; Park
 leaves the ground, unless it is a rover, and the vessel may land on its side. With
 [End-Stop Slide](end-stop-slide/README.md), a braked vessel resting on its end-stops rocks from one long side to the
 other at every step, and creeps down a slope. Parking Brake works around vessels that
-will not stay still; the fixes of this mod, with its two siblings above, are meant to make it unnecessary.
+will not stay still; the fixes of this mod, with its two siblings above and Physics Easing Fix, which holds a vessel
+still as it loads, are meant to make it unnecessary.
 
 ## Building
 

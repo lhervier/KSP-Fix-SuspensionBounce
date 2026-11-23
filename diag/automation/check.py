@@ -33,13 +33,12 @@ Cases, and the save or craft each one loads, in the saves folder of the fix whos
     crane-mun-auto   vessel-bodies: SuspensionBounceCraneMunAuto: the same, its springs left to the game
     end-stops-flat   end-stop-slide: SuspensionBounceEndStopsFlat: a rover on soft springs, resting on its end-stops,
                      driven at 24 m/s
-    end-stops-slope  end-stop-slide: SuspensionBounceEndStopsSlope (SuspensionBounceEndStopsSlopeStock with Parking
-                     Brake installed): the same rover, braked across a slope of about 20 deg
-    end-stops-warp   end-stop-slide: the same saves: the same rover on its slope, the time warped on rails for a minute,
+    end-stops-slope  end-stop-slide: SuspensionBounceEndStopsSlope: the same rover, braked across a slope of about
+                     20 deg
+    end-stops-warp   end-stop-slide: the same save: the same rover on its slope, the time warped on rails for a minute,
                      as a player does near a rover at rest, before it is recorded
-    straight-line    end-stop-slide: SuspensionBounceRoverFlat (SuspensionBounceRoverFlatStock with Parking Brake
-                     installed): a rover driven from standstill on flat ground, wheel throttle held, steering, brakes
-                     and SAS let go
+    straight-line    end-stop-slide: SuspensionBounceRoverFlat: a rover driven from standstill on flat ground, wheel
+                     throttle held, steering, brakes and SAS let go
 
 The soft springs of end-stops-flat, end-stops-slope and lander-drop are in their save or craft, twice: this mod's
 setting, the one its suspension window makes (toolbar button Suspensions: Auto for Kerbin, a mass of 0.01 t typed,
@@ -52,42 +51,31 @@ starts: fixedTuning, damperBounce and endStopSlide, each true or false (Fixed Tu
 endStopSlide = false). Change it with KSP closed, then start KSP again; to play a case without this mod, remove its
 folder from GameData.
 
-The saves (but the crafts) were made with Parking Brake on, for the trials without this mod: installed, it may hold the
-vessel still as it loads, wherever the game puts it, and let it go once it has nothing left to cancel, brakes kept as
-saved; but it lets go of a vessel that leaves the ground as it loads, which then settles on its own. Two of them have
-a second save, made without Parking Brake, for the trials with this mod: the rover on its slope
-(SuspensionBounceEndStopsSlope; SuspensionBounceEndStopsSlopeStock with Parking Brake), which, saved under Parking
-Brake, sinks past its end-stops and is thrown off them as it loads when nothing holds it; and the rover of
-straight-line (SuspensionBounceRoverFlat; SuspensionBounceRoverFlatStock with Parking Brake), which, saved under
-Parking Brake, the game puts 6 m lower as it loads. The script loads the Stock one when Parking Brake is installed. The
-saves were made with the terrain detail High (settings.cfg, TERRAIN preset): a save loaded at another detail puts its
-vessel on a ground a little off.
-Install Parking Brake only to play without this mod, or with fixedTuning = false: it sets the vessel's speed back to
-zero at every physics step, and under Fixed Tuning's springs that makes the vessel rock a little harder at each step,
-as it loads, until it leaves the ground. The script refuses to start when Parking Brake is installed with Fixed Tuning
-on.
+The cases are played with Physics Easing Fix, which holds a vessel on wheels or legs still as it leaves the rails on
+the ground, and lets it go once they hold it, with this mod or without it. The saves were made with the terrain detail
+High (settings.cfg, TERRAIN preset): a save loaded at another detail puts its vessel on a ground a little off.
+The script refuses to start when Parking Brake is installed: it sets the vessel's speed back to zero at every physics
+step, and holds a braked vessel still until the player lets it go, which the script does not do.
 
-For each trial it loads the save (or launches the craft), lets the parking brake go if it holds the vessel, does what
-the case asks a player to do, records KSP Diag - Suspension (its button Record CSV) for --seconds seconds or for the
-whole drive, and takes a screenshot at the end. --brakes and --friction are set beforehand on each wheel's window, as
-the player does: its Brakes slider; its friction button (automatic friction off) and Friction Control slider. It then
-prints one line per trial, read from the recording, one line per wheel at each physics step: the speed over the ground
-(speed_mm_s), how many wheels touch the ground and are bottomed out, on their end-stops (grounded, bottomed), the share
-of the weight the suspensions carry (supported_pct), how far the vessel turned (yaw_rate_deg_s summed), and, while it
-drives, its speed across its heading (lateral_m_s), the angle between its speed and its heading (drift_deg) and the
-share of wheel readings where the tyre skids (regime); with --ksp, the lines KSP.log gained ("damaged wheel",
-"Exploded"); and the vessel's parts before and after.
-The lone leg is not the active vessel, which KSP Diag - Suspension reads: for it, only the log lines and a
+For each trial it loads the save (or launches the craft), does what the case asks a player to do, records KSP Diag -
+Suspension (its button Record CSV) for --seconds seconds or for the whole drive, and takes a screenshot at the end.
+--brakes and --friction are set beforehand on each wheel's window, as the player does: its Brakes slider; its friction
+button (automatic friction off) and Friction Control slider. It then prints one line per trial, read from the
+recording, one line per wheel at each physics step: the speed over the ground (speed_mm_s), how many wheels touch the
+ground and are bottomed out, on their end-stops (grounded, bottomed), the share of the weight the suspensions carry
+(supported_pct), how far the vessel turned (yaw_rate_deg_s summed), and, while it drives, its speed across its heading
+(lateral_m_s), the angle between its speed and its heading (drift_deg) and the share of wheel readings where the tyre
+skids (regime); with --ksp, the lines KSP.log gained ("damaged wheel", "Exploded"); and the vessel's parts before and
+after. The lone leg is not the active vessel, which KSP Diag - Suspension reads: for it, only the log lines and a
 screenshot every 4 s. The dropped lander hangs from its clamps for 2 s, then is let go by the next stage, KSP Diag -
 Suspension recording from just before: from that recording come how fast it touched the ground (vertical_m_s, the
-game's vertical speed, as the gauge shows it, at the first step with a leg on the ground) and, over the 3 s after,
-how deep its legs went (compression, 1 on the end-stop), the share of the steps with a leg on its end-stop
-(is_bottomed), how fast it bounced back up and how many steps it spent with no leg on the ground; see fall(). Then it
-is recorded at rest, as the other cases. A vessel with legs then folds them by the gear button and deploys them again,
-each phase recorded; how far the legs went is read in their windows (their state line and their deploy or retract
-button), compared with what the same windows showed before, whatever the game's language. Everything goes to --out:
-lines.json, the CSV files, the screenshots. It never saves the game, and quits KSP at the end (unless --keep-running
-is given).
+game's vertical speed, as the gauge shows it, at the first step with a leg on the ground) and, over the 3 s after, how
+deep its legs went (compression, 1 on the end-stop), the share of the steps with a leg on its end-stop (is_bottomed),
+how fast it bounced back up and how many steps it spent with no leg on the ground; see fall(). Then it is recorded at
+rest, as the other cases. A vessel with legs then folds them by the gear button and deploys them again, each phase
+recorded; how far the legs went is read in their windows (their state line and their deploy or retract button),
+compared with what the same windows showed before, whatever the game's language. Everything goes to --out: lines.json,
+the CSV files, the screenshots. It never saves the game, and quits KSP at the end (unless --keep-running is given).
 """
 import argparse
 import csv
@@ -114,12 +102,9 @@ CASES = {
     "crane-mun": dict(save="SuspensionBounceCraneMun", seconds=60, legs=True),
     "crane-mun-auto": dict(save="SuspensionBounceCraneMunAuto", seconds=60, legs=True),
     "end-stops-flat": dict(save="SuspensionBounceEndStopsFlat", drive=dict(heading=201, speed=24, distance=800)),
-    "end-stops-slope": dict(save="SuspensionBounceEndStopsSlope", stock_save="SuspensionBounceEndStopsSlopeStock",
-                            seconds=30),
-    "end-stops-warp": dict(save="SuspensionBounceEndStopsSlope", stock_save="SuspensionBounceEndStopsSlopeStock",
-                           seconds=30, warp=60),
-    "straight-line": dict(save="SuspensionBounceRoverFlat", stock_save="SuspensionBounceRoverFlatStock", seconds=30,
-                          coast=0.3),
+    "end-stops-slope": dict(save="SuspensionBounceEndStopsSlope", seconds=30),
+    "end-stops-warp": dict(save="SuspensionBounceEndStopsSlope", seconds=30, warp=60),
+    "straight-line": dict(save="SuspensionBounceRoverFlat", seconds=30, coast=0.3),
 }
 
 # The parts whose legs or gear deploy, by name.
@@ -262,38 +247,6 @@ def set_friction(value):
     call("part_menu", action="close")
 
 
-# Parking Brake's button in the window of a command part: the name of its event, and its label while the brake holds,
-# in each language the mod is translated to (in English for the others).
-PARKING_BRAKE = "ToggleParkingBrake"
-PARKING_BRAKE_HELD = ("Disengage parking brake", "Desacionando o freio de mão", "Выключить стояночный тормоз")
-
-
-def parking_brake():
-    """The part of the active vessel whose window shows Parking Brake's button, and whether the brake holds, as the
-    button's label tells; (None, False) when no window of the vessel shows it: Parking Brake is not installed, or the
-    vessel cannot be controlled (a pod without its crew), and the player could not let it go either."""
-    for part in call("list_parts"):
-        button = item_named(open_menu(part["id"]), PARKING_BRAKE)
-        if button:
-            return part["id"], button["label"] in PARKING_BRAKE_HELD
-    call("part_menu", action="close")
-    return None, False
-
-
-FIXED_TUNING = "com.github.lhervier.ksp.fix.suspensions.fixedtuning.FixedTuning"
-
-
-def fixed_tuning_active():
-    """Whether this mod is installed with Fixed Tuning on, as the game reads it."""
-    try:
-        return call("get_member", type=FIXED_TUNING, member="IsActive")["value"] is True
-    except RuntimeError as error:
-        if "Unknown type" in str(error):
-            # This mod is not installed.
-            return False
-        raise
-
-
 def parking_brake_installed():
     """Whether Parking Brake is installed, from any scene: KSP-Util-MCPServer knows its vessel module's type, loaded
     on a vessel or not."""
@@ -302,41 +255,6 @@ def parking_brake_installed():
         return True
     except RuntimeError as error:
         return "Unknown type" not in str(error)
-
-
-def release_parking_brake(part):
-    """Waits until Parking Brake has nothing left to cancel, then lets the vessel go by its button in the window of
-    the command part, as the player does; the brakes stay as they are. The save was made with the parking brake on,
-    the vessel at rest: loaded, the vessel is pushed out of the ground and set in motion, which the parking brake stops
-    at every physics step. A vessel that never looks still is let go after 15 s. Returns whether it was still."""
-    still = 0
-    last = None
-    for attempt in range(30):
-        vessel = call("get_state")["vessel"]
-        # How far it turned since the last look, half a second ago, in degrees: heading and pitch.
-        turned = 360.0 if last is None else max(abs((vessel["heading"] - last["heading"] + 180) % 360 - 180),
-                                                abs(vessel["pitch"] - last["pitch"]))
-        last = vessel
-        still = still + 1 if vessel["surfaceSpeed"] < 0.01 and turned < 0.25 else 0
-        if still >= 4 and attempt >= 6:
-            break
-        call("wait", seconds=0.5)
-    # A vessel whose suspensions push it within each physics step never looks still, whatever Parking Brake cancels:
-    # it is let go after 15 s all the same.
-    open_menu(part)
-    menus = call("press_part_button", part=part, button=PARKING_BRAKE)
-    # The mod renames its button at once, but the window shows the new label only from its next update.
-    for attempt in range(8):
-        items = next((m["items"] for m in menus if m["part"] == part), [])
-        button = item_named(items, PARKING_BRAKE)
-        if button and button["label"] not in PARKING_BRAKE_HELD:
-            break
-        call("wait", seconds=0.25)
-        menus = call("read_part_menus")
-    else:
-        raise RuntimeError("Parking Brake still holds the vessel after its button was pressed")
-    call("part_menu", action="close")
-    return still >= 4
 
 
 def place_leg(case):
@@ -587,20 +505,15 @@ def trial(n, name, case, options, out):
             call("go_to_scene", scene="SPACECENTER")
         call("launch_vessel", craft=case["craft"])
     else:
-        # A case with a save of its own for Parking Brake, which only the trials without this mod use.
-        stock = "stock_save" in case and parking_brake_installed()
-        call("load_save", folder=options.folder, save=case["stock_save"] if stock else case["save"])
+        call("load_save", folder=options.folder, save=case["save"])
     row = dict(trial=n)
     if "vessel" in case:
         switch(case["vessel"])
-    # Brakes and friction set while Parking Brake still holds the vessel, before it lets it go.
+    # Brakes and friction set as the player does, before anything else.
     if options.brakes is not None:
         set_brakes(options.brakes)
     if options.friction is not None:
         set_friction(options.friction)
-    brake_part, held = parking_brake() if parking_brake_installed() else (None, False)
-    if held:
-        row["parked_still"] = release_parking_brake(brake_part)
     if case.get("hinges"):
         lower_hinges()
     if "warp" in case:
@@ -695,10 +608,12 @@ def main():
         case["seconds"] = options.seconds
     if options.ground and "ground" in case:
         case["ground"] = tuple(options.ground)
-    if parking_brake_installed() and fixed_tuning_active():
-        sys.exit("Parking Brake is installed with Fixed Tuning on: remove it from GameData (see the first lines of "
-                 "this script)")
+    if parking_brake_installed():
+        sys.exit("Parking Brake is installed: remove it from GameData (see the first lines of this script)")
 
+    # The game locks every control while its window is out of focus: kept off, the run goes on while the player
+    # works in another window.
+    call("set_focus_lock", ignore=True)
     # KSP-Util-MCPServer loads a save from the space centre or in flight only, as a player does: from the main
     # menu, the game is opened at the space centre first.
     if call("get_state")["scene"] == "MAINMENU":

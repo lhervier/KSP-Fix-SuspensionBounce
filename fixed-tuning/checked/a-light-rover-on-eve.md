@@ -28,8 +28,8 @@ Load the save from the quickload menu (Alt+F9 by default), and watch the rover.
 </tr>
 </table>
 
-Without this mod, the rover bounces on its wheels as soon as physics starts, higher and higher, and does not come to
-rest. With this mod, it stays on its wheels.
+Without this mod, the rover bounces on its wheels as soon as physics starts, and does not come to rest. With this mod,
+it stays on its wheels.
 
 ## By script
 
@@ -39,18 +39,20 @@ rest. With this mod, it stays on its wheels.
 
     python check.py light-rover-eve --folder <your sandbox game> --ksp <your KSP folder> --label stock
 
-Played once without this mod, KSP 1.12.5 and KSP Community Fixes. With this mod, KSP 1.12.5, KSP Community Fixes,
-[Terrain Precision Fix](https://github.com/lhervier/KSP-Fix-TerrainPrecision) and
-[KSP-Fix-AutoStrut](https://github.com/lhervier/KSP-Fix-AutoStrut), without
-[Parking Brake](https://github.com/jarosm/KSP-ParkingBrake), which this mod is not compatible with: three times with
-its default settings, and three times with Fixed Tuning alone, `damperBounce = false` and `endStopSlide = false` in the
-mod's `settings.cfg`. The rover settles on its own as it loads.
+Played three times in each configuration, KSP 1.12.5, KSP Community Fixes,
+[Terrain Precision Fix](https://github.com/lhervier/KSP-Fix-TerrainPrecision),
+[KSP-Fix-AutoStrut](https://github.com/lhervier/KSP-Fix-AutoStrut) and
+[Physics Easing Fix](https://github.com/lhervier/KSP-Fix-PhysicsEasing), without
+[Parking Brake](https://github.com/jarosm/KSP-ParkingBrake), which this mod is not compatible with: without this mod;
+with it and its default settings; and with Fixed Tuning alone, `damperBounce = false` and `endStopSlide = false` in
+the mod's `settings.cfg`. Physics Easing Fix holds the rover still as it loads, and lets it go once its wheels hold it.
 
 | | Without this mod | Fixed Tuning alone | This mod |
 |---|---|---|---|
-| Top speed over the ground | 24 m/s | 0.05 m/s | 0.05 m/s |
-| Time with no wheel on the ground | 47 % | 0 | 0 |
-| Speed over the last 10 s | up to 0.40 m/s | up to 0.11 mm/s | up to 0.06 mm/s |
-| `KSP.log` | `roverWheel2 Exploded!!` | nothing | nothing |
+| Top speed over the ground | 2.0 to 3.3 m/s | 0.05 m/s | 0.05 m/s |
+| Time with no wheel on the ground | 32 to 65 % | 0 | 0 |
+| Speed over the last 10 s | 1.0, 1.8 and 3.3 m/s | up to 0.12 mm/s | up to 0.16 mm/s |
+| `KSP.log` | nothing | nothing | nothing |
 
-Fixed Tuning alone keeps the rover on its wheels: the mod's other fixes change nothing here.
+Without this mod, the rover is let go at rest on its wheels, and the game's damper sets it bouncing all the same: it
+never comes to rest. Fixed Tuning alone keeps the rover on its wheels: the mod's other fixes change nothing here.

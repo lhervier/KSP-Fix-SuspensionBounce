@@ -78,11 +78,13 @@ make, and its damper throws it sideways.
 
 ## Checking the culprit
 
-Each case has its page: the save or craft it starts from, how to play it by hand, the script that plays it, and what it
-shows without and with this mod. With this mod, they were played without Parking Brake, which it is not compatible with
-([Installing](../README.md#installing)), with its default settings, then again with Fixed Tuning alone
-(`damperBounce = false` and `endStopSlide = false` in its `settings.cfg`): the player's setting cures them on its own.
-The bench of a rover docked to a base standing on the ground is in [Work in progress](#work-in-progress).
+Each case has its page: the save or craft it starts from, how to play it by hand, the script that plays it, and what
+it shows without and with this mod. They were played with Terrain Precision Fix, KSP-Fix-AutoStrut and
+[Physics Easing Fix](https://github.com/lhervier/KSP-Fix-PhysicsEasing), without Parking Brake, which this mod is not
+compatible with ([Installing](../README.md#installing)): without this mod, then with its default settings, then again
+with Fixed Tuning alone (`damperBounce = false` and `endStopSlide = false` in its `settings.cfg`): the player's
+setting cures them on its own. The bench of a rover docked to a base standing on the ground is in
+[Work in progress](#work-in-progress).
 
 The saves were made, and the cases played, with KSP's terrain detail on *High* (*Settings*, *Graphics*): loaded at
 another detail, a save puts its vessel on a ground a little off.
@@ -96,15 +98,15 @@ physics starts, and bounces on and on; with Fixed Tuning, alone or with the mod'
 
 ### A light rover on Eve
 
-A rover of a quarter of a ton on four RoveMax S2 wheels, loaded on Eve: without this mod, it bounces higher and
-higher and breaks a wheel; with Fixed Tuning, alone or with the mod's other fixes, it stays on its wheels.
+A rover of a quarter of a ton on four RoveMax S2 wheels, loaded on Eve: without this mod, it bounces and never comes
+to rest; with Fixed Tuning, alone or with the mod's other fixes, it stays on its wheels.
 
 **→ Full chapter: [A light rover on Eve](checked/a-light-rover-on-eve.md)**
 
 ### A landing leg swung against a fuel tank
 
 A light vessel swings a landing leg on a rotation servo against the side of a fuel tank: without this mod, it is
-thrown sideways, often hard enough to break apart; with Fixed Tuning, alone or with the mod's other fixes, it is
+thrown sideways, at times hard enough to break apart; with Fixed Tuning, alone or with the mod's other fixes, it is
 pushed aside, undamaged, in twenty trials out of twenty.
 
 **→ Full chapter: [A landing leg swung against a fuel tank](checked/a-landing-leg-swung-against-a-fuel-tank.md)**

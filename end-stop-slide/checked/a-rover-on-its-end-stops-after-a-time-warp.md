@@ -11,7 +11,7 @@ holds to it.
 ## The save
 
 [saves/SuspensionBounceEndStopsSlope.sfs](../saves/SuspensionBounceEndStopsSlope.sfs), the one of
-[A rover on its end-stops](a-rover-on-its-end-stops.md) for the trials with this mod: `SuspensionBounce Rover`, 2.4 t
+[A rover on its end-stops](a-rover-on-its-end-stops.md), saved without Parking Brake: `SuspensionBounce Rover`, 2.4 t
 on four TR-2L wheels, brakes on, on a slope of about 20° west of the space centre, on soft springs, resting on its
 end-stops. Copy it into the folder of a sandbox game, under `saves`, and load it from the quickload menu (Alt+F9 by
 default).
@@ -30,16 +30,21 @@ it, and how to choose a configuration of this mod (its `settings.cfg`, KSP start
 
     python check.py end-stops-warp --folder <your sandbox game> --trials 3 --label modded
 
-Played three times in each configuration, KSP 1.12.5, KSP Community Fixes, Terrain Precision Fix and
-KSP-Fix-AutoStrut, without Parking Brake, which this mod is not compatible with, the springs as saved: with this mod's
-default settings, and with this fix off, `endStopSlide = false` in the mod's `settings.cfg`.
+Played three times in each configuration, KSP 1.12.5, KSP Community Fixes,
+[Terrain Precision Fix](https://github.com/lhervier/KSP-Fix-TerrainPrecision),
+[KSP-Fix-AutoStrut](https://github.com/lhervier/KSP-Fix-AutoStrut) and
+[Physics Easing Fix](https://github.com/lhervier/KSP-Fix-PhysicsEasing), without
+[Parking Brake](https://github.com/jarosm/KSP-ParkingBrake), which this mod is not compatible with, the springs as
+saved: with this mod's default settings, and with this fix off, `endStopSlide = false` in the mod's `settings.cfg`.
+The rover leaves the rails twice in each trial, as the save loads and as the warp ends: Physics Easing Fix holds it
+still each time, and lets it go once its wheels hold it.
 
 | | `endStopSlide = false` | This mod |
 |---|---|---|
 | Share of the weight the tyres read (median) | 39 % | 99 % |
-| Top speed over the ground | 0.88 m/s | 0.06 m/s |
-| How far it turned in 30 s | −0.27° to −0.40° | 0.24° to 0.25° |
-| Speed over the last 10 s | 0.88 m/s | up to 0.67 mm/s |
+| Top speed over the ground | 0.88 m/s | 0.001 m/s |
+| How far it turned in 30 s | −0.25° to −0.30° | 0.0° to 0.02° |
+| Speed over the last 10 s | 0.88 m/s | up to 0.54 mm/s |
 | Parts at the end, `KSP.log` | 19 of 19, nothing | 19 of 19, nothing |
 
 After the warp, this fix still gives the tyres the whole weight of the rover, as before it, and the rover holds. With

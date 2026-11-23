@@ -61,10 +61,12 @@ before the bound comes back.
 ## Checking the culprit
 
 Each case has its page: the save it starts from, how to play it by hand, the script that plays it, and what it shows
-without and with this mod. With this mod, they were played without Parking Brake, which it is not compatible with
-([Installing](../README.md#installing)), with its default settings, then again with Fixed Tuning alone
-(`damperBounce = false` and `endStopSlide = false` in its `settings.cfg`), which shows that this fix does the work. The
-cases that the player's setting cures on its own are in [Fixed Tuning](../fixed-tuning/README.md#checking-the-culprit).
+without and with this mod. They were played with Terrain Precision Fix, KSP-Fix-AutoStrut and
+[Physics Easing Fix](https://github.com/lhervier/KSP-Fix-PhysicsEasing), without Parking Brake, which this mod is not
+compatible with ([Installing](../README.md#installing)): without this mod, then with its default settings, then again
+with Fixed Tuning alone (`damperBounce = false` and `endStopSlide = false` in its `settings.cfg`), which shows that
+this fix does the work. The cases that the player's setting cures on its own are in
+[Fixed Tuning](../fixed-tuning/README.md#checking-the-culprit).
 
 The saves were made, and the cases played, with KSP's terrain detail on *High* (*Settings*, *Graphics*): loaded at
 another detail, a save puts its vessel on a ground a little off.
@@ -72,8 +74,8 @@ another detail, a save puts its vessel on a ground a little off.
 ### A landing leg placed alone
 
 An LT-1 landing leg taken off a lander and set down alone, foot down, in EVA construction on Kerbin, with Terrain
-Precision Fix: without this mod, it is thrown into the air; with Fixed Tuning alone, it still is; with this mod, it
-tips over onto its side and comes to rest.
+Precision Fix and Physics Easing Fix: without this mod, it is thrown into the air about one time in two; with Fixed
+Tuning alone, it still is; with this mod, it tips over onto its side and comes to rest, ten times out of ten.
 
 **→ Full chapter: [A landing leg placed alone](checked/a-landing-leg-placed-alone.md)**
 
@@ -88,8 +90,8 @@ mod, it stays on its wheels.
 ### A rover lowered onto its wheels on Eve
 
 A base of 5 t on six TR-2L wheels, lowered onto them by its hinges on Eve: without this mod, its wheels kick it up
-as they touch, unless its springs are set by hand; with Fixed Tuning alone, it never quite comes to rest; with this
-mod, it settles.
+as they touch, unless its springs are set by hand; with Fixed Tuning alone, it is still moving at the end of two
+trials out of three; with this mod, it settles.
 
 **→ Full chapter: [A rover lowered onto its wheels on Eve](checked/a-rover-lowered-onto-its-wheels-on-eve.md)**
 

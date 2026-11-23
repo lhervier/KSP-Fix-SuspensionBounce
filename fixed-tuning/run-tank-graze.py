@@ -131,6 +131,9 @@ def main():
     out = os.path.abspath(options.out)
     os.makedirs(out, exist_ok=True)
 
+    # The game locks every control while its window is out of focus: kept off, the run goes on while the player
+    # works in another window.
+    call("set_focus_lock", ignore=True)
     # KSP-Util-MCPServer loads a save from the space centre or in flight only, as a player does: from the main
     # menu, the game is opened at the space centre first.
     if call("get_state")["scene"] == "MAINMENU":

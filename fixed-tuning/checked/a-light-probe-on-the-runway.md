@@ -41,18 +41,21 @@ them again (`--no-legs` leaves them be), which the table below leaves out. Its f
 
     python check.py probe --folder <your sandbox game> --trials 3 --label stock
 
-Played once without this mod, KSP 1.12.5 and KSP Community Fixes. With this mod, KSP 1.12.5, KSP Community Fixes,
-[Terrain Precision Fix](https://github.com/lhervier/KSP-Fix-TerrainPrecision) and
-[KSP-Fix-AutoStrut](https://github.com/lhervier/KSP-Fix-AutoStrut), without
-[Parking Brake](https://github.com/jarosm/KSP-ParkingBrake), which this mod is not compatible with: three times with
-its default settings, and three times with Fixed Tuning alone, `damperBounce = false` and `endStopSlide = false` in the
-mod's `settings.cfg`:
+Played three times in each configuration, KSP 1.12.5, KSP Community Fixes,
+[Terrain Precision Fix](https://github.com/lhervier/KSP-Fix-TerrainPrecision),
+[KSP-Fix-AutoStrut](https://github.com/lhervier/KSP-Fix-AutoStrut) and
+[Physics Easing Fix](https://github.com/lhervier/KSP-Fix-PhysicsEasing), without
+[Parking Brake](https://github.com/jarosm/KSP-ParkingBrake), which this mod is not compatible with: without this mod;
+with it and its default settings; and with Fixed Tuning alone, `damperBounce = false` and `endStopSlide = false` in
+the mod's `settings.cfg`. Physics Easing Fix holds the probe still as it is launched, and lets it go once its legs
+hold it.
 
 | | Without this mod | Fixed Tuning alone | This mod |
 |---|---|---|---|
-| Time with no leg on the ground | 99 % | 0 | 0 |
-| Top speed over the ground | 66 m/s | 0.13 m/s | 0.13 m/s |
-| Parts at the end | 0 of 7 | 7 of 7 | 7 of 7 |
-| `KSP.log` | `batteryPack`, `solarPanels5` (twice), `probeCoreOcto2.v2` `Exploded!!` | nothing | nothing |
+| Time with no leg on the ground | 94 to 99 % | 0 | 0 |
+| Top speed over the ground | 8.4 to 31 m/s | 0.13 m/s | 0.13 m/s |
+| Parts at the end | 6, 6 and 7 of 7 | 7 of 7 | 7 of 7 |
+| `KSP.log` | `solarPanels5` (twice), `miniLandingLeg`, `probeCoreOcto2.v2` `Exploded!!` in one trial, `solarPanels5` in another | nothing | nothing |
 
-Fixed Tuning alone keeps the probe on its legs: the mod's other fixes change nothing here.
+Without this mod, the probe is let go at rest on its legs, and leaves the runway all the same. Fixed Tuning alone keeps
+the probe on its legs: the mod's other fixes change nothing here.
