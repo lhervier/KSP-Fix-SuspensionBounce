@@ -53,7 +53,10 @@ falls the same way, down to 0.23 kN.</em></td>
 </tr>
 </table>
 
-<!-- The same, with this mod and all its fixes: the load holds on the end-stops. -->
+<p align="center"><img src="../imgs/rover-softened-modded.gif" width="50%" alt="The same rover softened onto its end-stops, with this mod and all its fixes"><br>
+<em>The same, with this mod and all its fixes: the springs of the front wheels softened the same way, from 202 to
+10 kN/m. Once the front wheels reach their end-stops (<em>100 % stop</em>), the load their tyres read holds, 5.93 and
+5.95 kN, and the suspensions still carry 99.1 % of the rover's weight.</em></p>
 
 
 Played once in each configuration, KSP 1.12.5, KSP Community Fixes,
