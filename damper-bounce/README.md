@@ -234,5 +234,12 @@ bounded: [A landing leg placed alone](checked/a-landing-leg-placed-alone.md) quo
 
 ## Work in progress
 
+- **A damper that gives a suspension energy.** If the bound on a damper were wrong, a wheel or a leg would come back
+  up from the ground faster than it went down, and bounce higher at each landing instead of lower. To check it, with
+  the graph of [KSP Diag - Suspension](https://github.com/lhervier/KSP-Diag-Suspension), which draws each
+  suspension's compression at every physics step, watch the suspensions settle: the rover of
+  [A heavy rover on Eve](checked/a-heavy-rover-on-eve.md) loaded on Eve, a capsule on landing legs dropped from a
+  few tens of centimetres, and a landing leg placed alone, each with this mod, then with `damperBounce = false` in
+  its `settings.cfg`. With the bound right, each swing of the compression is smaller than the one before it.
 - **Other parts with a suspension.** The fix applies to every part with `ModuleWheelSuspension`: landing legs, wheels
   and landing gear. It has been played with LT-05, LT-1 and LT-2 legs, and RoveMax S2 and TR-2L wheels only.

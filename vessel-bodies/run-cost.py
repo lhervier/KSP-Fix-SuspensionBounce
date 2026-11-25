@@ -92,7 +92,11 @@ def call(tool, **args):
     for attempt in range(20):
         request = urllib.request.Request(URL, body, {"Content-Type": "application/json"})
         with urllib.request.urlopen(request, timeout=900) as response:
-            result = json.loads(response.read())["result"]
+            reply = json.loads(response.read())
+        if "error" in reply:
+            # A tool the server does not offer, such as a tool of a mod not installed.
+            raise RuntimeError(tool + ": " + reply["error"].get("message", ""))
+        result = reply["result"]
         text = result["content"][0].get("text", "") if result["content"] else ""
         if not (result.get("isError") and text.startswith("Not in flight")):
             break
@@ -242,16 +246,13 @@ def parking_brake():
     return None, False
 
 
-FIXED_TUNING = "com.github.lhervier.ksp.fix.suspensions.fixedtuning.FixedTuning"
-
-
 def fixed_tuning_active():
     """Whether this mod is installed with Fixed Tuning on, as the game reads it."""
     try:
-        return call("get_member", type=FIXED_TUNING, member="IsActive")["value"] is True
+        return call("suspension_tuning_read")["active"] is True
     except RuntimeError as error:
-        if "Unknown type" in str(error):
-            # This mod is not installed.
+        if "Unknown tool" in str(error):
+            # This mod is not installed, or KSP-Util-MCPServer does not offer its tools.
             return False
         raise
 
@@ -320,14 +321,13 @@ def set_springs(strength):
     call("part_menu", action="close")
 
 
-TUNING_API = "com.github.lhervier.ksp.fix.suspensions.fixedtuning.SuspensionTuningApi"
-
-
 def tune(mass, compression):
     """Sets every suspension of the active vessel as the Auto button of this mod's suspension window does: predicted
     for the body the vessel is on and mass t (0: the vessel's), shared by the centre of mass, at that compression of
     the travel, with a damping ratio of 0.7."""
-    log("tune:", call("call_method", type=TUNING_API, method="Auto", arguments=["", mass, True, compression, 0.7]))
+    answer = call("suspension_tuning_auto", mass=mass, byCentre=True, compressionPct=100 * compression,
+                  dampingRatio=0.7)
+    log("tune:", answer["result"])
 
 
 def scenario(name, options, profiler, out):

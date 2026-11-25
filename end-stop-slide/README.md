@@ -6,7 +6,19 @@ travel. Here is what it fixes:
 > **In KSP, a rover whose wheels rest on their end-stops slides: sideways on flat ground, and down a slope, brakes
 > on.**
 
-<ROVER ON ITS END-STOPS, GOING ANYWHERE AS IT DRIVES>
+<table><tr>
+<td width="50%"><img src="imgs/rover.gif" alt="A rover on its end-stops, driven on flat ground"></td>
+<td width="50%"><a href="imgs/rover-diag.png"><img src="imgs/rover-diag.png" alt="KSP Diag - Suspension on the same rover, stopped"></a></td>
+</tr></table>
+
+*KSP 1.12.5, KSP Community Fixes, [Terrain Precision Fix](https://github.com/lhervier/KSP-Fix-TerrainPrecision),
+[KSP-Fix-AutoStrut](https://github.com/lhervier/KSP-Fix-AutoStrut) and
+[Physics Easing Fix](https://github.com/lhervier/KSP-Fix-PhysicsEasing), without this mod: the save
+[saves/SuspensionBounceEndStopsFlat.sfs](saves/SuspensionBounceEndStopsFlat.sfs) loaded, the rover of
+[A rover on its end-stops](checked/a-rover-on-its-end-stops.md), 2.4 t on four TR-2L wheels, its springs set by hand
+at their lowest in each wheel's window (Spring/Damper: Override, Spring Strength 0.05), resting on its end-stops,
+then driven and steered on flat ground near the space centre. Beside it, the window of
+[KSP Diag - Suspension](https://github.com/lhervier/KSP-Diag-Suspension) on the same rover, stopped.*
 
 The cause: the tyres read the load of a wheel in the force of its spring alone, and the end-stop that carries the rest
 of the weight reports it nowhere (see [The culprits](#the-culprits)).
@@ -47,6 +59,16 @@ mod's suspension window makes (*Auto* with a typed mass of 0.01 t) for this mod.
 
 The saves were made, and the cases played, with KSP's terrain detail on *High* (*Settings*, *Graphics*): loaded at
 another detail, a save puts its vessel on a ground a little off.
+
+### A rover softened onto its end-stops
+
+A rover at rest on flat ground, its springs softened step by step from this mod's suspension window, until its wheels
+rest on their end-stops: played with this mod, then with this fix alone turned off. With this mod, a wheel reaching its
+end-stop keeps telling its tyre the load it carried before, and the suspensions keep carrying the same share of the
+rover's weight. With this fix off, the load of a bottomed wheel falls to what its spring alone pushes, down to nothing
+on the softest springs, and the rover starts to creep on flat ground, brakes on.
+
+**→ Full chapter: [A rover softened onto its end-stops](checked/a-rover-softened-onto-its-end-stops.md)**
 
 ### A rover on its end-stops
 

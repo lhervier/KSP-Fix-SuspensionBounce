@@ -65,6 +65,16 @@ its own script in its folder. The scripts drive KSP through
 [KSP-Util-MCPServer](https://github.com/lhervier/KSP-Util-MCPServer), and need nothing but Python 3; their figures
 come from [KSP Diag - Suspension](https://github.com/lhervier/KSP-Diag-Suspension) and from `KSP.log`.
 
+## Work in progress
+
+Damper Bounce and Fixed Tuning each have a check still to play, of what they promise, with KSP Diag - Suspension and
+its graph of each suspension's compression at every physics step:
+
+- [Damper Bounce](damper-bounce/README.md#work-in-progress): a damper never sends a wheel or a leg back faster than
+  it came;
+- [Fixed Tuning](fixed-tuning/README.md#work-in-progress): the spring and the damping ratio the player sets are those
+  the suspension follows.
+
 ## Installing
 
 Requires:

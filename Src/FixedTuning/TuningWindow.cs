@@ -48,9 +48,7 @@ namespace com.github.lhervier.ksp.fix.suspensions.fixedtuning
             // A question left open by a scene change no longer hides the window.
             LaunchCheck.Asking = false;
             TuningChoices.Defaults();
-            massText = Format(TuningChoices.Mass, "0.###");
-            compressionText = Format(100f * TuningChoices.Compression, "0");
-            dampingText = Format(TuningChoices.Damping, "0.00");
+            ShowChoices();
             GameEvents.onGUIApplicationLauncherReady.Add(AddButton);
             if (ApplicationLauncher.Ready)
             {
@@ -314,6 +312,12 @@ namespace com.github.lhervier.ksp.fix.suspensions.fixedtuning
             {
                 TuningChoices.Damping = value;
             }
+            ShowChoices();
+        }
+
+        /// <summary>Shows the typed mass, compression and damping ratio of the choices in their fields.</summary>
+        internal void ShowChoices()
+        {
             massText = Format(TuningChoices.Mass, "0.###");
             compressionText = Format(100f * TuningChoices.Compression, "0");
             dampingText = Format(TuningChoices.Damping, "0.00");

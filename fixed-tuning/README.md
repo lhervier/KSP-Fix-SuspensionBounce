@@ -142,6 +142,11 @@ air, or its compression and its load on the ground. A toggle on each chooses whi
   so that it sinks to the compression asked for under the load it carries, in a few passes. It needs flat ground: the
   window warns on a slope or on uneven ground.
 
+With [KSP-Util-MCPServer](https://github.com/lhervier/KSP-Util-MCPServer) installed, a script drives this window
+through tools: `suspension_tuning_read` reads what it lists and the choices made, `suspension_tuning_auto` and
+`suspension_tuning_level` tick every suspension and press *Auto* or *Level on the ground*, with the window's choices as
+arguments and within its bounds (a compression above 0 and below 100 %). This mod runs the same without the server.
+
 ### Suspensions never set
 
 A vessel launched from the editor with suspensions never set stops on a question, *Suspensions not set*: *Set them for
@@ -156,7 +161,10 @@ the vessel is at, at the default compression and damping ratio (0.7).
 ### The part's window
 
 The part's window no longer shows the game's *Spring Strength* and *Damper Strength* sliders, nor its automatic mode,
-but *Spring* and *Damping ratio* (see [Work in progress](#work-in-progress)).
+but *Spring* and *Damping ratio* (see [Work in progress](#work-in-progress)). The *Spring* slider runs from 0.05 to 2
+times the spring a suspension never set would get on this vessel, as the game's *Spring Strength* runs from 0.05 to 2
+times its own: from soft enough to rest the wheel on its end-stop to twice as stiff as the default. It follows the
+vessel's mass while the window is open, and widens to hold a spring set from the suspension window outside it.
 
 ### The settings
 
@@ -208,6 +216,15 @@ if (wheel.wheelCollider.springRate != spring)
 
 ## Work in progress
 
+- **The setting the suspension follows.** If the spring or the damping ratio applied were not the player's, a vessel
+  would sit higher or lower than set, and settle with more or less bounce than chosen. To check it, with
+  [KSP Diag - Suspension](https://github.com/lhervier/KSP-Diag-Suspension):
+  - the spring: a rover at rest on flat ground, its spring changed from the suspension window; each wheel's
+    compression moves with it, and where it settles, the compression times the wheel's travel equals the load the
+    wheel carries over its spring;
+  - the damping ratio: a capsule on landing legs dropped from a few tens of centimetres, once for each damping ratio
+    set; the Diag's graph, which draws each suspension's compression at every physics step, overshoots and settles
+    as that ratio says, not at all at 1, a little below it.
 - **A rover docked to a base standing on the ground.** A rover docked to a base resting on its own legs or girders,
   with [Docking Wheel Jump Fix](https://github.com/lhervier/KSP-Fix-DockingWheelJump) and
   [Wheel Creep Fix](https://github.com/lhervier/KSP-Fix-WheelCreep): without this mod, the rover rises on its wheels
