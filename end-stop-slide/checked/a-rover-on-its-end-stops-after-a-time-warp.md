@@ -1,6 +1,6 @@
 # A rover on its end-stops after a time warp
 
-Part of [Suspension Bounce Fix](../../README.md), [End-Stop Slide](../README.md#checking-the-culprit): not a culprit,
+Part of [Suspension Bounce Fix](../../README.md), [End-Stop Slide](../README.md#checked): not a culprit,
 a check that this fix still holds a rover on its end-stops after the time is warped on rails, as a player does near a
 rover at rest ([After a time warp](../README.md#after-a-time-warp)).
 

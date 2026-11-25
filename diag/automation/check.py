@@ -42,7 +42,8 @@ Cases, and the save or craft each one loads, in the saves folder of the fix whos
 
 The soft springs of end-stops-flat, end-stops-slope and lander-drop are in their save or craft, twice: this mod's
 setting, the one its suspension window makes (toolbar button Suspensions: Auto for Kerbin, a mass of 0.01 t typed,
-shared by the centre of mass, compression 33 %, damping ratio 0.7), which it uses, and the game's own sliders, at
+shared by the centre of mass, compression 33 %, damping ratio 0.7; on end-stops-flat, shared equally and compression
+99 %, the softest it gives), which it uses, and the game's own sliders, at
 their lowest (0.05; 0.3 on the slope), which the game uses without this mod. The rovers were saved once settled on
 their end-stops.
 

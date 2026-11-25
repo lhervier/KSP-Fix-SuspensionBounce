@@ -1,6 +1,6 @@
 # A rover on its end-stops
 
-Part of [Suspension Bounce Fix](../../README.md), [End-Stop Slide](../README.md#checking-the-culprit):
+Part of [Suspension Bounce Fix](../../README.md), [End-Stop Slide](../README.md#checked):
 [a bottomed wheel hides its weight from the tyres](../a-bottomed-wheel-hides-its-weight-from-the-tyres.md).
 
 [KSP Diag - Suspension](https://github.com/lhervier/KSP-Diag-Suspension) shows, among others, the share of the
@@ -22,9 +22,10 @@ default).
 Each save holds the soft springs twice. Without this mod, the game uses its own sliders, set by hand at their lowest
 (0.05) on flat ground, at 0.3 on the slope. This mod hides those sliders and uses its own setting, saved with the rover:
 the one its suspension window makes (open it from the toolbar, tick all four wheels, keep Kerbin as the body, type a
-mass of 0.01 t, share the weight by the centre of mass, and press *Auto*: the springs are predicted for a rover of
-10 kg, and the wheels sink onto their end-stops). The saves were made with this mod, the rover settled on its
-end-stops and still.
+mass of 0.01 t, and press *Auto*: the springs are predicted for a rover of 10 kg, and the wheels sink onto their
+end-stops). On flat ground, the softest springs the window gives, 8.52 kN/m: the weight shared equally and a
+*Compression* of 99 %. On the slope, 25.6 kN/m: the weight shared by the centre of mass and a *Compression* of 33 %.
+The saves were made with this mod, the rover settled on its end-stops and still.
 
 ## By hand
 
@@ -32,7 +33,7 @@ Load the save: nothing to set, with this mod or without it.
 
 - **On flat ground**: drive the rover at full speed, about 24 m/s, in a straight line. Without this mod, it slides
   sideways as it goes, as on ice: on the navball, the speed marker drifts away from the heading. With this mod, it
-  holds its line. With Fixed Tuning alone, it holds its line too, though its tyres read only a third of its weight.
+  holds its line. With Fixed Tuning alone, it slides as without this mod: its tyres read less than 1 % of its weight.
 - **On the slope**: load the save and wait. Without this mod, and with Fixed Tuning alone, the rover slides down,
   brakes on. With this mod, it holds.
 
@@ -58,13 +59,14 @@ Physics Easing Fix holds the rover still as it loads, and lets it go once its wh
 
 | | Without this mod | Fixed Tuning alone | Fixed Tuning and this fix | This mod |
 |---|---|---|---|---|
-| **Flat ground, above 20 m/s**: share of the weight the tyres read (5th percentile, median, 95th) | -0.8 to -0.4 %, 0 %, 0.4 to 0.8 % | 37 %, 37 %, 37 % | 97 to 98 %, 99 %, 100 % | 97 to 98 %, 99 %, 100 % |
-| Speed across the heading, 95th percentile | 0.16 to 0.38 m/s | 0.03 to 0.04 m/s | 0.04 to 0.05 m/s | 0.04 to 0.05 m/s |
-| Angle between the speed and the heading, 95th percentile | 0.38° to 0.91° | 0.07° to 0.10° | 0.09° to 0.12° | 0.10° to 0.12° |
-| Wheel readings where the tyre skids | 64 to 66 % | 7 % | 1.6 % | 1.6 % |
+| **Flat ground, above 20 m/s**: share of the weight the tyres read (5th percentile, median, 95th) | -0.6 to -0.4 %, 0 %, 0.4 to 0.5 % | 0.5 to 0.6 %, 0.7 %, 0.7 % | 97 to 98 %, 99 %, 100 % | 97 to 98 %, 99 %, 100 % |
+| Speed across the heading, 95th percentile | 0.17 to 0.26 m/s | 0.14 to 0.22 m/s | 0.04 m/s | 0.04 m/s |
+| Angle between the speed and the heading, 95th percentile | 0.41° to 0.62° | 0.35° to 0.58° | 0.09° to 0.10° | 0.09° to 0.11° |
+| Wheel readings where the tyre skids | 64 to 65 % | 65 to 66 % | 2.2 to 2.3 % | 2.3 % |
 
-On flat ground, Fixed Tuning alone already keeps the rover in a straight line: its soft springs still carry a little
-over a third of its weight. This fix gives the tyres the whole weight back, and they skid four times less.
+On flat ground, on the softest springs this mod's window gives, Fixed Tuning alone slides as the game without this mod
+does: its springs carry less than 1 % of the rover's weight. This fix gives the tyres the whole weight back: the rover
+holds its line, and its tyres skid nearly thirty times less.
 
 | | Without this mod | Fixed Tuning alone | Fixed Tuning and this fix | This mod |
 |---|---|---|---|---|

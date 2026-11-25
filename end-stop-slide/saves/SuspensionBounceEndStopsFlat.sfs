@@ -609,7 +609,7 @@ GAME
 	FLIGHTSTATE
 	{
 		version = 1.12.5
-		UT = 1568.2999999988638
+		UT = 20677.775
 		activeVessel = 0
 		mapViewFiltering = -1026
 		commNetUIModeTracking = Network
@@ -629,9 +629,9 @@ GAME
 			landedAt = 
 			displaylandedAt = 
 			splashed = False
-			met = 895.25999999918588
+			met = 20004.735000000324
 			lct = 673.03999999967789
-			lastUT = 1568.2999999988638
+			lastUT = 20677.775
 			distanceTraveled = 6.2196128907128978
 			root = 0
 			lat = -0.13702811319303879
@@ -664,7 +664,7 @@ GAME
 				LPE = 89.987657026995308
 				LAN = 131.49103076998063
 				MNA = 3.1415927045828358
-				EPH = 1568.2999999988638
+				EPH = 20677.775
 				REF = 1
 			}
 			PART
@@ -1873,10 +1873,10 @@ GAME
 				{
 					name = ModuleSuspensionTuning
 					isEnabled = True
-					springRate = 25.5654449
+					springRate = 8.52181816
 					dampingRatio = 0.699999988
-					tunedMass = 0.00249996339
-					tunedFor = auto for Kerbin, 0.01 t over 4, by the centre of mass
+					tunedMass = 0.00249999994
+					tunedFor = auto for Kerbin, 0.01 t over 4, shared equally
 					stagingEnabled = True
 					EVENTS
 					{
@@ -2189,10 +2189,10 @@ GAME
 				{
 					name = ModuleSuspensionTuning
 					isEnabled = True
-					springRate = 25.5654469
+					springRate = 8.52181816
 					dampingRatio = 0.699999988
-					tunedMass = 0.0024999762
-					tunedFor = auto for Kerbin, 0.01 t over 4, by the centre of mass
+					tunedMass = 0.00249999994
+					tunedFor = auto for Kerbin, 0.01 t over 4, shared equally
 					stagingEnabled = True
 					EVENTS
 					{
@@ -2505,10 +2505,10 @@ GAME
 				{
 					name = ModuleSuspensionTuning
 					isEnabled = True
-					springRate = 25.5654583
+					springRate = 8.52181816
 					dampingRatio = 0.699999988
-					tunedMass = 0.00250002369
-					tunedFor = auto for Kerbin, 0.01 t over 4, by the centre of mass
+					tunedMass = 0.00249999994
+					tunedFor = auto for Kerbin, 0.01 t over 4, shared equally
 					stagingEnabled = True
 					EVENTS
 					{
@@ -2821,10 +2821,10 @@ GAME
 				{
 					name = ModuleSuspensionTuning
 					isEnabled = True
-					springRate = 25.5654621
+					springRate = 8.52181816
 					dampingRatio = 0.699999988
-					tunedMass = 0.0025000365
-					tunedFor = auto for Kerbin, 0.01 t over 4, by the centre of mass
+					tunedMass = 0.00249999994
+					tunedFor = auto for Kerbin, 0.01 t over 4, shared equally
 					stagingEnabled = True
 					EVENTS
 					{

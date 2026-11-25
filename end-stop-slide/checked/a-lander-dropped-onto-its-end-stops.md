@@ -1,6 +1,6 @@
 # A lander dropped onto its end-stops
 
-Part of [Suspension Bounce Fix](../../README.md), [End-Stop Slide](../README.md#checking-the-culprit):
+Part of [Suspension Bounce Fix](../../README.md), [End-Stop Slide](../README.md#checked):
 [a bottomed wheel hides its weight from the tyres](../a-bottomed-wheel-hides-its-weight-from-the-tyres.md), on landing legs rather than
 on wheels.
 

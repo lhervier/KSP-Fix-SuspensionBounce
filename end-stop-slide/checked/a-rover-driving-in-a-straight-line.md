@@ -1,6 +1,6 @@
 # A rover driving in a straight line
 
-Part of [Suspension Bounce Fix](../../README.md), [End-Stop Slide](../README.md#checking-the-culprit):
+Part of [Suspension Bounce Fix](../../README.md), [End-Stop Slide](../README.md#checked):
 a rover set off from standstill on flat ground, throttle held, its steering let go. Not a culprit: a check that
 the mod does not make a rover turn on its own.
 

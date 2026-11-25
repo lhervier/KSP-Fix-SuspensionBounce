@@ -6,19 +6,30 @@ travel. Here is what it fixes:
 > **In KSP, a rover whose wheels rest on their end-stops slides: sideways on flat ground, and down a slope, brakes
 > on.**
 
-<table><tr>
-<td width="50%"><img src="imgs/rover.gif" alt="A rover on its end-stops, driven on flat ground"></td>
-<td width="50%"><a href="imgs/rover-diag.png"><img src="imgs/rover-diag.png" alt="KSP Diag - Suspension on the same rover, stopped"></a></td>
-</tr></table>
+<table>
+<tr>
+<td width="50%"><img src="imgs/rover.gif" alt="A rover on its end-stops, driven on flat ground, without this mod"></td>
+<td width="50%"><img src="imgs/rover-modded.gif" alt="The same rover on its end-stops, driven on flat ground, with this mod"></td>
+</tr>
+<tr>
+<td valign="top"><em>Without this mod: the rover's springs at their lowest in each wheel's window (Spring/Damper:
+Override, Spring Strength 0.05). Framed in red: all four wheels rest on their end-stops (<em>100 % stop</em>), their
+tyres read no load (<em>Load kN</em> 0.00), and the suspensions seem to carry none of the rover's weight. The tyres
+spin and slip, and the rover slides sideways as it turns, at times more across its heading than along it.</em></td>
+<td valign="top"><em>With this mod and its default settings: the rover's springs at the softest this mod's suspension
+window gives (<em>Auto</em> for a typed mass of 0.01 t, <em>Compression</em> 99 %: 8.52 kN/m). The wheels still rest on
+their end-stops, but each tyre reads the load its wheel carries, more on the outer wheels in a turn, and the
+suspensions carry the rover's whole weight. It drives normally, a few degrees off its heading at most in a turn.</em></td>
+</tr>
+</table>
 
 *KSP 1.12.5, KSP Community Fixes, [Terrain Precision Fix](https://github.com/lhervier/KSP-Fix-TerrainPrecision),
 [KSP-Fix-AutoStrut](https://github.com/lhervier/KSP-Fix-AutoStrut) and
-[Physics Easing Fix](https://github.com/lhervier/KSP-Fix-PhysicsEasing), without this mod: the save
+[Physics Easing Fix](https://github.com/lhervier/KSP-Fix-PhysicsEasing): the save
 [saves/SuspensionBounceEndStopsFlat.sfs](saves/SuspensionBounceEndStopsFlat.sfs) loaded, the rover of
-[A rover on its end-stops](checked/a-rover-on-its-end-stops.md), 2.4 t on four TR-2L wheels, its springs set by hand
-at their lowest in each wheel's window (Spring/Damper: Override, Spring Strength 0.05), resting on its end-stops,
-then driven and steered on flat ground near the space centre. Beside it, the window of
-[KSP Diag - Suspension](https://github.com/lhervier/KSP-Diag-Suspension) on the same rover, stopped.*
+[A rover on its end-stops](checked/a-rover-on-its-end-stops.md), 2.4 t on four TR-2L wheels, resting on its end-stops,
+then driven and steered on flat ground near the space centre, with the window of
+[KSP Diag - Suspension](https://github.com/lhervier/KSP-Diag-Suspension) open below it.*
 
 The cause: the tyres read the load of a wheel in the force of its spring alone, and the end-stop that carries the rest
 of the weight reports it nowhere (see [The culprits](#the-culprits)).
@@ -48,17 +59,9 @@ each one. VPP is written for a car made of one rigid body; KSP makes each wheel 
 
 ## Checking the culprit
 
-Each case has its page: the save or craft it starts from, how to play it by hand, the script that plays it, and what
-it shows without and with this mod. They were played with Terrain Precision Fix, KSP-Fix-AutoStrut and
-[Physics Easing Fix](https://github.com/lhervier/KSP-Fix-PhysicsEasing), without Parking Brake, which this mod is not
-compatible with ([Installing](../README.md#installing)): without this mod, then with its default settings, then again
-with Fixed Tuning alone (`damperBounce = false` and `endStopSlide = false` in its `settings.cfg`), and with Fixed
-Tuning and this fix (`damperBounce = false`). This mod hides the game's sliders: where a case needs soft springs, its
-save or craft holds them twice, the game's sliders at their lowest for the game without this mod, and the setting this
-mod's suspension window makes (*Auto* with a typed mass of 0.01 t) for this mod.
-
-The saves were made, and the cases played, with KSP's terrain detail on *High* (*Settings*, *Graphics*): loaded at
-another detail, a save puts its vessel on a ground a little off.
+The case has its page: the save it starts from, how to play it by hand, and what it shows without this mod,
+with it, and with this fix alone turned off. It was played with KSP's terrain detail on *High* (*Settings*,
+*Graphics*): loaded at another detail, its save puts the rover on a ground a little off.
 
 ### A rover softened onto its end-stops
 
@@ -69,42 +72,6 @@ rover's weight. With this fix off, the load of a bottomed wheel falls to what it
 on the softest springs, and the rover starts to creep on flat ground, brakes on.
 
 **→ Full chapter: [A rover softened onto its end-stops](checked/a-rover-softened-onto-its-end-stops.md)**
-
-### A rover on its end-stops
-
-A rover whose springs are set soft, on Kerbin: its wheels rest on their end-stops. Without this mod, its tyres read a
-fraction of its weight: it slides sideways on flat ground, and slides down a slope, brakes on. With Fixed Tuning
-alone, they read a little over a third of it: the rover already keeps its line on flat ground, but slides down the
-slope at about 0.9 m/s. With
-this mod, the tyres read the whole weight, and it holds.
-
-**→ Full chapter: [A rover on its end-stops](checked/a-rover-on-its-end-stops.md)**
-
-### A lander dropped onto its end-stops
-
-A lander on four LT-1 legs, its springs set soft, dropped from its launch clamps onto the runway: it comes to rest on
-its end-stops. Without this mod, its feet read none of its weight, and it slowly turns and slides; with it, it stays
-still. With Fixed Tuning alone, it bounces back up from the fall at up to 6 m/s, its legs leaving the ground, in two
-trials out of three; with this fix, the legs catch it on their end-stops, and it comes back up at a third of a metre
-per second at most.
-
-**→ Full chapter: [A lander dropped onto its end-stops](checked/a-lander-dropped-onto-its-end-stops.md)**
-
-### A rover on its end-stops after a time warp
-
-The rover of the slope, its time warped on rails for a minute, as a player does near a rover at rest: not a culprit,
-a check that this fix still holds it once the game is back to normal time: its tyres read the whole weight of the
-rover, as before the warp.
-
-**→ Full chapter: [A rover on its end-stops after a time warp](checked/a-rover-on-its-end-stops-after-a-time-warp.md)**
-
-### A rover driving in a straight line
-
-A rover set off from standstill on flat ground, throttle held, its steering let go: not a culprit, a check that this
-mod does not make a rover turn on its own. Set off from the same place, it turns by about a tenth of a degree in
-30 s, with this mod or without it, in each of its configurations.
-
-**→ Full chapter: [A rover driving in a straight line](checked/a-rover-driving-in-a-straight-line.md)**
 
 ## The fix
 
@@ -120,22 +87,22 @@ rotation, and the forces known for the step, among them the spring of each wheel
 mod hands it too. The solver checks the result through a balance of the whole vessel
 ([Checking it](../vessel-bodies/README.md#checking-it)).
 
-### One step ahead
+### The end-stop as a contact
 
-For each wheel on the ground, the mod knows the travel it has left before its end-stop. The solver looks for the
-smallest forces, never pulling, such that by the end of the coming step no wheel has gone past the end of its travel.
-The wheels are handled together: a force on one wheel also tilts the vessel, and changes what the others have to hold.
-A wheel resting on its end-stop gets its share of the load, beyond what its spring carries; a wheel leaving it, or
-still far from it, gets nothing; a wheel coming fast is slowed just enough to reach it. These forces are applied to
-the wheels' parts, at the contact point: PhysX's end-stop has nothing left to correct, and no longer beats. They push
-along the normal of the ground, not along the axis of the suspension as PhysX's end-stop does: the end-stop passes the
-ground's reaction on through the tyre, the ground can only push along its normal, and what holds the wheel along the
-ground is the tyre's own force. Along the axis, a vessel tilted to the ground, some wheels on their end-stops and the
-others still on their springs, would be pushed along the ground by a part of its load, which the tyres only hold by
-creeping: the rover crept on flat ground, brakes on. The travel, on the other hand, is measured along the axis, and
-that matters at speed: measured along the normal of the ground, a normal tilted for a single step, by a bump or a seam
-between two pieces of terrain, would turn part of the forward speed into a speed towards the end-stop, and call for a
-force many times the weight.
+For each wheel on the ground, the mod hands the solver a contact: the wheel's part, pushed at its contact point along
+the normal of the ground, and allowed to close the travel the wheel has left before its end-stop. The solver keeps
+every wheel from going past the end of its travel by the end of the coming step
+([One step ahead](../vessel-bodies/README.md#one-step-ahead)): a wheel resting on its end-stop gets its share of the
+load, beyond what its spring carries, and PhysX's end-stop has nothing left to correct, and no longer beats.
+
+The force pushes along the normal of the ground, not along the axis of the suspension as PhysX's end-stop does: the
+end-stop passes the ground's reaction on through the tyre, the ground can only push along its normal, and what holds
+the wheel along the ground is the tyre's own force. Along the axis, a vessel tilted to the ground, some wheels on their
+end-stops and the others still on their springs, would be pushed along the ground by a part of its load, which the
+tyres only hold by creeping: the rover crept on flat ground, brakes on. The travel, on the other hand, is measured
+along the axis, and that matters at speed: measured along the normal of the ground, a normal tilted for a single step,
+by a bump or a seam between two pieces of terrain, would turn part of the forward speed into a speed towards the
+end-stop, and call for a force many times the weight.
 
 Among the endless ways four wheels can carry the same vessel, the solver takes the evenest
 ([Sharing between the contacts](../vessel-bodies/README.md#sharing-between-the-contacts)).
@@ -235,3 +202,53 @@ prefix and a postfix of `ModuleWheelDamage.FixedUpdate` show it to the damage mo
 - **A wheel landing hard enough to cross its whole travel in a single physics step still meets the game's end-stop.**
   The mod holds an end-stop one step ahead; a wheel that goes from the top of its travel to past the end of it within
   one step is caught by PhysX's end-stop, as without this mod, and held by the mod from the next step on.
+
+## Checked
+
+Each case has its page: the save or craft it starts from, how to play it by hand, the script that plays it, and what
+it shows without and with this mod. They were played with Terrain Precision Fix, KSP-Fix-AutoStrut and
+[Physics Easing Fix](https://github.com/lhervier/KSP-Fix-PhysicsEasing), without Parking Brake, which this mod is not
+compatible with ([Installing](../README.md#installing)): without this mod, then with its default settings, then again
+with Fixed Tuning alone (`damperBounce = false` and `endStopSlide = false` in its `settings.cfg`), and with Fixed
+Tuning and this fix (`damperBounce = false`). This mod hides the game's sliders: where a case needs soft springs, its
+save or craft holds them twice, the game's sliders at their lowest for the game without this mod, and the setting this
+mod's suspension window makes (*Auto* with a typed mass of 0.01 t) for this mod.
+
+The saves were made, and the cases played, with KSP's terrain detail on *High* (*Settings*, *Graphics*): loaded at
+another detail, a save puts its vessel on a ground a little off.
+
+### A rover on its end-stops
+
+A rover whose springs are set soft, on Kerbin: its wheels rest on their end-stops. Without this mod, its tyres read a
+fraction of its weight: it slides sideways on flat ground, and slides down a slope, brakes on. With Fixed Tuning
+alone, they read less than 1 % of it on flat ground, on the softest springs, and the rover slides as without this mod;
+a little over a third of it on the slope, and it slides down at about 0.9 m/s. With this mod, the tyres read the whole
+weight, and it holds.
+
+**→ Full chapter: [A rover on its end-stops](checked/a-rover-on-its-end-stops.md)**
+
+### A lander dropped onto its end-stops
+
+A lander on four LT-1 legs, its springs set soft, dropped from its launch clamps onto the runway: it comes to rest on
+its end-stops. Without this mod, its feet read none of its weight, and it slowly turns and slides; with it, it stays
+still. With Fixed Tuning alone, it bounces back up from the fall at up to 6 m/s, its legs leaving the ground, in two
+trials out of three; with this fix, the legs catch it on their end-stops, and it comes back up at a third of a metre
+per second at most.
+
+**→ Full chapter: [A lander dropped onto its end-stops](checked/a-lander-dropped-onto-its-end-stops.md)**
+
+### A rover on its end-stops after a time warp
+
+The rover of the slope, its time warped on rails for a minute, as a player does near a rover at rest: not a culprit,
+a check that this fix still holds it once the game is back to normal time: its tyres read the whole weight of the
+rover, as before the warp.
+
+**→ Full chapter: [A rover on its end-stops after a time warp](checked/a-rover-on-its-end-stops-after-a-time-warp.md)**
+
+### A rover driving in a straight line
+
+A rover set off from standstill on flat ground, throttle held, its steering let go: not a culprit, a check that this
+mod does not make a rover turn on its own. Set off from the same place, it turns by about a tenth of a degree in
+30 s, with this mod or without it, in each of its configurations.
+
+**→ Full chapter: [A rover driving in a straight line](checked/a-rover-driving-in-a-straight-line.md)**
