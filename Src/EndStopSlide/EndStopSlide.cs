@@ -58,6 +58,11 @@ namespace com.github.lhervier.ksp.fix.suspensions.endstopslide
             public float compression;
             /// <summary>Force PhysX reports for the spring and damper (kN).</summary>
             public float springForce;
+            /// <summary>
+            /// Force PhysX will apply for the spring and damper over the coming step, as the contacts' read foresees it
+            /// (kN) (<see cref="WheelContacts.Wheel.comingForce"/>).
+            /// </summary>
+            public float comingSpringForce;
             /// <summary>The tyre load as VPP would have computed it without the fix (kN).</summary>
             public float stockDownforce;
 
@@ -316,8 +321,8 @@ namespace com.github.lhervier.ksp.fix.suspensions.endstopslide
         /// (<see cref="WheelContacts"/>). While
         /// one of them could reach its end-stop during the coming step, hands the wheels on the ground to the
         /// <see cref="ContactSolver"/>, each a contact along the axis of its suspension whose gap is the travel it has
-        /// left, with the forces known to act on them over the last step (the suspension springs, the tyre forces), for
-        /// it to hold them at their end-stops (when <see cref="Hold"/>) and check what PhysX's own limits pushed at the
+        /// left, with the forces known to act on them (the suspension springs as at the last step and as they will be over
+        /// the coming one, the tyre forces), for it to hold them at their end-stops (when <see cref="Hold"/>) and check what PhysX's own limits pushed at the
         /// last step (<see cref="ContactSolver.Balance.unexplainedNormal"/>).
         /// </summary>
         private static void Solve(Vessel vessel)
@@ -361,6 +366,7 @@ namespace com.github.lhervier.ksp.fix.suspensions.endstopslide
                 p.axis = w.axis;
                 p.compression = w.compression;
                 p.springForce = w.grounded ? w.hit.force : 0f;
+                p.comingSpringForce = w.comingForce;
                 p.gap = 0f;
                 if (w.grounded)
                 {
@@ -377,8 +383,9 @@ namespace com.github.lhervier.ksp.fix.suspensions.endstopslide
                 return;
             }
 
-            // The forces known to act on the wheels at the last step, besides those the solver applied: the spring and
-            // damper, which PhysX applies along the contact normal, and the tyre force VPP applied.
+            // The forces known to act on the wheels, besides those the solver applies: the spring and damper, which PhysX
+            // applies along the contact normal, as at the last step and as they will be over the coming one, and the tyre
+            // force VPP applied at the last step, taken to stay the same (VPP works out the coming one after the solve).
             contacts.Clear();
             touching.Clear();
             known.Clear();
@@ -391,10 +398,20 @@ namespace com.github.lhervier.ksp.fix.suspensions.endstopslide
                 {
                     continue;
                 }
-                known.Add(new ContactSolver.KnownForce { force = p.hit.normal * p.springForce, point = p.hit.point });
+                known.Add(new ContactSolver.KnownForce
+                {
+                    force = p.hit.normal * p.springForce,
+                    coming = p.hit.normal * p.comingSpringForce,
+                    point = p.hit.point
+                });
                 if (p.lastTime >= 0f && Mathf.Abs(now - p.lastTime - dt) < dt * 0.25f)
                 {
-                    known.Add(new ContactSolver.KnownForce { force = p.lastTyreForce, point = p.lastTyrePoint });
+                    known.Add(new ContactSolver.KnownForce
+                    {
+                        force = p.lastTyreForce,
+                        coming = p.lastTyreForce,
+                        point = p.lastTyrePoint
+                    });
                 }
                 normal += p.hit.normal;
                 touching.Add(p);

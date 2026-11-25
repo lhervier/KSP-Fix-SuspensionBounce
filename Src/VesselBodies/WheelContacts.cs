@@ -10,8 +10,8 @@ namespace com.github.lhervier.ksp.fix.suspensions.vesselbodies
 {
     /// <summary>
     /// The contact of every wheel of a vessel with the ground, read once per vessel and physics step for every fix that
-    /// needs it: EndStopSlide, for the travel each wheel has left before its end-stop, and DamperBounce, for the wheels
-    /// on the ground and where they touch it.
+    /// needs it: EndStopSlide, for the travel each wheel has left before its end-stop and the force its spring and damper
+    /// will push it with over the coming step, and DamperBounce, for the wheels on the ground and where they touch it.
     /// <para>
     /// The contact is the one PhysX found for the wheel at the start of the last physics step, which Vehicle Physics Pro
     /// reads at the start of each wheel's own update: within a step, a wheel whose update has not run yet still holds
@@ -27,6 +27,13 @@ namespace com.github.lhervier.ksp.fix.suspensions.vesselbodies
         /// (KSP-Util-MCPServer set_member).
         /// </summary>
         public static bool Predict = true;
+
+        /// <summary>
+        /// Whether the force of each wheel's spring and damper is the one PhysX will apply over the coming step (true),
+        /// or the one it applied over the last step (false) (<see cref="Wheel.comingForce"/>). Public so that it can be
+        /// changed in game (KSP-Util-MCPServer set_member).
+        /// </summary>
+        public static bool PredictForce = true;
 
         /// <summary>One wheel, and its contact as read at the last step its vessel was read.</summary>
         public sealed class Wheel
@@ -65,6 +72,21 @@ namespace com.github.lhervier.ksp.fix.suspensions.vesselbodies
             /// <see cref="Predict"/>: negative for a wheel coming fast that will be past its end-stop. 0 off the ground.
             /// </summary>
             internal float gap;
+            /// <summary>
+            /// The force, along the contact normal, that PhysX will push the wheel with for its spring and damper over
+            /// the coming step (kN), when <see cref="PredictForce"/>; otherwise, or when it cannot be foreseen, the one
+            /// it reported for the last step. 0 off the ground.
+            /// </summary>
+            internal float comingForce;
+
+            // How much further into its travel PhysX will find the wheel at the start of the coming step than at the
+            // start of the last one (m), as foreseen at the read of this step and at the read of the step before, and
+            // that read's step and contact.
+            internal float step;
+            internal float readTime = -1f;
+            internal float lastStep;
+            internal float lastReadTime = -1f;
+            internal bool lastGrounded;
         }
 
         private static readonly MethodInfo CalculateSuspensionTravel =
@@ -72,6 +94,10 @@ namespace com.github.lhervier.ksp.fix.suspensions.vesselbodies
 
         private static readonly AccessTools.FieldRef<VehicleBase, Rigidbody> VehicleBody =
             AccessTools.FieldRefAccess<VehicleBase, Rigidbody>("m_rigidbody");
+
+        /// <summary>Unity's wheel behind VPP's, whose spring and damper PhysX uses.</summary>
+        private static readonly AccessTools.FieldRef<VPWheelCollider, WheelCollider> UnityWheel =
+            AccessTools.FieldRefAccess<VPWheelCollider, WheelCollider>("m_wheelCollider");
 
         /// <summary>The wheel of a wheel submodule, internal to the game's assembly.</summary>
         internal static readonly AccessTools.FieldRef<ModuleWheelSubmodule, KSPWheelController> Controller =
@@ -269,6 +295,16 @@ namespace com.github.lhervier.ksp.fix.suspensions.vesselbodies
         /// <summary>Reads the contact of <paramref name="w"/> as PhysX reports it for the last step.</summary>
         private static void ReadContact(Wheel w, float dt)
         {
+            // The read of the step before becomes the last one at the first read of a step; a read made again within
+            // the same step (the floating origin moved, wheels followed since) keeps it.
+            float now = Time.fixedTime;
+            if (w.readTime != now)
+            {
+                w.lastStep = w.step;
+                w.lastGrounded = w.grounded;
+                w.lastReadTime = w.readTime;
+                w.readTime = now;
+            }
             VPWheelCollider col = w.state.wheelCol;
             w.grounded = Read(col, out w.hit, out w.travel, out w.compression);
             // The end-stop works along the axis of the suspension, as PhysX's does.
@@ -276,6 +312,8 @@ namespace com.github.lhervier.ksp.fix.suspensions.vesselbodies
             w.rate = Vector3.zero;
             w.closing = 0f;
             w.gap = 0f;
+            w.step = 0f;
+            w.comingForce = 0f;
             if (!w.grounded)
             {
                 return;
@@ -299,6 +337,49 @@ namespace com.github.lhervier.ksp.fix.suspensions.vesselbodies
             {
                 w.gap -= Mathf.Max(0f, w.closing) * dt;
             }
+            w.comingForce = ComingForce(w, col, now, dt);
+        }
+
+        /// <summary>
+        /// Returns the force, along the contact normal, that PhysX will push the grounded wheel <paramref name="w"/> with
+        /// for its spring and damper over the coming step (kN), from its contact read at this step; the force PhysX
+        /// reported for the last step when <see cref="PredictForce"/> is off, or when the wheel was not read on the
+        /// ground at the step before.
+        /// </summary>
+        private static float ComingForce(Wheel w, VPWheelCollider col, float now, float dt)
+        {
+            // PhysX's vehicle (PxVehicleUpdate.cpp, processSuspTireWheels) works the force out once, at the start of
+            // each step, from where its ray finds the ground then, and applies it over the whole step: a spring on the
+            // jounce, capped at the travel, and a damper on the jounce's change since the step before, over the step,
+            // projected on the contact normal. Between the start of the last step and the start of the coming one, the
+            // wheel's body has moved by its speed at the end of the last step, read now: the jounce changes by the
+            // closing speed times the step, and the damper's speed is the closing speed itself. The compression the
+            // read measures does not follow PhysX's ray closely enough for either.
+            w.step = w.closing * dt;
+            if (w.compression >= 1f && w.step > 0f)
+            {
+                // On its end-stop, PhysX caps the jounce: going further changes nothing.
+                w.step = 0f;
+            }
+            float reported = w.hit.force;
+            if (!PredictForce || !w.lastGrounded || Mathf.Abs(now - w.lastReadTime - dt) >= dt * 0.25f)
+            {
+                return reported;
+            }
+            if (Mathf.Min(w.compression, 1f) * w.travel + w.step <= 0f)
+            {
+                // The wheel leaves the ground.
+                return 0f;
+            }
+            WheelCollider unity = UnityWheel(col);
+            if (unity == null)
+            {
+                return reported;
+            }
+            // The force reported is that of the last step: what the spring and the damper gain since.
+            JointSpring spring = unity.suspensionSpring;
+            float along = Vector3.Dot(w.hit.normal, w.axis);
+            return reported + along * (spring.spring * w.step + spring.damper * (w.step - w.lastStep) / dt);
         }
 
         /// <summary>

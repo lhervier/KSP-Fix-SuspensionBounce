@@ -11,11 +11,12 @@ namespace com.github.lhervier.ksp.fix.suspensions.vesselbodies
     /// <para>
     /// A caller hands, once per vessel and step, its contacts: each a point on a body, the direction a force may push
     /// it along, how fast the gap of the contact opens, and how much of that gap the coming step may close. The solver
-    /// takes the vessel as one rigid body (its bodies read by <see cref="VesselBodies"/>), pushed by the forces known to
-    /// act on it over the last step (KSP's gravity and its modules' forces, recorded here, and those the caller knows),
-    /// and finds the least forces, none pulling, that keep every contact from closing more than its gap by the end of
-    /// the coming step, all at once. It applies them to the bodies, and checks by the vessel's change of momentum over
-    /// the step what other forces pushed it (<see cref="Balance.unexplainedNormal"/>).
+    /// takes the vessel as one rigid body (its bodies read by <see cref="VesselBodies"/>), pushed over the coming step by
+    /// the forces known to act on it (KSP's gravity and its modules' forces, recorded here at the last step and taken to
+    /// stay the same, and those the caller knows, as it foresees them), and finds the least forces, none pulling, that
+    /// keep every contact from closing more than its gap by the end of the coming step, all at once. It applies them to
+    /// the bodies, and checks by the vessel's change of momentum over the last step what other forces pushed it then
+    /// (<see cref="Balance.unexplainedNormal"/>).
     /// </para>
     /// </summary>
     public static class ContactSolver
@@ -68,10 +69,16 @@ namespace com.github.lhervier.ksp.fix.suspensions.vesselbodies
             internal Vector3 heldPoint;
         }
 
-        /// <summary>A force known to act on the vessel over the last physics step, and where.</summary>
+        /// <summary>
+        /// A force known to act on the vessel: what it was over the last physics step, what it will be over the coming
+        /// one, and where.
+        /// </summary>
         internal struct KnownForce
         {
+            /// <summary>The force over the last step, for the check of what else pushed the vessel then.</summary>
             public Vector3 force;
+            /// <summary>The force over the coming step, for the forces that hold the contacts.</summary>
+            public Vector3 coming;
             public Vector3 point;
         }
 
@@ -273,11 +280,12 @@ namespace com.github.lhervier.ksp.fix.suspensions.vesselbodies
 
         /// <summary>
         /// Follows the vessel of <paramref name="balance"/> at this step: reads all its bodies, sums the forces known to
-        /// act on it over the last step (gravity, the forces KSP's modules applied, and <paramref name="known"/>), and
-        /// checks what else pushed it then, along <paramref name="normal"/> (<see cref="Balance.unexplainedNormal"/>),
-        /// the forces of the last step counted for every one of <paramref name="contacts"/>. When
-        /// <paramref name="hold"/>, finds and applies the forces of <paramref name="touching"/> for the coming step
-        /// (<see cref="HoldContacts"/>).
+        /// act on it over the last step (gravity, the forces KSP's modules applied, and <paramref name="known"/> as they
+        /// were then), and checks what else pushed it then, along <paramref name="normal"/>
+        /// (<see cref="Balance.unexplainedNormal"/>), the forces of the last step counted for every one of
+        /// <paramref name="contacts"/>. When <paramref name="hold"/>, finds and applies the forces of
+        /// <paramref name="touching"/> for the coming step (<see cref="HoldContacts"/>), the vessel pushed meanwhile by
+        /// gravity and KSP's forces as at the last step, and by <paramref name="known"/> as they will be.
         /// </summary>
         internal static void Solve(Balance balance, List<Contact> contacts, List<Contact> touching, List<KnownForce> known,
             Vector3 normal, bool hold)
@@ -348,11 +356,18 @@ namespace com.github.lhervier.ksp.fix.suspensions.vesselbodies
                     change += b.mass * (b.velocity - balance.velocities[i]) / dt;
                 }
             }
+            // The forces over the coming step: KSP's as over the last one, the caller's as it foresees them. A spring
+            // and damper that PhysX works out at the start of each step are not the same from one step to the next: taken
+            // as over the last step, the error the hold makes in them at a step comes back, reversed, at the next one.
+            Vector3 comingForce = knownForce;
+            Vector3 comingTorque = knownTorque;
             for (int i = 0; i < known.Count; i++)
             {
                 KnownForce k = known[i];
                 knownForce += k.force;
                 knownTorque += Vector3.Cross(k.point - centre, k.force);
+                comingForce += k.coming;
+                comingTorque += Vector3.Cross(k.point - centre, k.coming);
             }
 
             // What else pushed the vessel at the last step: the momentum change that neither the known forces nor the
@@ -374,7 +389,7 @@ namespace com.github.lhervier.ksp.fix.suspensions.vesselbodies
 
             if (hold && accelerationKnown && mass > 0f && touching.Count > 0)
             {
-                HoldContacts(balance, touching, bodiesNow, count, centre, knownForce, knownTorque, now, dt);
+                HoldContacts(balance, touching, bodiesNow, count, centre, comingForce, comingTorque, now, dt);
             }
 
             // Kept for the next step.
@@ -407,8 +422,8 @@ namespace com.github.lhervier.ksp.fix.suspensions.vesselbodies
         /// <summary>
         /// Holds the <paramref name="touching"/> contacts within their gaps for the coming physics step. The vessel is
         /// taken as one rigid body (the first <paramref name="count"/> of <paramref name="bodies"/>, about
-        /// <paramref name="centre"/>, their velocities read for this step), pushed by the <paramref name="known"/> forces
-        /// and <paramref name="knownTorque"/> of the last step. Finds the least forces, none pulling, that keep every
+        /// <paramref name="centre"/>, their velocities read for this step), pushed over the coming step by the
+        /// <paramref name="known"/> force and <paramref name="knownTorque"/>. Finds the least forces, none pulling, that keep every
         /// contact from closing more than its gap by the end of the coming step, all at once; applies them to the
         /// contacts' bodies at their points, and records them in
         /// <see cref="Contact.held"/>, <see cref="Balance.heldNormal"/> and <see cref="Balance.holding"/>. A contact

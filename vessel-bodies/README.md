@@ -44,6 +44,10 @@ read it once per vessel and per step, the same read, by whichever fix asks first
   nothing for it: the damper of a wheel off the ground pushes nothing. A wheel that touches the ground at the coming
   step cannot be foreseen: PhysX reports no contact for a wheel in the air, and it is for that step that Damper Bounce
   bounds the damper of every wheel in the air ([Damper Bounce](../damper-bounce/README.md#the-fix)).
+- **The spring of the coming step.** PhysX works out the force of each wheel's spring and damper once, at the start of
+  its step, from where it finds the ground then, and pushes with it over the whole step: the force the game reports is
+  that of the last step. The read foresees the one of the coming step, the wheel being found further into its travel
+  by its speed over a step, for the contact solver ([The springs of the coming step](#the-springs-of-the-coming-step)).
 - **The wheels are those the game updates.** A vessel put on rails, by a time warp or when it is moved, gets new wheels
   from the game when it comes back, on the same parts: a wheel the game has not updated for more than two and a half
   steps is forgotten, or it would be read as a wheel of its own. At the first step of a vessel loaded or unpacked, the
@@ -91,9 +95,23 @@ of wheels or end-stops: the fix says what a contact is, the solver how the vesse
 At each step where a fix hands it contacts, the solver makes the vessel the rigid body Vehicle Physics Pro expects: its
 mass, its centre of mass, its inertia (that of each part, brought back to the centre of mass), its velocity and its
 rotation, drawn from the momentum and the angular momentum of all its parts. To that it adds the forces known for the
-step: gravity, as KSP applies it to each part, and the forces and torques of KSP's modules (engines, reaction
-wheels…), which it records as KSP hands them to the parts; and the forces the fix knows of, for End-Stop Slide the
-spring of each wheel and the force of each tyre, as Vehicle Physics Pro applied it.
+coming step: gravity, as KSP applies it to each part, and the forces and torques of KSP's modules (engines, reaction
+wheels…), which it records as KSP hands them to the parts and takes to stay the same for a step; and the forces the fix
+knows of, for End-Stop Slide the spring of each wheel, as PhysX will push with it, and the force of each tyre, as
+Vehicle Physics Pro applied it.
+
+### The springs of the coming step
+
+A fix hands the solver each force it knows twice: as it was over the last step, for the check below, and as it will be
+over the coming one, for the forces that hold the contacts. Most forces barely change from one step to the next. A
+suspension spring does: PhysX works out its force at the start of each step, from the compression and the speed of
+the wheel then, and keeps it for the whole step. Taken as it was over the last step, the solver is off by what the
+spring and its damper gained since, and that change comes from the very motion the solver imposed: the hold of a
+soft wheel on its end-stop moves the vessel, the stiff wheel beside it answers at the next step with a damper force
+the solver did not count, the solver makes up for it the other way, and the error comes back reversed at each step.
+On a rover whose front wheels rest on their end-stops while the rear ones are still on their springs, the load jumps
+from one diagonal to the other at every step. Foreseen from the wheel's speed, the spring's force is the one PhysX
+will push with, and nothing is left to come back.
 
 ### One step ahead
 
@@ -183,6 +201,22 @@ w.gap -= Mathf.Max(0f, w.closing) * dt;
 The compression is measured where PhysX's `WheelCollider` really is (`ContactDepth`): Vehicle Physics Pro's own depth
 leaves out the centre the part gives the wheel, which the LT-1 leg sets to −0.119 m.
 
+The force of the wheel's spring and damper over the coming step (`comingForce`, `PredictForce`) follows PhysX's own
+(`PxVehicleUpdate.cpp`, a spring on the jounce, capped at the travel, and a damper on the jounce's change over a step,
+projected on the contact normal). Between the start of the last step and the start of the coming one, the wheel's
+body has moved by its speed at the end of the last step, which the read has just measured: the jounce changes by the
+closing speed times the step, and the damper's speed is the closing speed itself. The force reported for the last step
+gains what the spring and the damper gain from that (`ComingForce`), the spring and the damper being those of Unity's
+`WheelCollider`, which PhysX uses; the compression the read measures does not follow PhysX's ray closely enough for
+this:
+
+```csharp
+w.step = w.closing * dt;
+...
+float along = Vector3.Dot(w.hit.normal, w.axis);
+return reported + along * (spring.spring * w.step + spring.damper * (w.step - w.lastStep) / dt);
+```
+
 ### `ContactSolver`
 
 The solver is `ContactSolver`, in [Src/VesselBodies/ContactSolver.cs](../Src/VesselBodies/ContactSolver.cs). A fix
@@ -190,16 +224,18 @@ hands it each contact as a `ContactSolver.Contact`: the rigidbody (`body`), the 
 pushes along (`axis`), the vector a velocity is projected on to give how fast the contact opens (`rate`), and what it
 may close in the step (`gap`); the solver writes the force back (`held`). Once per vessel and per step, the fix gets
 the vessel's `ContactSolver.Balance` from `ContactSolver.Begin`, then either leaves the vessel alone for the step
-(`ContactSolver.Idle`) or hands it all its contacts, those that touch, the forces it knows of and the mean normal of
-the contacts (`ContactSolver.Solve`).
+(`ContactSolver.Idle`) or hands it all its contacts, those that touch, the forces it knows of (`ContactSolver.KnownForce`:
+over the last step, `force`, and over the coming one, `coming`) and the mean normal of the contacts
+(`ContactSolver.Solve`).
 
 What KSP gives each part for the coming step is recorded in a prefix of `FlightIntegrator.Integrate(Part)`
 (`IntegratePrefix`): the vessel's acceleration (`vessel.precalc.integrationAccel`, gravity included), and the forces
 and torques its modules gathered (`part.force`, `part.forces`, `part.torque`).
 
 `Solve` reads each rigidbody's velocity and angular momentum (`ReadMotion`), on top of the read the whole mod shares,
-then sums the known forces and checks what else pushed the vessel at the last step
-([Checking it](#checking-it)):
+then sums the known forces twice, as they were over the last step and as they will be over the coming one, and checks
+with the first what else pushed the vessel at the last step ([Checking it](#checking-it)); the second pushes the vessel
+in `HoldContacts` ([The springs of the coming step](#the-springs-of-the-coming-step)):
 
 ```csharp
 VesselBodies read = VesselBodies.Of(balance.vessel);
