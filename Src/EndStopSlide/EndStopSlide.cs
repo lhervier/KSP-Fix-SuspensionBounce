@@ -320,10 +320,11 @@ namespace com.github.lhervier.ksp.fix.suspensions.endstopslide
         /// Once per physics step and vessel, at its first wheel: reads the contact of every wheel of the vessel
         /// (<see cref="WheelContacts"/>). While
         /// one of them could reach its end-stop during the coming step, hands the wheels on the ground to the
-        /// <see cref="ContactSolver"/>, each a contact along the axis of its suspension whose gap is the travel it has
-        /// left, with the forces known to act on them (the suspension springs as at the last step and as they will be over
-        /// the coming one, the tyre forces), for it to hold them at their end-stops (when <see cref="Hold"/>) and check what PhysX's own limits pushed at the
-        /// last step (<see cref="ContactSolver.Balance.unexplainedNormal"/>).
+        /// <see cref="ContactSolver"/>, each a contact pushed along the ground's normal whose gap is the travel it has
+        /// left along the axis of its suspension, with the forces known to act on them (the suspension springs as at the
+        /// last step and as they will be over the coming one, the tyre forces), for it to hold them at their end-stops
+        /// (when <see cref="Hold"/>) and check what PhysX's own limits pushed at the last step
+        /// (<see cref="ContactSolver.Balance.unexplainedNormal"/>).
         /// </summary>
         private static void Solve(Vessel vessel)
         {
@@ -371,6 +372,12 @@ namespace com.github.lhervier.ksp.fix.suspensions.endstopslide
                 if (w.grounded)
                 {
                     p.point = w.hit.point;
+                    // The end-stop carries the ground's reaction through the tyre, which the ground can only give
+                    // along its normal; what holds the wheel along the ground is the tyre's own force. Along the
+                    // suspension's axis instead, as PhysX's end-stop pushes, a vessel tilted to the ground (some wheels
+                    // on their end-stops, the others not) would be pushed along it by a part of the load, which VPP's
+                    // tyres only hold by creeping. The travel left is still measured along the axis (rate).
+                    p.axis = w.hit.normal;
                     p.rate = w.rate;
                     near |= w.gap <= Mathf.Max(0f, w.closing + fall) * dt;
                     p.gap = Mathf.Max(0f, w.gap);

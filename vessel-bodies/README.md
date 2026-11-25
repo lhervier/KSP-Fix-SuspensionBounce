@@ -86,8 +86,9 @@ For each pair of contacts, it needs how a force at one moves the other, through 
 vessel: the matrix J · M⁻¹ · Jᵀ, J the directions of the contacts and their arms about the centre of mass, M⁻¹ the
 inverse of the vessel's mass and inertia. For a single contact, it is the 1 / m above.
 
-[End-Stop Slide](../end-stop-slide/README.md) is the fix that uses it: each wheel on the ground is a contact, along the
-axis of its suspension, and what it may close is the travel it has left before its end-stop. The solver knows nothing
+[End-Stop Slide](../end-stop-slide/README.md) is the fix that uses it: each wheel on the ground is a contact, pushed
+along the normal of the ground, and what it may close is the travel it has left before its end-stop, along the axis of
+its suspension. The solver knows nothing
 of wheels or end-stops: the fix says what a contact is, the solver how the vessel answers.
 
 ### The vessel taken as one body

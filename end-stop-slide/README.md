@@ -127,10 +127,15 @@ smallest forces, never pulling, such that by the end of the coming step no wheel
 The wheels are handled together: a force on one wheel also tilts the vessel, and changes what the others have to hold.
 A wheel resting on its end-stop gets its share of the load, beyond what its spring carries; a wheel leaving it, or
 still far from it, gets nothing; a wheel coming fast is slowed just enough to reach it. These forces are applied to
-the wheels' parts, at the contact point, along the axis of the suspension, as the end-stop they replace: PhysX's
-end-stop has nothing left to correct, and no longer beats. The axis matters at speed: measured along the normal of the
-ground instead, a normal tilted for a single step, by a bump or a seam between two pieces of terrain, would turn part
-of the forward speed into a speed towards the end-stop, and call for a force many times the weight.
+the wheels' parts, at the contact point: PhysX's end-stop has nothing left to correct, and no longer beats. They push
+along the normal of the ground, not along the axis of the suspension as PhysX's end-stop does: the end-stop passes the
+ground's reaction on through the tyre, the ground can only push along its normal, and what holds the wheel along the
+ground is the tyre's own force. Along the axis, a vessel tilted to the ground, some wheels on their end-stops and the
+others still on their springs, would be pushed along the ground by a part of its load, which the tyres only hold by
+creeping: the rover crept on flat ground, brakes on. The travel, on the other hand, is measured along the axis, and
+that matters at speed: measured along the normal of the ground, a normal tilted for a single step, by a bump or a seam
+between two pieces of terrain, would turn part of the forward speed into a speed towards the end-stop, and call for a
+force many times the weight.
 
 Among the endless ways four wheels can carry the same vessel, the solver takes the evenest
 ([Sharing between the contacts](../vessel-bodies/README.md#sharing-between-the-contacts)).
@@ -183,7 +188,8 @@ The work is done in a postfix of `VehicleBase.CalculateSuspensionForces`, which 
 once the spring force is read and before the tyre's load is drawn from it; only once per vessel and per step, at its
 first wheel (`Solve`). Each wheel has a probe (`Probe`), which is also its contact for the solver. Each step starts
 with the contacts of the vessel's wheels, read once per step for both fixes (`WheelContacts.Of`,
-[Vessel Bodies](../vessel-bodies/README.md#wheelcontacts)): the axis of each suspension (`w.axis`), how fast the wheel
+[Vessel Bodies](../vessel-bodies/README.md#wheelcontacts)): the normal of the ground each wheel's force pushes along
+(`w.hit.normal`), the axis of each suspension (`w.axis`), how fast the wheel
 closes its travel, along that axis over the square of the axis's share along the ground normal (`w.rate`), and the
 travel it has left, moved on by a step for a wheel coming towards its end-stop
 ([Where the wheel is now](#where-the-wheel-is-now)). The probes of the wheels that read has forgotten are dropped
