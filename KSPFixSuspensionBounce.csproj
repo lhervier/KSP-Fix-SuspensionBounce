@@ -3,7 +3,7 @@
     <TargetFramework>net472</TargetFramework>
     <AssemblyName>KSPFixSuspensionBounce</AssemblyName>
     <RootNamespace>com.github.lhervier.ksp.fix.suspensions</RootNamespace>
-    <Version>0.1.0-dev</Version>
+    <Version>0.1.1-dev</Version>
     <Description>Sizes the damper of landing legs and wheels for the mass each of them carries, so that a light vessel or a part placed alone is no longer thrown into the air by its own suspension</Description>
     <!-- Straight into the folder that gets copied to the GameData of KSP. -->
     <OutputPath>GameData\KSPFixSuspensionBounce</OutputPath>
