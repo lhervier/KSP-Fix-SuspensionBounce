@@ -41,7 +41,7 @@ own mass from the start.
 <img src="imgs/landing-leg.gif" alt="A landing leg set down alone on Kerbin, with Terrain Precision Fix" width="50%">
 
 *KSP 1.12.5, KSP Community Fixes and Terrain Precision Fix, without this mod: on Kerbin, the save
-[`landing-leg-kerbin.sfs`](https://github.com/lhervier/KSP-Fix-TerrainPrecision/blob/main/diag/lone-parts/limits/landing-leg/landing-leg-kerbin.sfs)
+[`landing-leg-kerbin.sfs.zip`](https://github.com/lhervier/KSP-Fix-TerrainPrecision/blob/main/docs/lone-parts/diag/limits/landing-leg/landing-leg-kerbin.sfs.zip)
 of Terrain Precision Fix; in EVA construction, Bill Kerman takes a leg off the lander and sets it down on its foot
 ([A landing leg placed alone](checked/a-landing-leg-placed-alone.md)).*
 

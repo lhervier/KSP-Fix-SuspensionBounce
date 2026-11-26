@@ -37,7 +37,7 @@ equally among its legs ([Suspensions never set](../../fixed-tuning/README.md#sus
 <tr>
 <td valign="top"><em>KSP 1.12.5, KSP Community Fixes and Terrain Precision Fix: the leg, set down as above, from the
 same lander on Kerbin in the save
-<a href="https://github.com/lhervier/KSP-Fix-TerrainPrecision/blob/main/diag/lone-parts/limits/landing-leg/landing-leg-kerbin.sfs"><code>landing-leg-kerbin.sfs</code></a>
+<a href="https://github.com/lhervier/KSP-Fix-TerrainPrecision/blob/main/docs/lone-parts/diag/limits/landing-leg/landing-leg-kerbin.sfs.zip"><code>landing-leg-kerbin.sfs.zip</code></a>
 of Terrain Precision Fix.</em></td>
 <td valign="top"><em>KSP 1.12.5, KSP Community Fixes, Terrain Precision Fix and this mod, the game setting the
 springs: the same leg, set down the same way from the same save.</em></td>
